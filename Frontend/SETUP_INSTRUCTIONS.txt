@@ -1,0 +1,125 @@
+===============================================
+SETUP INSTRUCTIONS FOR YOUR SUI WALLET PROJECT
+===============================================
+
+PREREQUISITES:
+--------------
+1. Node.js (version 18.x or higher)
+   Download from: https://nodejs.org/
+
+2. Git (to clone your repository)
+   Download from: https://git-scm.com/
+
+3. A code editor (VS Code recommended)
+   Download from: https://code.visualstudio.com/
+
+
+INSTALLATION STEPS:
+-------------------
+
+Step 1: Clone Your Repository
+------------------------------
+Open your terminal/command prompt and run:
+
+    git clone <your-github-repository-url>
+    cd <your-project-folder-name>
+
+
+Step 2: Install Dependencies
+-----------------------------
+You need to install a package manager first. You can use either npm (comes with Node.js), yarn, or pnpm.
+
+IMPORTANT: If you encounter dependency conflicts, use --legacy-peer-deps flag:
+
+Option A - Using npm (comes with Node.js):
+    npm install --legacy-peer-deps
+
+Option B - Using pnpm (recommended for faster installs):
+    npm install -g pnpm
+    pnpm install
+
+Option C - Using yarn:
+    npm install -g yarn
+    yarn install
+
+
+Step 3: Run the Development Server
+-----------------------------------
+After installation is complete, start the development server:
+
+Using npm:
+    npm run dev
+
+Using pnpm:
+    pnpm dev
+
+Using yarn:
+    yarn dev
+
+
+Step 4: View Your Application
+------------------------------
+Open your browser and navigate to:
+    http://localhost:3000
+
+Your landing page should now be visible!
+
+
+ADDITIONAL COMMANDS:
+--------------------
+
+Build for production:
+    npm run build    (or pnpm build / yarn build)
+
+Start production server:
+    npm start        (or pnpm start / yarn start)
+
+Run linter:
+    npm run lint     (or pnpm lint / yarn lint)
+
+
+TROUBLESHOOTING:
+----------------
+
+Issue: "Port 3000 is already in use"
+Solution: Either close the app using port 3000, or start the dev server on a different port:
+    npm run dev -- -p 3001
+
+Issue: "Module not found" errors
+Solution: Delete node_modules and reinstall:
+    rm -rf node_modules
+    npm install
+
+Issue: TypeScript errors during build
+Solution: The project has "ignoreBuildErrors: true" in next.config.mjs, so builds should succeed anyway
+
+
+WHAT'S BEEN UPDATED:
+--------------------
+Your landing page now features:
+- Left side: Informative content about the Sui ecosystem with three feature highlights
+- Right side: Wallet connection card (Connect/Create tabs)
+- Responsive design that works on mobile (stacks vertically) and desktop (side-by-side)
+- Animated wavy background with cyan/blue/teal gradient colors
+- Professional, modern design optimized for blockchain/web3 aesthetics
+
+
+DEPENDENCIES INCLUDED:
+----------------------
+- Next.js 14 (React framework)
+- TypeScript (type safety)
+- Tailwind CSS v4 (styling)
+- Radix UI (accessible UI components)
+- Lucide React (icons)
+- React Hook Form (form handling)
+- simplex-noise (wavy background animation)
+- And many other UI component libraries
+
+
+NOTES:
+------
+- The pnpm-lock.yaml file in your project suggests pnpm was used
+- All dependencies are already listed in package.json
+- The project uses the new Tailwind CSS v4 syntax
+- Images are stored in public/images/design-mode/
+- The Sui logo spinning animation is defined in app/globals.css
