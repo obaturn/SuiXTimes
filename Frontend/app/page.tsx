@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthCard } from "@/components/auth/auth-card"
@@ -14,6 +15,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -31,6 +33,7 @@ export default function AuthPage() {
         title: "Wallet connected!",
         description: "Welcome to Sui ecosystem.",
       })
+      router.push('/dashboard')
     }, 1500)
   }
 
@@ -55,6 +58,7 @@ export default function AuthPage() {
         title: "Wallet created!",
         description: "Your Slush wallet has been created successfully.",
       })
+      router.push('/dashboard')
     }, 1500)
   }
 
