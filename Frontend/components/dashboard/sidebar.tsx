@@ -7,6 +7,8 @@ import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, Sun, Moon, LogOut
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from 'next-themes';
 
+import { useDisconnectWallet } from '@mysten/dapp-kit';
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,12 +19,18 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const isMobile = useIsMobile();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const { mutate: disconnect } = useDisconnectWallet();
+
+  const handleDisconnect = () => {
+    disconnect();
+    router.push('/');
+  };
 
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
     { href: '/dashboard/sui-news', icon: Newspaper, label: 'SUI News' },
-    { href: '/dashboard/news', icon: Newspaper, label: 'General News' },
+    { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
     { href: '/dashboard/community', icon: Users, label: 'Community' },
@@ -70,6 +78,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             </li>
           ))}
         </ul>
+
       </nav>
       <div className="border-t border-gray-800 p-4 space-y-4">
         <div className="flex items-center justify-between">
@@ -92,7 +101,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </button>
         </div>
         <button
-          onClick={() => router.push('/')}
+          onClick={handleDisconnect}
           className="w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-red-600/20 border border-red-600/30 text-red-400 hover:bg-red-600/30 hover:text-red-300 transition-colors"
         >
           <LogOut className="h-5 w-5" />

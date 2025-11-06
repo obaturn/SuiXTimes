@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { fetchSuiNews, Article } from '@/app/actions/news';
 import { Button } from '@/components/ui/button';
 import { Search, ThumbsUp, MessageCircle, Share2, Bookmark } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const StreakCard = dynamic(() => import('@/components/streak/StreakCard'), { ssr: false });
 
 const Home = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -28,9 +31,14 @@ const Home = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Sui News Feed</h1>
-        <p className="text-slate-400 mt-2">Get the latest updates from the Sui ecosystem.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <h1 className="text-3xl font-bold text-white">Sui News Feed</h1>
+          <p className="text-slate-400 mt-2">Get the latest updates from the Sui ecosystem.</p>
+        </div>
+        <div className="lg:col-span-1">
+          <StreakCard />
+        </div>
       </div>
 
       <div className="flex justify-between items-center">

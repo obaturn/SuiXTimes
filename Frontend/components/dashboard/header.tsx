@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
-import { Bell, Menu, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useCurrentWallet, useDisconnectWallet, ConnectButton } from '@mysten/dapp-kit';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Menu, Wallet, Sun, Moon, Bell } from 'lucide-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -11,6 +12,15 @@ interface HeaderProps {
 
 const Header = ({ onMenuClick }: HeaderProps) => {
   const { theme, setTheme } = useTheme();
+  const { currentWallet } = useCurrentWallet();
+  const { mutate: disconnect } = useDisconnectWallet();
+  const router = useRouter();
+  const account = currentWallet?.accounts?.[0];
+
+  const handleDisconnect = () => {
+    disconnect();
+    router.push('/');
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-lg">
@@ -24,10 +34,32 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           <h1 className="text-lg font-semibold">Sui Dashboard</h1>
         </div>
         <div className="hidden lg:block">
-          <h1 className="text-xl font-bold">Sui Ecosystem Dashboard</h1>
+          <h1 className="text-xl font-bold">Sui Times Dashboard</h1>
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Wallet Connection Status */}
+          {account ? (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-600/20 border border-green-600/30 rounded-full">
+                <Wallet className="h-4 w-4 text-green-400" />
+                <span className="text-sm text-green-400 font-medium">
+                  {account.address.slice(0, 6)}...{account.address.slice(-4)}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDisconnect}
+                className="text-red-400 border-red-400/30 hover:bg-red-400/10"
+              >
+                Disconnect
+              </Button>
+            </div>
+          ) : (
+            <ConnectButton />
+          )}
+
           <Button
             variant="ghost"
             size="icon"

@@ -1,27 +1,33 @@
 "use client";
 
 import React from 'react';
-import { Construction, Clock } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { PlusCircle, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
-const News = () => {
+const ArticlePage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-      <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 max-w-md">
-        <div className="flex justify-center mb-4">
-          <Construction className="w-16 h-16 text-purple-400" />
-        </div>
-        <h1 className="text-2xl font-bold text-white mb-2">News Section</h1>
-        <p className="text-slate-400 mb-4">Coming Soon</p>
-        <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
-          <Clock className="w-4 h-4" />
-          <span>Under Development</span>
-        </div>
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-white">Community Articles</h1>
+        <Link href="/dashboard/news/new" passHref>
+          <Button className="gap-2">
+            <PlusCircle className="h-5 w-5" />
+            Create Article
+          </Button>
+        </Link>
       </div>
-      <p className="text-slate-500 max-w-sm">
-        We're working hard to bring you the latest Sui ecosystem news and updates. Stay tuned!
-      </p>
+
+      {/* Placeholder for article list */}
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-center space-y-4 border-2 border-dashed border-slate-700 rounded-lg">
+        <BookOpen className="w-16 h-16 text-slate-600" />
+        <h2 className="text-xl font-bold text-slate-300">No Articles Yet</h2>
+        <p className="text-slate-400 max-w-sm">
+          Be the first to contribute! Click the "Create Article" button to share your knowledge with the community.
+        </p>
+      </div>
     </div>
   );
 };
 
-export default News;
+export default ArticlePage;

@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Bell, Trash2, Star, ArrowUpRight } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import StreakCard from '@/components/streak/StreakCard';
 
 const Watchlist = () => {
   const summary = [
@@ -33,6 +34,11 @@ const Watchlist = () => {
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold text-white">My Watchlist</h1>
+
+      {/* Streak Card Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StreakCard />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {summary.map(item => (
