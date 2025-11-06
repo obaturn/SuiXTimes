@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+const Parser = require("rss-parser");
 
 const ArticleSchema = z.object({
   id: z.string(),
@@ -22,7 +23,7 @@ const sampleArticles: Article[] = [
     url: "https://example.com/sui-defi-partnership",
     image: "/placeholder.jpg",
     category: "DeFi",
-    publishedAt: new Date().toISOString(),
+    publishedAt: "2023-10-26T10:00:00Z",
   },
   {
     id: "2",
@@ -31,7 +32,7 @@ const sampleArticles: Article[] = [
     url: "https://example.com/sui-grants",
     image: "/placeholder.jpg",
     category: "Grants",
-    publishedAt: new Date(Date.now() - 86400000).toISOString(),
+    publishedAt: "2023-10-25T10:00:00Z",
   },
 ];
 
@@ -54,8 +55,8 @@ export async function fetchSuiNews(): Promise<Article[]> {
 
     const data = await response.json();
 
-    const articles = data.articles.map((article: any, index: number) => ({
-      id: `news-${index}`,
+    const articles = data.articles.map((article: any) => ({
+      id: article.url, // Use URL as the unique ID
       title: article.title || "Untitled",
       description: article.description || "No description available",
       url: article.url,
@@ -68,5 +69,30 @@ export async function fetchSuiNews(): Promise<Article[]> {
   } catch (error) {
     console.error("Failed to fetch SUI news:", error);
     return sampleArticles;
+  }
+}
+
+export async function fetchSuiOfficialNews(): Promise<Article[]> {
+  try {
+    // Fetch from Sui blog RSS or API if available
+    // For now, using a placeholder - replace with actual Sui blog endpoint
+    const parser = new Parser();
+    const feed = await parser.parseURL('https://sui.io/blog/rss.xml'); // Assuming RSS feed exists
+
+    const articles: Article[] = feed.items.slice(0, 10).map((item: any) => ({
+      id: item.link || `sui-blog-${item.title}`,
+      title: item.title || "Untitled",
+      description: item.contentSnippet?.replace(/<[^>]*>/g, '') || "No description",
+      url: item.link || "#",
+      image: "/placeholder.jpg", // Sui blog might have images, but placeholder for now
+      category: "Official",
+      publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : "2023-10-26T10:00:00Z",
+    }));
+
+    return articles;
+  } catch (error) {
+    console.error("Failed to fetch SUI official news:", error);
+    // Return sample articles as fallback
+    return sampleArticles.filter(article => article.category === "Official" || true); // Adjust as needed
   }
 }

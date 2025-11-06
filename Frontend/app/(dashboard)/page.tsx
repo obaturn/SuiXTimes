@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { WavyBackground } from '@/components/ui/wavy-background';
 import { Button } from '@/components/ui/button';
 import { ArrowUpRight } from 'lucide-react';
+import StreakCard from '@/components/streak/StreakCard';
 
 const Home = () => {
   const stats = [
@@ -26,16 +26,7 @@ const Home = () => {
   ];
 
   return (
-    <WavyBackground
-      className="w-full"
-      containerClassName="w-full"
-      colors={['#6d28d9', '#ec4899', '#8b5cf6', '#a855f7', '#d946ef']}
-      waveWidth={60}
-      blur={10}
-      speed="slow"
-      waveOpacity={0.15}
-      backgroundFill="#020617"
-    >
+    <div className="w-full min-h-screen bg-gray-900">
       <div className="space-y-8">
         <div className="rounded-lg bg-purple-600/40 p-8 backdrop-blur-md border border-purple-500/50">
           <div className="flex justify-between items-center">
@@ -49,7 +40,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat) => (
             <div key={stat.label} className="rounded-lg bg-slate-800/60 p-6 backdrop-blur-md border border-slate-700/50">
               <p className="text-slate-400">{stat.label}</p>
@@ -62,6 +53,11 @@ const Home = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Streak Card Section */}
+        <div className="w-full max-w-md">
+          <StreakCard />
         </div>
 
         <div>
@@ -96,7 +92,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-    </WavyBackground>
+    </div>
   );
 };
 

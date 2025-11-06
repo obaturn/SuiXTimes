@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useWallets, useConnectWallet } from "@mysten/dapp-kit"
 
 interface AuthCardProps {
   isLoading: boolean
@@ -35,13 +36,25 @@ export function AuthCard({
   const [activeTab, setActiveTab] = useState("connect")
   const [walletAddress, setWalletAddress] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const wallets = useWallets()
+  const { mutate: connect } = useConnectWallet()
 
   const handleRedirect = () => {
     window.open("https://www.youtube.com/@diecastbydollarall", "_blank")
   }
 
-  const handleConnectWallet = () => {
-    onSignIn(new Event("submit") as any)
+  const handleConnectWallet = async () => {
+    try {
+      connect({ wallet: wallets[0] })
+      // Wait a bit for connection to establish before redirecting
+      setTimeout(() => {
+        onSignIn(new Event("submit") as any)
+      }, 1000)
+    } catch (error) {
+      console.error("Failed to connect wallet:", error)
+      // Fallback to opening Slush website
+      window.open("https://slush.finance/", "_blank")
+    }
   }
 
   const handleCreateSlushWallet = () => {
@@ -50,7 +63,7 @@ export function AuthCard({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 lg:p-10 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl w-full">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
         <div className="flex justify-center mb-8 sm:mb-10 lg:mb-12">
           <div className="bouncing-logo">
             <img

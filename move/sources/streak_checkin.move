@@ -1,7 +1,7 @@
 
 
 // sources/streak_checkin.move
-module streak_checkin::streak_system;
+module streak_checkin::streak_checkin;
     use sui::object::{Self, UID, ID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
@@ -20,15 +20,14 @@ module streak_checkin::streak_system;
 const EAlreadyCheckedInToday: u64 = 1;
     const EStreakNotCompleted: u64 = 2;
     const EAlreadyClaimedReward: u64 = 3;
-    const EStreakBroken: u64 = 4;
 
     // ====== Structs ======
 
     /// One-time witness for the module
-    struct STREAK_SYSTEM has drop {}
+   public struct STREAK_CHECKIN has drop {}
 
     /// User's streak data
-    struct UserStreak has key, store {
+    public struct UserStreak has key, store {
         id: UID,
         owner: address,
         current_streak: u64,
@@ -39,7 +38,7 @@ const EAlreadyCheckedInToday: u64 = 1;
     }
 
     /// NFT reward for completing 30-day streak
-    struct StreakNFT has key, store {
+    public struct StreakNFT has key, store {
         id: UID,
         name: String,
         description: String,
@@ -50,12 +49,12 @@ const EAlreadyCheckedInToday: u64 = 1;
     }
 
     /// Admin capability for managing the system
-    struct AdminCap has key, store {
+   public struct AdminCap has key, store {
         id: UID,
     }
 
     /// Registry to track all user streaks
-    struct StreakRegistry has key {
+    public struct StreakRegistry has key {
         id: UID,
         total_users: u64,
         total_rewards_claimed: u64,
@@ -63,19 +62,19 @@ const EAlreadyCheckedInToday: u64 = 1;
 
     // ====== Events ======
 
-    struct CheckInEvent has copy, drop {
+    public struct CheckInEvent has copy, drop {
         user: address,
         current_streak: u64,
         timestamp: u64,
     }
 
-    struct StreakBrokenEvent has copy, drop {
+    public struct StreakBrokenEvent has copy, drop {
         user: address,
         lost_streak: u64,
         timestamp: u64,
     }
 
-    struct RewardClaimedEvent has copy, drop {
+    public struct RewardClaimedEvent has copy, drop {
         user: address,
         nft_id: ID,
         timestamp: u64,
@@ -83,7 +82,7 @@ const EAlreadyCheckedInToday: u64 = 1;
 
     // ====== Init Function ======
 
-    fun init(otw: STREAK_SYSTEM, ctx: &mut TxContext) {
+    fun init(otw: STREAK_CHECKIN, ctx: &mut TxContext) {
         // Create and transfer admin capability
         let admin_cap = AdminCap {
             id: object::new(ctx),
@@ -290,7 +289,7 @@ const EAlreadyCheckedInToday: u64 = 1;
 
     #[test_only]
     public fun init_for_testing(ctx: &mut TxContext) {
-        init(STREAK_SYSTEM {}, ctx);
+        init(STREAK_CHECKIN {}, ctx);
     }
 
     #[test_only]

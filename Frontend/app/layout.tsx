@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { WalletProviders } from "@/components/wallet-providers"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -30,7 +31,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <WalletProviders>
+            {children}
+          </WalletProviders>
         </ThemeProvider>
       </body>
     </html>

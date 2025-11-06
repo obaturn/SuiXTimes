@@ -5,7 +5,7 @@ compiled_package_info:
     std: "0000000000000000000000000000000000000000000000000000000000000001"
     streak_checkin: "0000000000000000000000000000000000000000000000000000000000000000"
     sui: "0000000000000000000000000000000000000000000000000000000000000002"
-  source_digest: F20E7F2EA3B037DBD7591C04A96465FD122AA9B3AF185BA8F329C5862E1E956F
+  source_digest: 005E882D40AEC27D779398ED5C7EBDAFD6B7913E418D8CAD010ECED6F068BAA4
   build_flags:
     dev_mode: false
     test_mode: false
@@ -26,13 +26,14 @@ compiled_package_info:
     lint_flag:
       no_lint: false
       lint: false
+    modes: []
     implicit_dependencies:
       Bridge:
         Internal:
           kind:
             Git:
               git_url: "https://github.com/MystenLabs/sui.git"
-              git_rev: e54b798790ed
+              git_rev: 664b05b3b047c5bb03979d093660176176ea6175
               subdir: crates/sui-framework/packages/bridge
           subst: ~
           digest: ~
@@ -42,7 +43,7 @@ compiled_package_info:
           kind:
             Git:
               git_url: "https://github.com/MystenLabs/sui.git"
-              git_rev: e54b798790ed
+              git_rev: 664b05b3b047c5bb03979d093660176176ea6175
               subdir: crates/sui-framework/packages/move-stdlib
           subst: ~
           digest: ~
@@ -52,7 +53,7 @@ compiled_package_info:
           kind:
             Git:
               git_url: "https://github.com/MystenLabs/sui.git"
-              git_rev: e54b798790ed
+              git_rev: 664b05b3b047c5bb03979d093660176176ea6175
               subdir: crates/sui-framework/packages/sui-framework
           subst: ~
           digest: ~
@@ -62,11 +63,12 @@ compiled_package_info:
           kind:
             Git:
               git_url: "https://github.com/MystenLabs/sui.git"
-              git_rev: e54b798790ed
+              git_rev: 664b05b3b047c5bb03979d093660176176ea6175
               subdir: crates/sui-framework/packages/sui-system
           subst: ~
           digest: ~
           dep_override: true
+    force_lock_file: false
 dependencies:
   - MoveStdlib
   - Sui
