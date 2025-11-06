@@ -13,6 +13,10 @@ const NewArticlePage = () => {
     router.push("/dashboard/news");
   };
 
+  const handleCancel = () => {
+    router.back();
+  };
+
   return (
     <div className="space-y-8">
       <Card className="bg-slate-800/60 border-slate-700/50">
@@ -23,7 +27,7 @@ const NewArticlePage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateArticleForm onFinished={handleFormFinished} />
+          <CreateArticleForm onFinished={handleFormFinished} onCancel={handleCancel} />
         </CardContent>
       </Card>
     </div>

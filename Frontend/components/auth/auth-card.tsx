@@ -63,7 +63,18 @@ export function AuthCard({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 lg:p-10 shadow-2xl">
+      <div className="rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200" style={{
+        background: `
+          radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 105, 180, 0.4) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.2) 0%, transparent 50%),
+          radial-gradient(circle at 60% 30%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
+          linear-gradient(135deg, rgba(255, 105, 180, 0.1) 0%, rgba(255, 20, 147, 0.2) 50%, rgba(255, 0, 255, 0.1) 100%)
+        `,
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 105, 180, 0.3)',
+        boxShadow: '0 8px 32px rgba(255, 20, 147, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+      }}>
         <div className="flex justify-center mb-8 sm:mb-10 lg:mb-12">
           <div className="bouncing-logo">
             <img
@@ -78,23 +89,23 @@ export function AuthCard({
 
         {/* Header with tabs */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-4 sm:gap-0 mb-6 sm:mb-8 lg:mb-10">
-          <div className="flex bg-black/30 backdrop-blur-sm rounded-full p-1 border border-white/10 w-full sm:w-auto">
+          <div className="flex bg-white/20 rounded-lg p-1 border border-white/30 w-full sm:w-auto backdrop-blur-sm">
             <button
               onClick={() => setActiveTab("connect")}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2 rounded-full text-xs sm:text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2 rounded-md text-xs sm:text-sm lg:text-base font-medium transition-all duration-200 ${
                 activeTab === "connect"
-                  ? "bg-white/20 backdrop-blur-sm text-white border border-white/20 shadow-lg"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-white text-pink-600 shadow-sm"
+                  : "text-white/80 hover:text-white hover:bg-white/20"
               }`}
             >
               Connect
             </button>
             <button
               onClick={() => setActiveTab("create")}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2 rounded-full text-xs sm:text-sm lg:text-base font-medium transition-all duration-300 transform hover:scale-105 ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2 rounded-md text-xs sm:text-sm lg:text-base font-medium transition-all duration-200 ${
                 activeTab === "create"
-                  ? "bg-white/20 backdrop-blur-sm text-white border border-white/20 shadow-lg"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-white text-pink-600 shadow-sm"
+                  : "text-white/80 hover:text-white hover:bg-white/20"
               }`}
             >
               Create
@@ -102,7 +113,7 @@ export function AuthCard({
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-white mb-6 sm:mb-8 lg:mb-10 transition-all duration-300 break-words text-center">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-6 sm:mb-8 lg:mb-10 transition-all duration-300 break-words text-center">
           {activeTab === "connect" ? "Connect your Sui wallet" : "Create a Slush wallet"}
         </h1>
 
@@ -121,46 +132,21 @@ export function AuthCard({
               className="space-y-4 sm:space-y-5 lg:space-y-6"
             >
 
-              {/* Google login button */}
-              <Button
-                type="button"
-                onClick={() => onSocialLogin("Google")}
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-12 sm:h-14 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Continue with Google
-              </Button>
-
-              {/* OR separator */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-white/20" />
-                </div>
-                <div className="relative flex justify-center text-xs sm:text-sm">
-                  <span className="bg-black/40 px-2 text-white/60">OR</span>
-                </div>
-              </div>
-
               {/* Connect wallet button */}
               <Button
                 type="submit"
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-12 sm:h-14 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+                className="w-full bg-white text-slate-800 hover:bg-white/90 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm"
                 disabled={isLoading}
               >
                 {isLoading ? "Connecting..." : "Connect Sui Wallet"}
               </Button>
 
-              <p className="text-center text-white/40 text-xs sm:text-sm mt-4 sm:mt-6 lg:mt-8">
+              <p className="text-center text-white/80 text-xs sm:text-sm mt-4 sm:mt-6 lg:mt-8">
                 Don't have a Sui wallet?{" "}
                 <button
                   type="button"
                   onClick={() => setActiveTab("create")}
-                  className="text-white/70 hover:text-white underline transition-colors duration-200"
+                  className="text-pink-300 hover:text-pink-200 underline transition-colors duration-200"
                 >
                   Create a Slush wallet
                 </button>
@@ -175,14 +161,14 @@ export function AuthCard({
             }`}
           >
             <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-              <p className="text-white/60 text-sm sm:text-base text-center leading-relaxed">
+              <p className="text-white/80 text-sm sm:text-base text-center leading-relaxed">
                 Get started with Slush by clicking the button below. Slush will guide you through creating your wallet.
               </p>
 
               {/* Direct link button to Slush */}
               <Button
                 onClick={handleCreateSlushWallet}
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-12 sm:h-14 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full bg-white/90 border border-white/50 hover:bg-white text-slate-800 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md flex items-center justify-center gap-2 backdrop-blur-sm"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19" />
@@ -191,12 +177,12 @@ export function AuthCard({
                 Create Slush Wallet
               </Button>
 
-              <p className="text-center text-white/40 text-xs sm:text-sm">
+              <p className="text-center text-white/80 text-xs sm:text-sm">
                 Already have a wallet?{" "}
                 <button
                   type="button"
                   onClick={() => setActiveTab("connect")}
-                  className="text-white/70 hover:text-white underline transition-colors duration-200"
+                  className="text-pink-300 hover:text-pink-200 underline transition-colors duration-200"
                 >
                   Connect instead
                 </button>
