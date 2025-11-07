@@ -19,7 +19,7 @@ const ArticlePage = () => {
       </div>
 
       {/* Placeholder for article list */}
-      <div className="flex flex-col items-center justify-center min-h-[40vh] text-center space-y-4 border-2 border-dashed border-slate-700 rounded-lg">
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-center space-y-4 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-8 shadow-lg">
         <BookOpen className="w-16 h-16 text-slate-600" />
         <h2 className="text-xl font-bold text-slate-300">No Articles Yet</h2>
         <p className="text-slate-400 max-w-sm">

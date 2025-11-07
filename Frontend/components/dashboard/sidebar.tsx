@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
-    { href: '/dashboard/sui-news', icon: Newspaper, label: 'SUI News' },
+    { href: '/dashboard/sui-news', icon: Newspaper, label: 'X Feed' },
     { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
@@ -41,22 +41,16 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'lg:translate-x-0'
     }`}>
       <div className="flex items-center justify-between h-20 border-b border-gray-800 px-4">
-        {isMobile ? (
-          <Link href="/" className="text-2xl font-bold text-white">
-            <span className="text-purple-400">Ξ</span> Sui Swap
-          </Link>
-        ) : (
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">𝕏</span>
-            </div>
-            <span className="text-xl font-bold text-white">Sui Times</span>
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-bold text-sm">𝕏</span>
           </div>
-        )}
+          <span className="text-xl font-bold text-white">Sui Times</span>
+        </div>
         {isMobile && (
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="p-2 rounded-full text-gray-300 hover:bg-gray-800 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -81,24 +75,16 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       </nav>
       <div className="border-t border-gray-800 p-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <img
-              className="h-10 w-10 rounded-full object-cover"
-              src="/placeholder-user.jpg"
-              alt="User avatar"
-            />
-            <div className="ml-4">
-              <p className="font-semibold text-white">Satoshi</p>
-              <p className="text-sm text-gray-400">Level 5</p>
-            </div>
+        <div className="flex items-center">
+          <img
+            className="h-10 w-10 rounded-full object-cover"
+            src="/placeholder-user.jpg"
+            alt="User avatar"
+          />
+          <div className="ml-4">
+            <p className="font-semibold text-white">Satoshi</p>
+            <p className="text-sm text-gray-400">Level 5</p>
           </div>
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
         </div>
         <button
           onClick={handleDisconnect}
