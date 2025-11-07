@@ -1,14 +1,10 @@
 
 "use client";
 
-import { Inter } from "next/font/google";
-import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import Sidebar from "@/components/dashboard/sidebar";
 import Header from "@/components/dashboard/header";
 import { useState } from "react";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from "next-themes";
 
 export default function DashboardLayout({
   children,
@@ -18,27 +14,23 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex h-screen bg-gray-900">
-            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="flex flex-1 flex-col min-h-screen lg:ml-64">
-              <Header onMenuClick={() => setIsSidebarOpen(true)} />
-              <main className="flex-1 overflow-y-auto bg-gray-900">
-                <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-                  {children}
-                </div>
-              </main>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="flex h-screen bg-background">
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className="flex flex-1 flex-col min-h-screen lg:ml-64">
+          <Header onMenuClick={() => setIsSidebarOpen(true)} />
+          <main className="flex-1 overflow-y-auto bg-background">
+            <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+              {children}
             </div>
-          </div>
-        </ThemeProvider>
-      </body>
-    </html>
+          </main>
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }

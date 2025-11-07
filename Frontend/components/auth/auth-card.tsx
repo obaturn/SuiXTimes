@@ -1,10 +1,11 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useWallets, useConnectWallet } from "@mysten/dapp-kit"
+import { useWallets, useConnectWallet, useCurrentAccount } from "@mysten/dapp-kit"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface AuthCardProps {
   isLoading: boolean
@@ -36,24 +37,40 @@ export function AuthCard({
   const [activeTab, setActiveTab] = useState("connect")
   const [walletAddress, setWalletAddress] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [connectingWallet, setConnectingWallet] = useState<string | null>(null)
   const wallets = useWallets()
-  const { mutate: connect } = useConnectWallet()
+  const { mutateAsync: connect } = useConnectWallet()
+  const account = useCurrentAccount()
+  const router = useRouter()
+
+  // If already connected, redirect to dashboard
+  React.useEffect(() => {
+    if (account) {
+      router.push('/dashboard')
+    }
+  }, [account, router])
 
   const handleRedirect = () => {
     window.open("https://www.youtube.com/@diecastbydollarall", "_blank")
   }
 
-  const handleConnectWallet = async () => {
+  const handleConnectWallet = async (walletName: string) => {
+    const wallet = wallets.find(w => w.name === walletName)
+    if (!wallet) {
+      toast.error(`Wallet ${walletName} not found`)
+      return
+    }
+
+    setConnectingWallet(walletName)
     try {
-      connect({ wallet: wallets[0] })
-      // Wait a bit for connection to establish before redirecting
-      setTimeout(() => {
-        onSignIn(new Event("submit") as any)
-      }, 1000)
+      await connect({ wallet })
+      toast.success("Wallet connected successfully!")
+      // The useEffect above will handle the redirect
     } catch (error) {
       console.error("Failed to connect wallet:", error)
-      // Fallback to opening Slush website
-      window.open("https://slush.finance/", "_blank")
+      toast.error(`Failed to connect ${walletName}`)
+    } finally {
+      setConnectingWallet(null)
     }
   }
 
@@ -124,22 +141,46 @@ export function AuthCard({
               activeTab === "connect" ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 absolute inset-0"
             }`}
           >
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                handleConnectWallet()
-              }}
-              className="space-y-4 sm:space-y-5 lg:space-y-6"
-            >
-
-              {/* Connect wallet button */}
-              <Button
-                type="submit"
-                className="w-full bg-white text-slate-800 hover:bg-white/90 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm"
-                disabled={isLoading}
-              >
-                {isLoading ? "Connecting..." : "Connect Sui Wallet"}
-              </Button>
+            <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+              {/* Available Wallets */}
+              <div className="space-y-3">
+                {wallets.length > 0 ? (
+                  <>
+                    <p className="text-white/80 text-sm text-center mb-4">Choose your wallet</p>
+                    {wallets.map((wallet) => (
+                      <Button
+                        key={wallet.name}
+                        onClick={() => handleConnectWallet(wallet.name)}
+                        className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm flex items-center justify-center gap-3"
+                        disabled={connectingWallet !== null}
+                      >
+                        {wallet.icon && typeof window !== 'undefined' ? (
+                          <img
+                            src={wallet.icon}
+                            alt={wallet.name}
+                            className="w-6 h-6 rounded"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+                            <span className="text-xs font-bold">W</span>
+                          </div>
+                        )}
+                        {connectingWallet === wallet.name ? "Connecting..." : `Connect ${wallet.name}`}
+                      </Button>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-white/80 text-sm text-center mb-4">Choose your wallet</p>
+                    <Button
+                      onClick={() => window.open("https://suiwallet.com", "_blank")}
+                      className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm"
+                    >
+                      Install Sui Wallet
+                    </Button>
+                  </>
+                )}
+              </div>
 
               <p className="text-center text-white/80 text-xs sm:text-sm mt-4 sm:mt-6 lg:mt-8">
                 Don't have a Sui wallet?{" "}
@@ -151,7 +192,7 @@ export function AuthCard({
                   Create a Slush wallet
                 </button>
               </p>
-            </form>
+            </div>
           </div>
 
           {/* Create Slush Wallet Tab - Simplified to just a link button */}

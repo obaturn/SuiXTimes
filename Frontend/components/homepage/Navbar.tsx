@@ -50,19 +50,25 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <a
-              href="#"
+              href="/"
+              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+            >
+              Home
+            </a>
+            <a
+              href="/features"
               className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
             >
               Features
             </a>
             <a
-              href="#"
+              href="/ecosystem"
               className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
             >
               Ecosystem
             </a>
             <a
-              href="#"
+              href="/news"
               className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
             >
               News
@@ -114,19 +120,25 @@ const Navbar = () => {
           className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3"
         >
           <a
-            href="#"
+            href="/"
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+          >
+            Home
+          </a>
+          <a
+            href="/features"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
           >
             Features
           </a>
           <a
-            href="#"
+            href="/ecosystem"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
           >
             Ecosystem
           </a>
           <a
-            href="#"
+            href="/news"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
           >
             News
