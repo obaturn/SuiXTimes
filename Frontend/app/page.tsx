@@ -110,10 +110,10 @@ export default function AuthPage() {
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
               <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight ${
-                isLightMode ? "text-gray-900" : "text-white"
+                isLightMode ? "text-gray-500" : "text-gray-100"
               }`}>
                 Sui News. Zero Clutter.
               </h1>
