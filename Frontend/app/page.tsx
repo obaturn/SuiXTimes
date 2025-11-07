@@ -78,9 +78,10 @@ export default function AuthPage() {
       <div className="relative w-full min-h-screen flex flex-col overflow-y-auto">
         <Navbar />
         {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(56,189,248,0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(139,92,246,0.1),transparent_50%)]" />
+        <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(56,189,248,0.3),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(139,92,246,0.4),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,20,147,0.2),transparent_80%)]" />
           <div className="relative z-10 container mx-auto text-center max-w-4xl px-4 py-20">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -136,6 +137,7 @@ export default function AuthPage() {
                 <Button
                   size="lg"
                   className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-0.5"
+                  onClick={() => window.location.href = '/news'}
                 >
                   Explore News
                 </Button>
@@ -143,6 +145,7 @@ export default function AuthPage() {
                   size="lg"
                   variant="outline"
                   className="border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
+                  onClick={() => window.location.href = '/community'}
                 >
                   Join Community
                 </Button>
@@ -151,71 +154,68 @@ export default function AuthPage() {
           </div>
         </section>
 
-        <div className="w-full flex-1 flex items-start justify-center px-4 py-16 pb-24 sm:px-6 lg:px-8">
-          <WavyBackground
-            colors={["#38bdf8", "#0ea5e9", "#06b6d4", "#14b8a6", "#10b981"]}
-            waveWidth={30}
-            blur={10}
-            speed="slow"
-            waveOpacity={0.3}
-            className="w-full"
-          >
-            <div className="w-full max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 xl:gap-12 items-start">
-                {/* Left Side - Landing Page Content */}
-                <div className="space-y-6 sm:space-y-8 text-white order-2 lg:order-1">
+        <div className="w-full flex-1 flex items-start justify-center px-4 py-16 pb-24 sm:px-6 lg:px-8 relative">
+          {/* Clean Background matching Features page style */}
+          <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/20 to-background" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(56,189,248,0.08),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.08),transparent_50%)]" />
+
+          <div className="w-full max-w-7xl mx-auto relative z-10">
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 xl:gap-12 items-start">
+              {/* Left Side - Landing Page Content */}
+              <div className="space-y-6 sm:space-y-8 text-foreground order-2 lg:order-1 relative z-20">
                   <div className="space-y-4">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                       Welcome to{" "}
-                      <span className="block text-cyan-400">
+                      <span className="block text-pink-400">
                         Sui Times
                       </span>
                     </h1>
-                    <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed max-w-xl">
+                    <p className="text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl">
                       Your decentralized content platform for creating, sharing, and monetizing articles on the Sui blockchain with full ownership and censorship resistance.
                     </p>
                   </div>
 
                   {/* Feature Cards */}
                   <div className="grid gap-6 sm:gap-8">
-                    <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-white/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="bg-card/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-card/90 transition-all duration-300 transform hover:-translate-y-1">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center backdrop-blur-sm">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Decentralized Content Creation</h3>
-                          <p className="text-white/90 leading-relaxed">Create and publish articles with full ownership using Sui blockchain and Walrus decentralized storage</p>
+                          <h3 className="text-xl font-semibold mb-2 text-foreground">Decentralized Content Creation</h3>
+                          <p className="text-muted-foreground leading-relaxed">Create and publish articles with full ownership using Sui blockchain and Walrus decentralized storage</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-white/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="bg-card/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-card/90 transition-all duration-300 transform hover:-translate-y-1">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center backdrop-blur-sm">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Community Voting & Monetization</h3>
-                          <p className="text-white/90 leading-relaxed">Earn from your content through community upvotes, downvotes, and direct reader support via smart contracts</p>
+                          <h3 className="text-xl font-semibold mb-2 text-foreground">Community Voting & Monetization</h3>
+                          <p className="text-muted-foreground leading-relaxed">Earn from your content through community upvotes, downvotes, and direct reader support via smart contracts</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-white/30 transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="bg-card/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl shadow-white/10 hover:bg-card/90 transition-all duration-300 transform hover:-translate-y-1">
                       <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center backdrop-blur-sm">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Censorship Resistant Storage</h3>
-                          <p className="text-white/90 leading-relaxed">Your articles are stored on Walrus decentralized storage, ensuring they remain permanently accessible and censorship-resistant</p>
+                          <h3 className="text-xl font-semibold mb-2 text-foreground">Censorship Resistant Storage</h3>
+                          <p className="text-muted-foreground leading-relaxed">Your articles are stored on Walrus decentralized storage, ensuring they remain permanently accessible and censorship-resistant</p>
                         </div>
                       </div>
                     </div>
@@ -223,7 +223,7 @@ export default function AuthPage() {
                 </div>
 
                 {/* Right Side - Auth Card */}
-                <div className="order-1 lg:order-2 w-full" id="auth-card">
+                <div className="order-1 lg:order-2 w-full relative z-20" id="auth-card">
                   <AuthCard
                     isLoading={isLoading}
                     email={email}
@@ -240,13 +240,13 @@ export default function AuthPage() {
                 </div>
               </div>
             </div>
-          </WavyBackground>
-        </div>
+          </div>
 
         {/* FAQ Section */}
         <section className="py-32 bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(56,189,248,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,20,147,0.05),transparent_70%)]" />
 
           <div className="container mx-auto px-4 relative">
             <motion.div
@@ -349,6 +349,7 @@ export default function AuthPage() {
         <section className="py-20 bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(56,189,248,0.1),transparent_50%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(255,20,147,0.1),transparent_50%)]" />
 
           <div className="container mx-auto px-4 relative">
             <motion.div
@@ -411,7 +412,7 @@ export default function AuthPage() {
                 className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white px-8 py-4 text-lg"
                 onClick={() => window.location.href = '/ecosystem'}
               >
-                Explore Full Ecosystem
+                Explore Ecosystem
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </motion.div>
@@ -419,8 +420,8 @@ export default function AuthPage() {
         </section>
 
         <Footer />
+        <Toaster />
       </div>
-      <Toaster />
     </>
   )
 }
