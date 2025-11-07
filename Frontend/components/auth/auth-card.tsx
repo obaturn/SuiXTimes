@@ -154,7 +154,7 @@ export function AuthCard({
                         className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm flex items-center justify-center gap-3"
                         disabled={connectingWallet !== null}
                       >
-                        {wallet.icon && typeof window !== 'undefined' ? (
+                        {wallet.icon ? (
                           <img
                             src={wallet.icon}
                             alt={wallet.name}
