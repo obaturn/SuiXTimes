@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       <div className="flex items-center justify-between h-20 border-b border-gray-800 px-4">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">𝕏</span>
+            <span className="text-white font-bold text-sm">X</span>
           </div>
           <span className="text-xl font-bold text-white">Sui Times</span>
         </div>
@@ -62,8 +62,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className={`flex items-center rounded-lg px-4 py-3 text-gray-300 transition-colors duration-200 hover:bg-purple-600/20 hover:text-white ${
-                  pathname === item.href ? 'bg-purple-600/30 text-white' : ''
+                className={`flex items-center rounded-lg px-4 py-3 text-gray-300 transition-colors duration-200 hover:bg-purple-300/20 hover:text-white ${
+                  pathname === item.href ? 'bg-purple-100/30 text-white' : ''
                 }`}>
 
                 <item.icon className="h-5 w-5" />

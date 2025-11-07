@@ -40,10 +40,9 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             onClick={onMenuClick}>
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-semibold">Sui Times</h1>
         </div>
         <div className="hidden lg:block">
-          <h1 className="text-xl font-bold">World News</h1>
+          <h1 className="text-xl font-bold"></h1>
         </div>
 
         <div className="flex items-center gap-4">
