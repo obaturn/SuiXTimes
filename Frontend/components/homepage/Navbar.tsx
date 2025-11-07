@@ -3,9 +3,12 @@
 import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { useColorTheme } from "@/components/color-theme-provider"
+import { Palette } from "lucide-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { theme, setTheme } = useColorTheme()
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
@@ -18,12 +21,25 @@ const Navbar = () => {
     }
   }
 
+  const cycleColorTheme = () => {
+    const themes = ["green", "blue", "pink", "light"]
+    const currentIndex = themes.indexOf(theme)
+    const nextIndex = (currentIndex + 1) % themes.length
+    setTheme(themes[nextIndex] as any)
+  }
+
+  const isLightMode = theme === "light"
+
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-lg border-b border-cyan-500/20"
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b ${
+        isLightMode
+          ? "bg-white/80 border-gray-200"
+          : "bg-black/30 border-cyan-500/20"
+      }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -43,40 +59,49 @@ const Navbar = () => {
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-              <span className="text-xl font-bold text-white">SuiTimes</span>
+              <span className={`text-xl font-bold ${
+                isLightMode ? "text-gray-900" : "text-white"
+              }`}>SuiTimes</span>
             </a>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <a
-              href="#"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              href="#features"
+              className={`transition-colors duration-300 ${
+                isLightMode
+                  ? "text-gray-700 hover:text-cyan-600"
+                  : "text-gray-300 hover:text-cyan-400"
+              }`}
             >
               Features
             </a>
             <a
-              href="#"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
-            >
-              Ecosystem
-            </a>
-            <a
-              href="#"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
-            >
-              News
-            </a>
-            <a
-              href="#"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              href="#footer"
+              className={`transition-colors duration-300 ${
+                isLightMode
+                  ? "text-gray-700 hover:text-cyan-600"
+                  : "text-gray-300 hover:text-cyan-400"
+              }`}
             >
               Community
             </a>
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Theme Toggle & CTA Button */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={cycleColorTheme}
+              className={`p-2 rounded-full transition-colors ${
+                isLightMode
+                  ? "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-300 hover:bg-gray-800"
+              }`}
+              aria-label="Change theme"
+            >
+              <Palette size={20} />
+            </button>
             <Button
               onClick={scrollToAuth}
               className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -87,7 +112,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <button onClick={toggleMenu} className="text-white">
+            <button onClick={toggleMenu} className={isLightMode ? "text-gray-900" : "text-white"} aria-label="Toggle menu">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -114,30 +139,37 @@ const Navbar = () => {
           className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3"
         >
           <a
-            href="#"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+            href="#features"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+              isLightMode
+                ? "text-gray-700 hover:text-cyan-600 hover:bg-gray-100"
+                : "text-gray-300 hover:text-white hover:bg-gray-700"
+            }`}
           >
             Features
           </a>
           <a
-            href="#"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-          >
-            Ecosystem
-          </a>
-          <a
-            href="#"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-          >
-            News
-          </a>
-          <a
-            href="#"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+            href="#footer"
+            className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+              isLightMode
+                ? "text-gray-700 hover:text-cyan-600 hover:bg-gray-100"
+                : "text-gray-300 hover:text-white hover:bg-gray-700"
+            }`}
           >
             Community
           </a>
-          <div className="pt-4 pb-2">
+          <div className="pt-4 pb-2 space-y-3">
+            <button
+              onClick={cycleColorTheme}
+              className={`w-full flex items-center justify-center space-x-2 p-2 rounded-lg transition-colors ${
+                isLightMode
+                  ? "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-300 hover:bg-gray-700"
+              }`}
+            >
+              <Palette size={18} />
+              <span>Change Theme</span>
+            </button>
             <Button
               onClick={scrollToAuth}
               className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2.5 px-4 rounded-lg"
