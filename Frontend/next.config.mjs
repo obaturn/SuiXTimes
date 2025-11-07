@@ -6,6 +6,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@mysten/walrus', '@mysten/walrus-wasm');
+    }
+    return config;
+  },
 }
 
 export default nextConfig

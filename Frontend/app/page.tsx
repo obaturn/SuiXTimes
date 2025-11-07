@@ -13,6 +13,7 @@ import FeaturesSection from "@/components/homepage/FeaturesSection";
 import Navbar from "@/components/homepage/Navbar";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,18 +29,8 @@ export default function AuthPage() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    setIsLoading(true)
-
-    // Simulate authentication
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Wallet connected!",
-        description: "Welcome to Sui ecosystem.",
-      })
-      router.push('/dashboard')
-    }, 1500)
+    // Wallet connection is now handled by the AuthCard component
+    // This function is kept for compatibility but wallet connection happens in AuthCard
   }
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -96,16 +87,48 @@ export default function AuthPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight">
+              <motion.h1
+                className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
                 The Future is{" "}
-                <span className="text-cyan-400">
+                <motion.span
+                  className="text-cyan-400 inline-block"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
                   Fluid
-                </span>
+                </motion.span>
                 {" "}with{" "}
-                <span className="text-pink-400 font-extrabold">
-                  SuiTimes
-                </span>
-              </h1>
+                <motion.span
+                  className="text-pink-400 font-extrabold inline-block relative"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                  <motion.span
+                    className="inline-block"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      textShadow: [
+                        "0 0 0px rgba(255, 20, 147, 0)",
+                        "0 0 20px rgba(255, 20, 147, 0.5)",
+                        "0 0 0px rgba(255, 20, 147, 0)"
+                      ]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    SuiTimes
+                  </motion.span>
+                </motion.span>
+              </motion.h1>
               <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
                 Your all-in-one platform for the latest news, analytics, and community insights from the Sui blockchain ecosystem.
               </p>
@@ -143,13 +166,13 @@ export default function AuthPage() {
                 <div className="space-y-6 sm:space-y-8 text-white order-2 lg:order-1">
                   <div className="space-y-4">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-                      Welcome to the{" "}
+                      Welcome to{" "}
                       <span className="block text-cyan-400">
-                        SuiTimes Ecosystem
+                        Sui Times
                       </span>
                     </h1>
                     <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed max-w-xl">
-                      Connect your wallet to access the next generation of decentralized applications built on Sui blockchain.
+                      Your decentralized content platform for creating, sharing, and monetizing articles on the Sui blockchain with full ownership and censorship resistance.
                     </p>
                   </div>
 
@@ -163,8 +186,8 @@ export default function AuthPage() {
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Sui World News</h3>
-                          <p className="text-white/90 leading-relaxed">Access real-time updates and in-depth articles covering major developments across the Sui network and its partners</p>
+                          <h3 className="text-xl font-semibold mb-2 text-white">Decentralized Content Creation</h3>
+                          <p className="text-white/90 leading-relaxed">Create and publish articles with full ownership using Sui blockchain and Walrus decentralized storage</p>
                         </div>
                       </div>
                     </div>
@@ -177,8 +200,8 @@ export default function AuthPage() {
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Live Metrics & Analytics</h3>
-                          <p className="text-white/90 leading-relaxed">Track real-time TVL, token prices, network statistics, and gas fee analytics for informed decision-making</p>
+                          <h3 className="text-xl font-semibold mb-2 text-white">Community Voting & Monetization</h3>
+                          <p className="text-white/90 leading-relaxed">Earn from your content through community upvotes, downvotes, and direct reader support via smart contracts</p>
                         </div>
                       </div>
                     </div>
@@ -191,8 +214,8 @@ export default function AuthPage() {
                           </svg>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold mb-2 text-white">Community & Social Feed</h3>
-                          <p className="text-white/90 leading-relaxed">Connect with the Sui community through official announcements, developer updates, and trending discussions</p>
+                          <h3 className="text-xl font-semibold mb-2 text-white">Censorship Resistant Storage</h3>
+                          <p className="text-white/90 leading-relaxed">Your articles are stored on Walrus decentralized storage, ensuring they remain permanently accessible and censorship-resistant</p>
                         </div>
                       </div>
                     </div>
@@ -220,7 +243,181 @@ export default function AuthPage() {
           </WavyBackground>
         </div>
 
-        <FeaturesSection />
+        {/* FAQ Section */}
+        <section className="py-32 bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(56,189,248,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.1),transparent_50%)]" />
+
+          <div className="container mx-auto px-4 relative">
+            <motion.div
+              className="text-center mb-20"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6"
+              >
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </motion.div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Everything you need to know about Sui Times and decentralized content creation.
+              </p>
+            </motion.div>
+
+            <div className="max-w-4xl mx-auto">
+              {[
+                {
+                  question: "What is Sui Times?",
+                  answer: "Sui Times is a decentralized content platform built on the Sui blockchain, allowing users to create, share, and monetize articles through smart contracts and decentralized storage."
+                },
+                {
+                  question: "How does content storage work?",
+                  answer: "We use Walrus decentralized storage to ensure your content remains censorship-resistant and permanently available. Content is stored off-chain while metadata and ownership are managed on-chain."
+                },
+                {
+                  question: "Is Sui Times free to use?",
+                  answer: "Yes! Sui Times is completely free for content creation and reading. Users only pay minimal gas fees for blockchain interactions, and storage costs are covered by the platform initially."
+                },
+                {
+                  question: "How do I earn from my content?",
+                  answer: "Content creators can earn through community voting, premium subscriptions, and direct support from readers. Our smart contracts ensure fair revenue distribution."
+                },
+                {
+                  question: "What makes Sui Times different?",
+                  answer: "Unlike traditional platforms, Sui Times gives you full ownership of your content, censorship resistance, and direct monetization through blockchain technology."
+                }
+              ].map((faq, index) => (
+                <motion.div
+                  key={index}
+                  className="mb-6"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="bg-card/50 backdrop-blur-xl rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden">
+                    <details className="group">
+                      <summary className="flex items-center justify-between cursor-pointer p-8 hover:bg-white/5 transition-colors">
+                        <h3 className="text-xl font-semibold pr-4 text-left text-foreground group-hover:text-cyan-400 transition-colors">
+                          {faq.question}
+                        </h3>
+                        <motion.div
+                          className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center"
+                          animate={{ rotate: 0 }}
+                          whileHover={{ rotate: 180 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </motion.div>
+                      </summary>
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-8 pb-8">
+                          <div className="w-full h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mb-6" />
+                          <p className="text-muted-foreground leading-relaxed text-lg">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      </motion.div>
+                    </details>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Ecosystem Preview Section */}
+        <section className="py-20 bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(56,189,248,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.1),transparent_50%)]" />
+
+          <div className="container mx-auto px-4 relative">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Join the <span className="text-cyan-400">Content Universe</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Discover the thriving ecosystem of creators, platforms, and communities building the future of decentralized publishing on Sui.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {[
+                {
+                  icon: "📰",
+                  title: "News Platforms",
+                  description: "Real-time Sui blockchain news and updates"
+                },
+                {
+                  icon: "📝",
+                  title: "Article Hubs",
+                  description: "In-depth analysis and educational content"
+                },
+                {
+                  icon: "🎥",
+                  title: "Video Studios",
+                  description: "Tutorials and visual content creation"
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-card/80 backdrop-blur-xl p-6 rounded-xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="text-3xl mb-4">{item.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white px-8 py-4 text-lg"
+                onClick={() => window.location.href = '/ecosystem'}
+              >
+                Explore Full Ecosystem
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+
         <Footer />
       </div>
       <Toaster />
