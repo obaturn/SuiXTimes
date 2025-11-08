@@ -1,10 +1,11 @@
 "use client";
 
 import { useTheme } from 'next-themes';
+import { useColorTheme } from '@/components/color-theme-provider';
 import { useCurrentWallet, useDisconnectWallet, ConnectButton } from '@mysten/dapp-kit';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Menu, Wallet, Sun, Moon, Bell } from 'lucide-react';
+import { Menu, Wallet, Sun, Moon, Bell, Palette } from 'lucide-react';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -12,6 +13,7 @@ interface HeaderProps {
 
 const Header = ({ onMenuClick }: HeaderProps) => {
   const { theme, setTheme } = useTheme();
+  const { theme: colorTheme, setTheme: setColorTheme } = useColorTheme();
   const { currentWallet } = useCurrentWallet();
   const { mutate: disconnect } = useDisconnectWallet();
   const router = useRouter();
@@ -20,6 +22,13 @@ const Header = ({ onMenuClick }: HeaderProps) => {
   const handleDisconnect = () => {
     disconnect();
     router.push('/');
+  };
+
+  const cycleColorTheme = () => {
+    const themes: ("green" | "blue" | "pink" | "light")[] = ["green", "blue", "pink", "light"];
+    const currentIndex = themes.indexOf(colorTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setColorTheme(themes[nextIndex]);
   };
 
   return (
@@ -68,7 +77,10 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          {/* Remove placeholder notification bell */}
+          <div className="relative">
+            <Bell className="h-6 w-6" />
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground font-medium">3</span>
+          </div>
         </div>
       </div>
     </header>

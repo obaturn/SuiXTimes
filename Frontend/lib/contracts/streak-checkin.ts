@@ -103,17 +103,22 @@ export class StreakCheckinContract {
     signAndExecuteTransaction: any,
     streakId: string
   ) {
-    const tx = this.checkInTransaction(streakId);
+    try {
+      const result = await signAndExecuteTransaction({
+        transaction: tx,
+        options: {
+          showEffects: true,
+          showEvents: true,
+        },
+      });
 
-    const result = await signAndExecuteTransaction({
-      transaction: tx,
-      options: {
-        showEffects: true,
-        showEvents: true,
-      },
-    });
-
-    return result;
+      return result;
+    } catch (error: any) {
+      if (error.message && error.message.includes('MoveAbort') && error.message.includes('streak_checkin') && error.message.includes('function: 2, instruction: 32')) {
+        throw new Error('You can only check in once every 24 hours. Please try again later.');
+      }
+      throw error;
+    }
   }
 
   /**

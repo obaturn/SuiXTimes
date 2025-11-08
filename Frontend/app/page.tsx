@@ -6,13 +6,16 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthCard } from "@/components/auth/auth-card"
+import { useColorTheme } from "@/components/color-theme-provider"
 
 import Footer from "@/components/footer";
+
 
 import Navbar from "@/components/homepage/Navbar";
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, Zap, Shield, Globe } from "lucide-react";
+import { motion } from "framer-motion"
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -21,6 +24,8 @@ export default function AuthPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+  const { theme } = useColorTheme()
+  const isLightMode = theme === "light"
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -97,15 +102,19 @@ export default function AuthPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg">
+                <Button
+                  size="lg"
+                  className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-0.5"
+                  onClick={() => window.location.href = '/news'}
+                >
                   Explore News
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-lg font-medium text-lg"
+                  className="border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5 text-left"
                   onClick={() => window.location.href = '/community'}
                 >
-                  Join Community
+                  join the Community
                 </Button>
               </div>
             </div>
@@ -300,8 +309,8 @@ export default function AuthPage() {
         </section>
 
         <Footer />
+        <Toaster />
       </div>
-      <Toaster />
     </>
   )
 }
