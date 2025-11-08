@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
-    { href: '/dashboard/sui-news', icon: Newspaper, label: 'SUI News' },
+    { href: '/dashboard/sui-news', icon: Newspaper, label: 'X Feed' },
     { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </Link>
         ) : (
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">𝕏</span>
             </div>
             <span className="text-xl font-bold text-foreground">Sui Times</span>
@@ -56,7 +56,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         {isMobile && (
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="p-2 rounded-full text-gray-300 hover:bg-gray-800 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -64,19 +64,22 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       </div>
       <nav className="flex-1 px-4 py-8">
         <ul>
-          {navItems.map((item) => (
-            <li key={item.label}>
-              <Link
-                href={item.href}
-                className={`flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-colors duration-200 hover:bg-blue-500/20 hover:text-blue-400 ${
-                  pathname === item.href ? 'bg-blue-500/30 text-blue-400' : ''
-                }`}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-colors duration-200 hover:bg-blue-500/20 hover:text-blue-400 ${
+                    pathname === item.href ? 'bg-blue-500/30 text-blue-400' : ''
+                  }`}>
 
-                <item.icon className="h-5 w-5" />
-                <span className="ml-4 font-medium">{item.label}</span>
-              </Link>
-            </li>
-          ))}
+                  <Icon className="h-5 w-5" />
+                  <span className="ml-4 font-medium">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
       </nav>
