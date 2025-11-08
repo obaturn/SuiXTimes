@@ -80,18 +80,7 @@ export function AuthCard({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200" style={{
-        background: `
-          radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(255, 105, 180, 0.4) 0%, transparent 50%),
-          radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.2) 0%, transparent 50%),
-          radial-gradient(circle at 60% 30%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
-          linear-gradient(135deg, rgba(255, 105, 180, 0.1) 0%, rgba(255, 20, 147, 0.2) 50%, rgba(255, 0, 255, 0.1) 100%)
-        `,
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 105, 180, 0.3)',
-        boxShadow: '0 8px 32px rgba(255, 20, 147, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-      }}>
+      <div className="bg-slate-800/60 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-800 backdrop-blur-md">
         <div className="flex justify-center mb-8 sm:mb-10 lg:mb-12">
           <div className="bouncing-logo">
             <img
@@ -154,7 +143,7 @@ export function AuthCard({
                         className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm flex items-center justify-center gap-3"
                         disabled={connectingWallet !== null}
                       >
-                        {wallet.icon && typeof window !== 'undefined' ? (
+                        {wallet.icon ? (
                           <img
                             src={wallet.icon}
                             alt={wallet.name}

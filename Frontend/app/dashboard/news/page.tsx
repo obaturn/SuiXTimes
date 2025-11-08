@@ -22,6 +22,7 @@ import {
 import Link from 'next/link';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { useArticles } from '@/hooks/use-articles';
+import { Article } from '../../../components/articles/ArticleCard';
 
 const NewsPage = () => {
   const { scrollYProgress } = useScroll();
@@ -31,22 +32,11 @@ const NewsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Live news data from Twitter API and Sui ecosystem
-  const [liveNews, setLiveNews] = useState([
-    {
-      id: 1,
-      title: "Loading live Sui news...",
-      category: "breaking",
-      time: "Just now",
-      source: "Sui Times",
-      urgent: false
-    }
-  ]);
-  const [isLoadingNews, setIsLoadingNews] = useState(true);
+  // Removed live news - focus on user articles only
 
   const categories = [
     { id: 'all', name: 'All News', icon: Newspaper, color: 'text-cyan-400' },
-    { id: 'breaking', name: 'Breaking', icon: Zap, color: 'text-red-400' },
+  
     { id: 'tech', name: 'Technology', icon: TrendingUp, color: 'text-blue-400' },
     { id: 'defi', name: 'DeFi', icon: Users, color: 'text-green-400' },
     { id: 'nft', name: 'NFT', icon: Star, color: 'text-purple-400' }
@@ -60,93 +50,16 @@ const NewsPage = () => {
     return matchesCategory && matchesSearch;
   });
 
-  // Fetch live news from Twitter and Sui ecosystem
+  // Removed live news fetching - focus on user articles only
   useEffect(() => {
-    fetchLiveNews();
-
-    // Update timestamps every minute
-    const interval = setInterval(() => {
-      setLiveNews(prev => prev.map(item => ({
-        ...item,
-        time: updateTime(item.time)
-      })));
-    }, 60000);
-
-    // Refresh news every 5 minutes
-    const newsInterval = setInterval(() => {
-      fetchLiveNews();
-    }, 300000);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(newsInterval);
-    };
+    // No live news to fetch
   }, []);
 
-  const fetchLiveNews = async () => {
-    try {
-      setIsLoadingNews(true);
+  // Removed fetchLiveNews function - no live news needed
 
-      // Fetch from ElizaOS news API
-      const response = await fetch('/api/news/live', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  // Removed getFallbackNews function - no live news needed
 
-      if (response.ok) {
-        const newsData = await response.json();
-        setLiveNews(newsData);
-      } else {
-        // Fallback to mock data if API fails
-        console.warn('Failed to fetch ElizaOS news, using fallback data');
-        setLiveNews(getFallbackNews());
-      }
-    } catch (error) {
-      console.error('Error fetching ElizaOS news:', error);
-      // Fallback to mock data
-      setLiveNews(getFallbackNews());
-    } finally {
-      setIsLoadingNews(false);
-    }
-  };
-
-  const getFallbackNews = () => [
-    {
-      id: 1,
-      title: "Sui Network Achieves New Transaction Record",
-      category: "breaking",
-      time: "2 min ago",
-      source: "ElizaOS Agent",
-      urgent: true
-    },
-    {
-      id: 2,
-      title: "Major DeFi Protocol Launches on Sui Testnet",
-      category: "defi",
-      time: "15 min ago",
-      source: "ElizaOS Agent",
-      urgent: false
-    },
-    {
-      id: 3,
-      title: "New NFT Marketplace Goes Live",
-      category: "nft",
-      time: "1 hour ago",
-      source: "ElizaOS Agent",
-      urgent: false
-    }
-  ];
-
-  const updateTime = (timeStr: string) => {
-    // Simple time update logic
-    if (timeStr.includes('min ago')) {
-      const mins = parseInt(timeStr.split(' ')[0]) + 1;
-      return `${mins} min ago`;
-    }
-    return timeStr;
-  };
+  // Removed updateTime function - no live news needed
 
   return (
     <div className="space-y-8">
@@ -164,8 +77,8 @@ const NewsPage = () => {
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Sui Times News</h1>
-              <p className="text-slate-300">Stay updated with the latest from the Sui ecosystem</p>
+              <h1 className="text-4xl font-bold text-white mb-2">Sui Times Article</h1>
+              <p className="text-slate-300">Stay updated with the latest from the Sui ecosystem Article</p>
             </div>
             <div className="flex gap-3">
               <Button
@@ -218,45 +131,6 @@ const NewsPage = () => {
         </div>
       </motion.div>
 
-      {/* Live News Ticker */}
-      <motion.div
-        className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg p-4"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-          <h3 className="text-red-400 font-semibold flex items-center gap-2">
-            Live Updates
-            {isLoadingNews && <RefreshCw className="w-4 h-4 animate-spin" />}
-          </h3>
-        </div>
-        <div className="space-y-2">
-          {liveNews.map((news) => (
-            <div key={news.id} className="flex items-center justify-between py-2 border-b border-red-500/10 last:border-b-0">
-              <div className="flex-1">
-                <p className="text-white text-sm">{news.title}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-slate-400">{news.source}</span>
-                  <span className="text-xs text-slate-500">•</span>
-                  <span className="text-xs text-slate-400">{news.time}</span>
-                </div>
-              </div>
-              {news.urgent && (
-                <div className="ml-2 px-2 py-1 bg-red-500/20 rounded text-xs text-red-400 font-medium">
-                  BREAKING
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="mt-3 pt-3 border-t border-red-500/10">
-          <p className="text-xs text-slate-500 text-center">
-            Powered by ElizaOS Agent • Real-time Sui ecosystem monitoring
-          </p>
-        </div>
-      </motion.div>
 
       {/* Error State */}
       {error && (
@@ -286,7 +160,7 @@ const NewsPage = () => {
           transition={{ duration: 0.5 }}
         >
           <RefreshCw className="w-16 h-16 text-slate-600 animate-spin" />
-          <h2 className="text-xl font-bold text-slate-300">Loading Latest News...</h2>
+          <h2 className="text-xl font-bold text-slate-300">Loading Latest Article...</h2>
         </motion.div>
       ) : filteredArticles.length > 0 ? (
         <motion.div

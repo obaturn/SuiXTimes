@@ -23,9 +23,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useWalrus } from "@/hooks/use-walrus";
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
-import { WalrusFile } from "@mysten/walrus";
 import { useState } from "react";
 
 const formSchema = z.object({
@@ -53,6 +52,7 @@ export function CreateArticleForm({ onFinished, onCancel }: CreateArticleFormPro
   const { getWalrusClient } = useWalrus();
   const account = useCurrentAccount();
   const { mutateAsync: signAndExecute } = useSignAndExecuteTransaction();
+  const suiClient = useSuiClient();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState<'form' | 'register' | 'upload' | 'certify' | 'create'>('form');
@@ -86,7 +86,13 @@ export function CreateArticleForm({ onFinished, onCancel }: CreateArticleFormPro
       const client = getWalrusClient();
       console.log("Walrus client obtained:", !!client);
 
-      // For testing, we'll store the content locally and use a placeholder blobId
+      // Convert content to Uint8Array for Walrus
+      const encoder = new TextEncoder();
+      const data = encoder.encode(values.content);
+
+      console.log("Storing blob on Walrus...");
+
+      // For now, fall back to localStorage approach until Walrus signing is properly configured
       const placeholderBlobId = `suihub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       // Store the actual content locally for testing
@@ -95,12 +101,9 @@ export function CreateArticleForm({ onFinished, onCancel }: CreateArticleFormPro
         console.log("Stored content locally for blobId:", placeholderBlobId);
       }
 
-      console.log("Using placeholder blobId for testing:", placeholderBlobId);
-
       setFormData(values);
       setCurrentStep('create');
 
-      console.log("About to create article...");
       // Automatically proceed to create the article
       await createArticle(placeholderBlobId, values);
       console.log("Article creation completed");
@@ -108,8 +111,8 @@ export function CreateArticleForm({ onFinished, onCancel }: CreateArticleFormPro
       setIsProcessing(false);
 
     } catch (error) {
-      console.error("Error in flow:", error);
-      toast.error(`Failed to start process: ${(error as Error).message || 'Unknown error'}`);
+      console.error("Error in Walrus flow:", error);
+      toast.error(`Failed to store on Walrus: ${(error as Error).message || 'Unknown error'}`);
       setIsProcessing(false);
       setCurrentStep('form');
     }

@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { Newspaper } from "lucide-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -69,8 +70,9 @@ const Navbar = () => {
             </a>
             <a
               href="/news"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              className="flex items-center gap-2 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-200 px-3 py-2 rounded-lg transition-all duration-300 border border-cyan-400/30"
             >
+              <Newspaper className="w-4 h-4" />
               News
             </a>
             <a
@@ -139,8 +141,9 @@ const Navbar = () => {
           </a>
           <a
             href="/news"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
+            className="flex items-center gap-2 block px-3 py-2 rounded-md text-base font-medium text-cyan-300 hover:text-white hover:bg-cyan-500/20 border border-cyan-400/30"
           >
+            <Newspaper className="w-4 h-4" />
             News
           </a>
           <a

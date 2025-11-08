@@ -113,7 +113,7 @@ export function ArticleCard({ article, onVote }: ArticleCardProps) {
   }
 
   return (
-    <Card className="bg-slate-800/60 border-slate-700/50 hover:bg-slate-800/80 transition-colors">
+    <Card className="bg-blue-800/60 border-slate-700/50 hover:bg-slate-800/80 transition-colors">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -160,7 +160,7 @@ export function ArticleCard({ article, onVote }: ArticleCardProps) {
                   {article.contentBlobId.startsWith('suihub_') && (
                     <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 mb-4">
                       <p className="text-green-300 text-sm">
-                        ✅ <strong>Your Article Content:</strong> This is the actual content you wrote when creating the article.
+                         <strong>Your Article Content:</strong> This is the actual content you wrote when creating the article.
                       </p>
                     </div>
                   )}

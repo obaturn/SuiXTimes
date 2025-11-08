@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
 import {
   Globe,
   Users,
@@ -13,7 +12,6 @@ import {
   MessageSquare,
   Star,
   ArrowRight,
-  Sparkles,
   Zap,
   Target,
   Award
@@ -23,479 +21,337 @@ import Navbar from "@/components/homepage/Navbar";
 import Footer from "@/components/footer";
 
 const EcosystemPage = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
-  // Content categories with their data
-  const contentCategories = [
+  // Ecosystem categories with their data
+  const ecosystemCategories = [
     {
-      id: "news",
-      name: "News Platforms",
+      id: "defi",
+      name: "DeFi Protocols",
+      icon: TrendingUp,
+      color: "from-green-500 to-emerald-500",
+      description: "Decentralized finance applications and protocols",
+      platforms: [
+        { name: "SuiSwap", users: "150K+", tvl: "$500M+", status: "Live" },
+        { name: "Cetus Protocol", users: "80K+", tvl: "$200M+", status: "Live" },
+        { name: "Sui Lending", users: "45K+", tvl: "$100M+", status: "Beta" }
+      ]
+    },
+    {
+      id: "nfts",
+      name: "NFT Marketplaces",
+      icon: Star,
+      color: "from-purple-500 to-pink-500",
+      description: "NFT trading platforms and collections",
+      platforms: [
+        { name: "SuiNS", users: "120K+", volume: "$50M+", status: "Live" },
+        { name: "Sui Marketplace", users: "90K+", volume: "$30M+", status: "Live" },
+        { name: "BlueMove", users: "60K+", volume: "$15M+", status: "Live" }
+      ]
+    },
+    {
+      id: "gaming",
+      name: "Gaming dApps",
+      icon: Target,
+      color: "from-orange-500 to-red-500",
+      description: "Blockchain games and gaming platforms",
+      platforms: [
+        { name: "Sui Heroes", users: "200K+", players: "50K+", status: "Live" },
+        { name: "Move and Earn", users: "100K+", players: "25K+", status: "Live" },
+        { name: "Sui Quest", users: "75K+", players: "15K+", status: "Beta" }
+      ]
+    },
+    {
+      id: "infrastructure",
+      name: "Infrastructure",
       icon: Globe,
       color: "from-blue-500 to-cyan-500",
-      description: "Real-time Sui blockchain news and updates",
+      description: "Core infrastructure and developer tools",
       platforms: [
-        { name: "Sui Times News", users: "50K+", articles: "10K+", status: "Live" },
-        { name: "BlockBeat Sui", users: "25K+", articles: "5K+", status: "Live" },
-        { name: "Chain Chronicle", users: "15K+", articles: "3K+", status: "Beta" }
+        { name: "Sui RPC", users: "500K+", requests: "10M/day", status: "Live" },
+        { name: "Walrus Storage", users: "300K+", data: "1TB+", status: "Live" },
+        { name: "Sui Bridge", users: "250K+", volume: "$100M+", status: "Live" }
       ]
     },
     {
-      id: "articles",
-      name: "Article Platforms",
-      icon: BookOpen,
-      color: "from-green-500 to-emerald-500",
-      description: "In-depth analysis and educational content",
-      platforms: [
-        { name: "Sui Scholar", users: "30K+", articles: "8K+", status: "Live" },
-        { name: "DeFi Digest", users: "20K+", articles: "4K+", status: "Live" },
-        { name: "Tech Tales", users: "12K+", articles: "2K+", status: "Live" }
-      ]
-    },
-    {
-      id: "videos",
-      name: "Video Platforms",
-      icon: Video,
-      color: "from-purple-500 to-pink-500",
-      description: "Video content and tutorials",
-      platforms: [
-        { name: "Sui Studios", users: "40K+", videos: "2K+", status: "Live" },
-        { name: "BlockLearn", users: "18K+", videos: "800+", status: "Live" },
-        { name: "Crypto Visuals", users: "8K+", videos: "300+", status: "Beta" }
-      ]
-    },
-    {
-      id: "podcasts",
-      name: "Podcast Networks",
-      icon: Mic,
-      color: "from-orange-500 to-red-500",
-      description: "Audio content and discussions",
-      platforms: [
-        { name: "Sui Soundwaves", users: "15K+", episodes: "500+", status: "Live" },
-        { name: "Chain Chat", users: "10K+", episodes: "300+", status: "Live" },
-        { name: "DeFi Dialogues", users: "6K+", episodes: "150+", status: "Live" }
-      ]
-    },
-    {
-      id: "analytics",
-      name: "Analytics Tools",
-      icon: BarChart3,
-      color: "from-indigo-500 to-purple-500",
-      description: "Data and analytics platforms",
-      platforms: [
-        { name: "Sui Analytics Pro", users: "35K+", reports: "50K+", status: "Live" },
-        { name: "Chain Metrics", users: "22K+", reports: "25K+", status: "Live" },
-        { name: "DeFi Dashboard", users: "14K+", reports: "15K+", status: "Beta" }
-      ]
-    },
-    {
-      id: "community",
-      name: "Community Hubs",
+      id: "social",
+      name: "Social dApps",
       icon: MessageSquare,
       color: "from-pink-500 to-rose-500",
-      description: "Discussion and community platforms",
+      description: "Social networks and communication platforms",
       platforms: [
-        { name: "Sui Community Hub", users: "100K+", posts: "200K+", status: "Live" },
-        { name: "DeFi Discussions", users: "45K+", posts: "80K+", status: "Live" },
-        { name: "Creator Connect", users: "25K+", posts: "40K+", status: "Live" }
+        { name: "Sui Social", users: "180K+", posts: "1M+", status: "Live" },
+        { name: "Decentralized Chat", users: "120K+", messages: "500K+", status: "Live" },
+        { name: "Sui Connect", users: "85K+", connections: "200K+", status: "Beta" }
+      ]
+    },
+    {
+      id: "tools",
+      name: "Developer Tools",
+      icon: BarChart3,
+      color: "from-indigo-500 to-purple-500",
+      description: "Development tools and analytics platforms",
+      platforms: [
+        { name: "Sui Explorer", users: "400K+", txns: "5M/day", status: "Live" },
+        { name: "Sui Dev Kit", users: "150K+", projects: "2K+", status: "Live" },
+        { name: "Sui Analytics", users: "100K+", reports: "10K+", status: "Live" }
       ]
     }
   ];
 
-  // Featured creators - Content creators on Sui Times platform
-  const featuredCreators = [
+  // Featured projects - Top projects in Sui ecosystem
+  const featuredProjects = [
     {
-      name: "Content Creator",
-      role: "Writes articles on Sui Times",
+      name: "SuiSwap",
+      role: "Leading DEX on Sui",
       avatar: "https://res.cloudinary.com/dcejzfbo8/image/upload/v1762463948/use2_xijebb.png",
-      followers: "TBA",
-      articles: "TBA",
-      badge: "Author"
+      users: "150K",
+      tvl: "$500M",
+      volume: "$2.1B",
+      badge: "Top DeFi Protocol"
     },
     {
-      name: "Content Creator",
-      role: "Creates content on Sui Times",
+      name: "Cetus Protocol",
+      role: "AMM & Concentrated Liquidity",
       avatar: "https://res.cloudinary.com/dcejzfbo8/image/upload/v1762462229/20251106_2143_image_wwtwry.png",
-      followers: "TBA",
-      articles: "TBA",
-      badge: "Author"
+      users: "80K",
+      tvl: "$200M",
+      volume: "$1.5B",
+      badge: "Innovation Leader"
     },
     {
-      name: "Content Creator",
-      role: "Publishes on Sui Times",
+      name: "SuiNS",
+      role: "Decentralized Naming Service",
       avatar: "https://res.cloudinary.com/dcejzfbo8/image/upload/v1762463931/use1_en87ux.png",
-      followers: "TBA",
-      articles: "TBA",
-      badge: "Author"
+      users: "120K",
+      tvl: "$50M",
+      volume: "$25M",
+      badge: "Infrastructure Project"
     }
   ];
 
   // Stats
   const stats = [
-    { label: "Active Creators", value: "25,000+", icon: Users },
-    { label: "Content Pieces", value: "500,000+", icon: BookOpen },
-    { label: "Monthly Readers", value: "2M+", icon: TrendingUp },
-    { label: "Platforms", value: "50+", icon: Globe }
+    { label: "Active dApps", value: "1,200+", icon: Globe },
+    { label: "Total Value Locked", value: "$2.5B+", icon: TrendingUp },
+    { label: "Daily Transactions", value: "5M+", icon: Zap },
+    { label: "Unique Users", value: "500K+", icon: Users }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(56,189,248,0.3),transparent_70%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(139,92,246,0.4),transparent_70%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(255,20,147,0.2),transparent_70%)]" />
+      {/* Hero Section - Simple */}
+      <section className="relative py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="space-y-6">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                  <Globe className="w-8 h-8 text-white" />
+                </div>
+              </div>
 
-          {/* Content Nodes Animation */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(30)].map((_, i) => (
-              <motion.div
-                key={i}
-                className={`absolute w-2 h-2 rounded-full ${
-                  i % 3 === 0 ? 'bg-cyan-400' :
-                  i % 3 === 1 ? 'bg-purple-400' : 'bg-pink-400'
-                }`}
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.3, 0.8, 0.3],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 2,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                Sui{" "}
+                <span className="text-blue-600">
+                  Ecosystem
+                </span>
+                {" "}Hub
+              </h1>
+
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Explore the thriving Sui ecosystem of platforms, tools, and communities. Discover dApps, DeFi protocols, NFT marketplaces, and innovative projects building on Sui blockchain.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg">
+                  <Globe className="w-5 h-5 mr-2" />
+                  Explore dApps
+                </Button>
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-lg font-medium text-lg">
+                  <BarChart3 className="w-5 h-5 mr-2" />
+                  View Ecosystem Stats
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 flex items-center justify-center h-full">
-          <motion.div
-            className="text-center text-white max-w-6xl px-4"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-8"
-            >
-              <Globe className="w-20 h-20 mx-auto text-cyan-400 mb-6" />
-            </motion.div>
-
-            <motion.h1
-              className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              The{" "}
-              <motion.span
-                className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500"
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                style={{
-                  backgroundSize: "200% 200%",
-                }}
-              >
-                Content Universe
-              </motion.span>
-              {" "}of Sui
-            </motion.h1>
-
-            <motion.p
-              className="text-xl md:text-2xl lg:text-3xl mb-12 text-gray-300 leading-relaxed max-w-4xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            >
-              Discover the thriving ecosystem of content creators, platforms, and communities building the future of decentralized publishing.
-            </motion.p>
-
-            <motion.div
-              className="flex flex-col sm:flex-row gap-6 justify-center"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-            >
-              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-10 py-5 text-xl font-semibold rounded-2xl shadow-2xl shadow-cyan-500/25 transform hover:scale-105 transition-all duration-300 border border-cyan-400/50">
-                <Users className="w-6 h-6 mr-2" />
-                Join Ecosystem
-              </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white/50 text-white hover:bg-white hover:text-black px-10 py-5 text-xl font-semibold rounded-2xl backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                <BarChart3 className="w-6 h-6 mr-2" />
-                View Analytics
-              </Button>
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-muted/30 relative">
+      {/* Stats Section - Simple */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                className="text-center"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <stat.icon className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </motion.div>
+                <div className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Content Categories */}
-      <section className="py-32 bg-gradient-to-b from-background to-muted/20 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(56,189,248,0.05),transparent_70%)]" />
-        <div className="container mx-auto px-4 relative">
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6"
-            >
-              <Sparkles className="w-10 h-10 text-white" />
-            </motion.div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-              Content Categories
+      {/* Content Categories - Simple */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                <Star className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+              Ecosystem Categories
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Explore diverse content types and platforms within the Sui ecosystem.
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover different types of applications and platforms building on Sui blockchain.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {contentCategories.map((category, index) => (
-              <motion.div
-                key={category.id}
-                className="group relative"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500" />
-                <div className="relative bg-card/80 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10 transform hover:-translate-y-2">
-                  <div className={`w-16 h-16 bg-gradient-to-r ${category.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <category.icon className="w-8 h-8 text-white" />
+            {ecosystemCategories.map((category, index) => (
+              <div key={category.id} className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <category.icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 text-foreground group-hover:text-cyan-400 transition-colors">
-                    {category.name}
-                  </h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {category.description}
-                  </p>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold mb-2 text-gray-900">
+                      {category.name}
+                    </h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed">
+                      {category.description}
+                    </p>
 
-                  <div className="space-y-3">
-                    {category.platforms.slice(0, 2).map((platform, pIndex) => (
-                      <div key={pIndex} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <div>
-                          <div className="font-medium text-sm">{platform.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {platform.users} users • {Object.values(platform).find((v, i) => i > 1 && typeof v === 'string')} content
+                    <div className="space-y-2">
+                      {category.platforms.slice(0, 2).map((platform, pIndex) => (
+                        <div key={pIndex} className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div>
+                            <div className="font-medium text-sm text-gray-900">{platform.name}</div>
+                            <div className="text-xs text-gray-500">
+                              {platform.users} users
+                            </div>
+                          </div>
+                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            platform.status === 'Live' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {platform.status}
                           </div>
                         </div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          platform.status === 'Live' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                        }`}>
-                          {platform.status}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
 
-                  <Button
-                    variant="ghost"
-                    className="w-full mt-6 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
-                  >
-                    View All {category.name}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 font-medium"
+                    >
+                      View All {category.name}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Creators */}
-      <section className="py-32 bg-gradient-to-b from-muted/20 to-background relative">
-        <div className="container mx-auto px-4 relative">
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6"
-            >
-              <Star className="w-10 h-10 text-white" />
-            </motion.div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-pink-400 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
-              Featured Creators
+      {/* Featured Creators - Simple */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                <Star className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+              Top Ecosystem Projects
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Meet the top content creators shaping the future of decentralized publishing.
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover successful projects and protocols building the future of Web3 on Sui blockchain.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {featuredCreators.map((creator, index) => (
-              <motion.div
-                key={index}
-                className="group relative"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500" />
-                <div className="relative bg-card/80 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/10 transform hover:-translate-y-2">
-                  <div className="text-center mb-6">
-                    <div className="relative inline-block mb-4">
-                      <img
-                        src={creator.avatar}
-                        alt={creator.name}
-                        className="w-20 h-20 rounded-full border-4 border-gradient-to-r from-cyan-500 to-purple-500"
-                      />
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                        <Award className="w-3 h-3 text-white" />
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-bold mb-1">{creator.name}</h3>
-                    <p className="text-muted-foreground text-sm mb-3">{creator.role}</p>
-                    <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-400/20 to-orange-500/20 text-yellow-400 border border-yellow-400/30`}>
-                      {creator.badge}
+            {featuredProjects.map((project, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+                <div className="text-center mb-6">
+                  <div className="relative inline-block mb-4">
+                    <img
+                      src={project.avatar}
+                      alt={project.name}
+                      className="w-20 h-20 rounded-full border-4 border-blue-200"
+                    />
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <Award className="w-3 h-3 text-white" />
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-cyan-400">{creator.followers}</div>
-                      <div className="text-xs text-muted-foreground">Followers</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">{creator.articles}</div>
-                      <div className="text-xs text-muted-foreground">Articles</div>
-                    </div>
+                  <h3 className="text-xl font-bold mb-1 text-gray-900">{project.name}</h3>
+                  <p className="text-gray-600 text-sm mb-3">{project.role}</p>
+                  <div className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium border border-yellow-200">
+                    {project.badge}
                   </div>
-
-                  <Button className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white">
-                    Follow Creator
-                  </Button>
                 </div>
-              </motion.div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{project.users}</div>
+                    <div className="text-xs text-gray-500">Active Users</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{project.tvl}</div>
+                    <div className="text-xs text-gray-500">TVL</div>
+                  </div>
+                </div>
+
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  View Project
+                </Button>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-32 bg-gradient-to-br from-cyan-600 via-purple-600 to-pink-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.1),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(56,189,248,0.2),transparent_70%)]" />
+      {/* CTA Section - Simple */}
+      <section className="py-16 bg-blue-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+            </div>
 
-        <div className="relative container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-            className="max-w-5xl mx-auto"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="w-24 h-24 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto mb-8"
-            >
-              <Target className="w-12 h-12 text-white" />
-            </motion.div>
-
-            <motion.h2
-              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              Join the{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                Content Revolution
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Start{" "}
+              <span className="text-yellow-300">
+                Earning Today
               </span>
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              viewport={{ once: true }}
-            >
-              Be part of the growing ecosystem of creators, platforms, and communities building the future of decentralized content.
-            </motion.p>
+            <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
+              Join thousands of developers and entrepreneurs building the future of Web3 on Sui. Launch your dApp, grow your protocol, and scale your project to millions of users.
+            </p>
 
-            <motion.div
-              className="flex flex-col sm:flex-row gap-6 justify-center"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              viewport={{ once: true }}
-            >
-              <Button size="lg" className="bg-white text-black hover:bg-gray-100 px-12 py-6 text-xl font-bold rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-white/20">
-                <Zap className="w-6 h-6 mr-3" />
-                Start Creating
-                <ArrowRight className="ml-3 w-6 h-6" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-medium text-lg">
+                <Zap className="w-5 h-5 mr-2" />
+                Build on Sui
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white/60 text-white hover:bg-white hover:text-black px-12 py-6 text-xl font-bold rounded-2xl backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                <Users className="w-6 h-6 mr-3" />
-                Explore Ecosystem
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-lg font-medium text-lg">
+                <Globe className="w-5 h-5 mr-2" />
+                View Documentation
               </Button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 

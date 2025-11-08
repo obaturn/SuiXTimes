@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchTopPerformingTokens, fetchSuiChartData, Token } from '@/app/actions/tokens';
+import { useWatchlist } from '@/hooks/use-watchlist';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, Star, Search, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowUpRight, Star, Search, TrendingUp, TrendingDown, Plus, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -35,6 +37,8 @@ const Markets = () => {
   const [chartData, setChartData] = useState<any>(null);
   const [chartLoading, setChartLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
 
   useEffect(() => {
     const getTokens = async () => {
@@ -240,36 +244,62 @@ const Markets = () => {
               <div className="col-span-2 text-right">Price</div>
               <div className="col-span-2 text-right">24h Change</div>
               <div className="col-span-2 text-right">Volume</div>
-              <div className="col-span-2 text-right">Market Cap</div>
+              <div className="col-span-1 text-right">Market Cap</div>
+              <div className="col-span-1 text-right">Watchlist</div>
             </div>
 
             {/* Token Rows */}
-            {tokens.map((token) => (
-              <div key={token.id} className="grid grid-cols-12 gap-4 px-4 py-4 bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg hover:bg-slate-800/80 transition-colors">
-                <div className="col-span-4 flex items-center space-x-3">
-                  <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
-                  <div>
-                    <p className="font-bold text-white text-sm">{token.name}</p>
-                    <p className="text-xs text-slate-400">{token.symbol}</p>
+            {tokens.map((token) => {
+              const inWatchlist = isInWatchlist(token.id);
+              return (
+                <div key={token.id} className="grid grid-cols-12 gap-4 px-4 py-4 bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg hover:bg-slate-800/80 transition-colors">
+                  <div className="col-span-4 flex items-center space-x-3">
+                    <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                    <div>
+                      <p className="font-bold text-white text-sm">{token.name}</p>
+                      <p className="text-xs text-slate-400">{token.symbol}</p>
+                    </div>
+                  </div>
+                  <div className="col-span-2 flex items-center justify-end">
+                    <p className="text-white font-semibold">${token.price.toFixed(4)}</p>
+                  </div>
+                  <div className="col-span-2 flex items-center justify-end">
+                    <div className={`flex items-center space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {token.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                      <span>{token.change24h.toFixed(2)}%</span>
+                    </div>
+                  </div>
+                  <div className="col-span-2 flex items-center justify-end">
+                    <p className="text-white text-sm">{token.volumeFormatted}</p>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-end">
+                    <p className="text-white text-sm">{token.marketCapFormatted}</p>
+                  </div>
+                  <div className="col-span-1 flex items-center justify-end">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        console.log('Watchlist button clicked for token:', token);
+                        console.log('Currently in watchlist:', inWatchlist);
+                        if (inWatchlist) {
+                          console.log('Removing from watchlist');
+                          removeFromWatchlist(token.id);
+                          toast.success(`Removed ${token.symbol} from watchlist`);
+                        } else {
+                          console.log('Adding to watchlist');
+                          addToWatchlist(token);
+                          toast.success(`Added ${token.symbol} to watchlist`);
+                        }
+                      }}
+                      className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
+                    >
+                      {inWatchlist ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                    </Button>
                   </div>
                 </div>
-                <div className="col-span-2 flex items-center justify-end">
-                  <p className="text-white font-semibold">${token.price.toFixed(4)}</p>
-                </div>
-                <div className="col-span-2 flex items-center justify-end">
-                  <div className={`flex items-center space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {token.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                    <span>{token.change24h.toFixed(2)}%</span>
-                  </div>
-                </div>
-                <div className="col-span-2 flex items-center justify-end">
-                  <p className="text-white text-sm">{token.volumeFormatted}</p>
-                </div>
-                <div className="col-span-2 flex items-center justify-end">
-                  <p className="text-white text-sm">{token.marketCapFormatted}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
