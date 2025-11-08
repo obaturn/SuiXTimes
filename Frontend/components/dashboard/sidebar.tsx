@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
-    { href: '/dashboard/sui-news', icon: Newspaper, label: 'SUI News' },
+    { href: '/dashboard/sui-news', icon: Newspaper, label: 'X Feed' },
     { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
@@ -52,11 +52,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             </div>
             <span className="text-xl font-bold text-foreground">Sui Times</span>
           </div>
-        )}
+          <span className="text-xl font-bold text-white">Sui Times</span>
+        </div>
         {isMobile && (
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white"
+            className="p-2 rounded-full text-gray-300 hover:bg-gray-800 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>

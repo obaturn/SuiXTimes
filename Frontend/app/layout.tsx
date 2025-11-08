@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ColorThemeProvider } from "@/components/color-theme-provider"
 import { WalletProviders } from "@/components/wallet-providers"
 import "./globals.css"
 
@@ -11,11 +12,6 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
 })
 
-export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
-}
 
 export default function RootLayout({
   children,
@@ -31,9 +27,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <WalletProviders>
-            {children}
-          </WalletProviders>
+          <ColorThemeProvider>
+            <WalletProviders>
+              {children}
+            </WalletProviders>
+          </ColorThemeProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSuiNews, Article } from '@/app/actions/news';
 import { Button } from '@/components/ui/button';
-import { Search, ThumbsUp, MessageCircle, Share2, Bookmark } from 'lucide-react';
+import { Search,Share2, } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const StreakCard = dynamic(() => import('@/components/streak/StreakCard'), { ssr: false });
@@ -46,13 +46,13 @@ const Home = () => {
           <Button
             variant={filter === 'All News' ? 'default' : 'outline'}
             onClick={() => setFilter('All News')}
-            className={`whitespace-nowrap ${filter === 'All News' ? 'bg-purple-600 text-white' : 'border-slate-700 text-slate-300 hover:bg-slate-800'}`}>
+            className={`whitespace-nowrap ${filter === 'All News' ? 'bg-cyan-600 text-white' : 'border-slate-700 text-slate-300 hover:bg-slate-800'}`}>
             All News
           </Button>
         </div>
         <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input type="text" placeholder="Search news..." className="bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          <input type="text" placeholder="Search news..." className="bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-yellow-100" />
         </div>
       </div>
 
@@ -72,21 +72,18 @@ const Home = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredArticles.map((article) => (
-              <div key={article.id} className="rounded-lg bg-slate-800/60 backdrop-blur-md border border-slate-700/50 overflow-hidden flex flex-col">
+              <div key={article.id} className="rounded-lg bg-slate-600/60 backdrop-blur-md border border-slate-700/50 overflow-hidden flex flex-col">
                 <img src={article.image} alt={article.title} className="w-full h-40 object-cover" />
                 <div className="p-4 flex flex-col flex-grow">
                   <div>
-                    <span className="text-xs font-semibold bg-purple-600/50 text-white px-2 py-1 rounded-full">{article.category}</span>
-                    <h3 className="text-lg font-bold text-white mt-2 hover:text-purple-400 transition-colors"><a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a></h3>
+                    <span className="text-xs font-semibold bg-cyan-800/50 text-white px-2 py-1 rounded-full">{article.category}</span>
+                    <h3 className="text-lg font-bold text-white mt-2 hover:text-cyan-400 transition-colors"><a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a></h3>
                     <p className="text-slate-400 text-sm mt-1 flex-grow">{article.description}</p>
                   </div>
                   <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-700/50">
                     <div className="flex items-center space-x-4 text-slate-400">
-                      <button className="flex items-center space-x-1 hover:text-white"><ThumbsUp className="w-4 h-4" /><span>12</span></button>
-                      <button className="flex items-center space-x-1 hover:text-white"><MessageCircle className="w-4 h-4" /><span>5</span></button>
                       <button className="hover:text-white"><Share2 className="w-4 h-4" /></button>
                     </div>
-                    <button className="hover:text-white"><Bookmark className="w-4 h-4" /></button>
                   </div>
                 </div>
               </div>
