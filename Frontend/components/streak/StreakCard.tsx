@@ -18,6 +18,11 @@ const StreakCard: React.FC = () => {
   const [streakId, setStreakId] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
+  const ONE_DAY_MS = 86400000; // 24 hours in milliseconds
+
+  const [canCheckIn, setCanCheckIn] = useState(false);
+  const [nextCheckInTime, setNextCheckInTime] = useState<Date | null>(null);
+
   // Load user's streak data on wallet connection
   useEffect(() => {
     console.log('Account changed:', account);
@@ -28,6 +33,30 @@ const StreakCard: React.FC = () => {
       setStreakId(null);
     }
   }, [account?.address]);
+
+  // Calculate check-in eligibility
+  useEffect(() => {
+    if (streakData && streakData.last_checkin_time > 0) {
+      const lastCheckInDate = new Date(Number(streakData.last_checkin_time));
+      const nextEligibleCheckInTime = new Date(lastCheckInDate.getTime() + ONE_DAY_MS);
+      const now = new Date();
+
+      if (now >= nextEligibleCheckInTime) {
+        setCanCheckIn(true);
+        setNextCheckInTime(null);
+      } else {
+        setCanCheckIn(false);
+        setNextCheckInTime(nextEligibleCheckInTime);
+      }
+    } else if (streakData && streakData.last_checkin_time === 0) {
+      // New streak, never checked in, so can check in
+      setCanCheckIn(true);
+      setNextCheckInTime(null);
+    } else {
+      setCanCheckIn(false);
+      setNextCheckInTime(null);
+    }
+  }, [streakData]);
 
   const loadStreakData = async () => {
     if (!account?.address) return;
