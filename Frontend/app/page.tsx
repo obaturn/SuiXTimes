@@ -8,7 +8,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { AuthCard } from "@/components/auth/auth-card"
 import { WavyBackground } from "@/components/ui/wavy-background";
 import Footer from "@/components/footer";
-import EcosystemTokens from "@/components/homepage/EcosystemTokens";
 import FeaturesSection from "@/components/homepage/FeaturesSection";
 import Navbar from "@/components/homepage/Navbar";
 import { motion } from "framer-motion";
@@ -22,6 +21,8 @@ export default function AuthPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+  const { theme } = useColorTheme()
+  const isLightMode = theme === "light"
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -86,7 +87,7 @@ export default function AuthPage() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
               <motion.h1
                 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight"
@@ -147,8 +148,17 @@ export default function AuthPage() {
                   className="border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
                   onClick={() => window.location.href = '/community'}
                 >
-                  Join Community
-                </Button>
+                  <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-relaxed inline-block pr-32 ${
+                    isLightMode ? "text-gray-700" : "text-gray-300"
+                  }`}>
+                    One bookmark. Every crucial update. Whether you're building on Move or just following the ecosystem, get the signal without the noise, curated daily.
+                  </h2>
+                  <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold leading-relaxed inline-block pr-32 ${
+                    isLightMode ? "text-gray-700" : "text-gray-300"
+                  }`}>
+                    One bookmark. Every crucial update. Whether you're building on Move or just following the ecosystem, get the signal without the noise, curated daily.
+                  </h2>
+                </motion.div>
               </div>
             </motion.div>
           </div>

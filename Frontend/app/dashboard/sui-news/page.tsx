@@ -17,7 +17,7 @@ export default function SuiNews() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">SUI News</h1>
+        <h1 className="text-3xl font-bold text-white">Sui X News</h1>
         <div className="text-sm text-slate-400">
           Curated social media feed
         </div>
