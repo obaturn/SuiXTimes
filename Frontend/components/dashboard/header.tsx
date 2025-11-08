@@ -68,10 +68,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <div className="relative">
-            <Bell className="h-6 w-6" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground font-medium">3</span>
-          </div>
+          {/* Remove placeholder notification bell */}
         </div>
       </div>
     </header>

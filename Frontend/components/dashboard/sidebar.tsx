@@ -68,8 +68,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className={`flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-accent-foreground ${
-                  pathname === item.href ? 'bg-accent text-accent-foreground' : ''
+                className={`flex items-center rounded-lg px-4 py-3 text-muted-foreground transition-colors duration-200 hover:bg-blue-500/20 hover:text-blue-400 ${
+                  pathname === item.href ? 'bg-blue-500/30 text-blue-400' : ''
                 }`}>
 
                 <item.icon className="h-5 w-5" />
@@ -101,11 +101,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </button>
         </div>
         <button
-          onClick={handleDisconnect}
-          className="w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-destructive/20 border border-destructive/30 text-destructive hover:bg-destructive/30 hover:text-destructive transition-colors"
+          onClick={() => router.push('/')}
+          className="w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-blue-600/20 border border-blue-600/30 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 transition-colors"
         >
-          <LogOut className="h-5 w-5" />
-          <span>Disconnect</span>
+          <Home className="h-5 w-5" />
+          <span>Back to Home</span>
         </button>
       </div>
     </aside>

@@ -38,16 +38,7 @@ const PublicNewsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Live news data from ElizaOS
-  const [liveNews, setLiveNews] = useState([
-    {
-      id: 1,
-      title: "Loading live Sui news...",
-      category: "breaking",
-      time: "Just now",
-      source: "ElizaOS Agent",
-      urgent: false
-    }
-  ]);
+  const [liveNews, setLiveNews] = useState<any[]>([]);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
 
   // General news from NewsAPI
@@ -170,32 +161,7 @@ const PublicNewsPage = () => {
     }
   };
 
-  const getFallbackNews = () => [
-    {
-      id: 1,
-      title: "Sui Network Achieves New Transaction Record",
-      category: "breaking",
-      time: "2 min ago",
-      source: "ElizaOS Agent",
-      urgent: true
-    },
-    {
-      id: 2,
-      title: "Major DeFi Protocol Launches on Sui Testnet",
-      category: "defi",
-      time: "15 min ago",
-      source: "ElizaOS Agent",
-      urgent: false
-    },
-    {
-      id: 3,
-      title: "New NFT Marketplace Goes Live",
-      category: "nft",
-      time: "1 hour ago",
-      source: "ElizaOS Agent",
-      urgent: false
-    }
-  ];
+  const getFallbackNews = (): any[] => [];
 
   const updateTime = (timeStr: string) => {
     // Simple time update logic
@@ -289,7 +255,7 @@ const PublicNewsPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              The Latest{" "}
+              Latest{" "}
               <motion.span
                 className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500"
                 animate={{
@@ -306,7 +272,7 @@ const PublicNewsPage = () => {
               >
                 Sui News
               </motion.span>
-              {" "}in Real Time
+              {" "}Updates
             </motion.h1>
 
             <motion.p
@@ -516,7 +482,7 @@ const PublicNewsPage = () => {
                 </h3>
               </div>
               <div className="space-y-2">
-                {liveNews.map((news) => (
+                {liveNews.length > 0 ? liveNews.map((news) => (
                   <div key={news.id} className="flex items-center justify-between py-2 border-b border-red-500/10 last:border-b-0">
                     <div className="flex-1">
                       <p className="text-white text-sm">{news.title}</p>
@@ -532,7 +498,11 @@ const PublicNewsPage = () => {
                       </div>
                     )}
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center py-4 text-slate-400 text-sm">
+                    No live updates available
+                  </div>
+                )}
               </div>
               <div className="mt-3 pt-3 border-t border-red-500/10">
                 <p className="text-xs text-slate-500 text-center">
@@ -552,7 +522,7 @@ const PublicNewsPage = () => {
                 { label: "News Today", value: filteredNews.length.toString(), icon: Newspaper },
                 { label: "Live Updates", value: liveNews.length.toString(), icon: Zap },
                 { label: "Categories", value: categories.length.toString(), icon: Filter },
-                { label: "Total Views", value: "15K", icon: TrendingUp }
+                { label: "Total Views", value: "0", icon: TrendingUp }
               ].map((stat, index) => (
                 <div key={index} className="bg-slate-800/50 rounded-lg p-4 text-center border border-slate-700">
                   <stat.icon className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
