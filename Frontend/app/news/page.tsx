@@ -322,14 +322,14 @@ const PublicNewsPage = () => {
               whileInView={{ scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6"
+              className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"
             >
               <Newspaper className="w-10 h-10 text-white" />
             </motion.div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
               Latest News & Updates
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Discover the most recent developments, announcements, and insights from the Sui ecosystem.
             </p>
           </motion.div>
@@ -468,48 +468,48 @@ const PublicNewsPage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Live News Ticker */}
-            <motion.div
-              className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg p-4 sticky top-4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <h3 className="text-red-400 font-semibold flex items-center gap-2">
-                  Live Updates
-                  {isLoadingNews && <RefreshCw className="w-4 h-4 animate-spin" />}
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {liveNews.length > 0 ? liveNews.map((news) => (
-                  <div key={news.id} className="flex items-center justify-between py-2 border-b border-red-500/10 last:border-b-0">
-                    <div className="flex-1">
-                      <p className="text-white text-sm">{news.title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-slate-400">{news.source}</span>
-                        <span className="text-xs text-slate-500">•</span>
-                        <span className="text-xs text-slate-400">{news.time}</span>
+              <motion.div
+                className="bg-gray-50 border border-gray-200 rounded-lg p-4 sticky top-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                  <h3 className="text-gray-900 font-semibold flex items-center gap-2">
+                    Live Updates
+                    {isLoadingNews && <RefreshCw className="w-4 h-4 animate-spin" />}
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {liveNews.length > 0 ? liveNews.map((news) => (
+                    <div key={news.id} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
+                      <div className="flex-1">
+                        <p className="text-gray-900 text-sm">{news.title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-500">{news.source}</span>
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-500">{news.time}</span>
+                        </div>
                       </div>
+                      {news.urgent && (
+                        <div className="ml-2 px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
+                          BREAKING
+                        </div>
+                      )}
                     </div>
-                    {news.urgent && (
-                      <div className="ml-2 px-2 py-1 bg-red-500/20 rounded text-xs text-red-400 font-medium">
-                        BREAKING
-                      </div>
-                    )}
-                  </div>
-                )) : (
-                  <div className="text-center py-4 text-slate-400 text-sm">
-                    No live updates available
-                  </div>
-                )}
-              </div>
-              <div className="mt-3 pt-3 border-t border-red-500/10">
-                <p className="text-xs text-slate-500 text-center">
-                  Powered by ElizaOS Agent • Real-time Sui ecosystem monitoring
-                </p>
-              </div>
-            </motion.div>
+                  )) : (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      No live updates available
+                    </div>
+                  )}
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-xs text-gray-500 text-center">
+                    Real-time Sui ecosystem monitoring
+                  </p>
+                </div>
+              </motion.div>
 
             {/* Quick Stats */}
             <motion.div

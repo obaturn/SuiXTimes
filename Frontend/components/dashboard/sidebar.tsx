@@ -9,6 +9,15 @@ import { useTheme } from 'next-themes';
 
 import { useDisconnectWallet } from '@mysten/dapp-kit';
 
+const SidebarLogo = () => (
+  <div className="flex items-center space-x-2">
+    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+      <span className="text-white font-bold text-sm">S</span>
+    </div>
+    <span className="text-xl font-bold text-foreground">Sui Times</span>
+  </div>
+);
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,12 +55,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <span className="text-purple-400">Ξ</span> Sui Swap
           </Link>
         ) : (
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">𝕏</span>
-            </div>
-            <span className="text-xl font-bold text-foreground">Sui Times</span>
-          </div>
+          <SidebarLogo />
         )}
         {isMobile && (
           <button

@@ -9,6 +9,7 @@
  * To run: node elizaos-news-agent.js
  */
 
+require('dotenv').config();
 const https = require('https');
 const http = require('http');
 
