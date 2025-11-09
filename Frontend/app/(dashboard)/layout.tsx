@@ -29,9 +29,9 @@ export default function DashboardLayout({
 
     // Allow access to dashboard even when not connected for development
     // Comment out the redirect for easier testing
-    // if (connectionStatus !== 'connected') {
-    //   router.push("/");
-    // }
+    if (connectionStatus !== 'connected') {
+      router.push("/");
+    }
   }, [connectionStatus, router]);
 
   // While checking, or if the user is not connected, show a full-screen loader.

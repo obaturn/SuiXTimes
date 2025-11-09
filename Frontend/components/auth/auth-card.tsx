@@ -7,6 +7,14 @@ import { useWallets, useConnectWallet, useCurrentAccount } from "@mysten/dapp-ki
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
+const WalletIcon = ({ src, alt, name }: { src?: string; alt: string; name: string }) => {
+  return (
+    <button className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+      <span className="text-xs font-bold text-white">W</span>
+    </button>
+  );
+};
+
 interface AuthCardProps {
   isLoading: boolean
   email: string
@@ -143,17 +151,7 @@ export function AuthCard({
                         className="w-full bg-white/10 border border-white/20 text-white hover:bg-white/20 font-medium rounded-lg h-12 sm:h-14 text-sm sm:text-base transition-all duration-200 hover:shadow-md backdrop-blur-sm flex items-center justify-center gap-3"
                         disabled={connectingWallet !== null}
                       >
-                        {wallet.icon ? (
-                          <img
-                            src={wallet.icon}
-                            alt={wallet.name}
-                            className="w-6 h-6 rounded"
-                          />
-                        ) : (
-                          <div className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
-                            <span className="text-xs font-bold">W</span>
-                          </div>
-                        )}
+                        <WalletIcon src={wallet.icon} alt={wallet.name} name={wallet.name} />
                         {connectingWallet === wallet.name ? "Connecting..." : `Connect ${wallet.name}`}
                       </Button>
                     ))}
