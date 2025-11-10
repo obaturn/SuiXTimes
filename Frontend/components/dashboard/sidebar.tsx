@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, Sun, Moon, LogOut } from 'lucide-react';
+import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, Sun, Moon, LogOut, BookOpen } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from 'next-themes';
 
@@ -38,11 +38,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Home' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
+    { href: '/dashboard/learn', icon: BookOpen, label: 'Learn' },
     { href: '/dashboard/sui-news', icon: Newspaper, label: 'X Feed' },
     { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
-    { href: '/dashboard/community', icon: Users, label: 'Community' },
   ];
 
   return (

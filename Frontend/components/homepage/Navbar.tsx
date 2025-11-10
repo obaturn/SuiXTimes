@@ -109,7 +109,7 @@ const Navbar = () => {
               onClick={scrollToAuth}
               className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
-              Connect Wallet
+              Get Started
             </Button>
           </div>
 
