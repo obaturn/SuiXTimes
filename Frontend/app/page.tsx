@@ -105,16 +105,9 @@ export default function AuthPage() {
                 <Button
                   size="lg"
                   className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-0.5"
-                  onClick={() => window.location.href = '/news'}
+                  onClick={() => window.location.href = '/features'}
                 >
-                  Explore News
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white font-medium py-4 px-8 rounded-lg transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5 text-left"
-                  onClick={() => window.location.href = '/community'}
-                >
-                  join the Community
+                  Explore Features
                 </Button>
               </div>
             </div>

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 
 import { useColorTheme } from "@/components/color-theme-provider"
 import { Palette } from "lucide-react"
-import { Newspaper } from "lucide-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,7 +23,7 @@ const Navbar = () => {
   }
 
   const cycleColorTheme = () => {
-    const themes = ["green", "blue", "pink", "light"]
+    const themes = ["default", "green", "blue", "pink", "purple", "orange", "red", "light"]
     const currentIndex = themes.indexOf(theme)
     const nextIndex = (currentIndex + 1) % themes.length
     setTheme(themes[nextIndex] as any)
@@ -39,8 +38,8 @@ const Navbar = () => {
       transition={{ duration: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b ${
         isLightMode
-          ? "bg-white/80 border-gray-200"
-          : "bg-black/30 border-cyan-500/20"
+          ? "bg-white/95 border-gray-200"
+          : "bg-slate-900/95 border-slate-700/50"
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,7 +50,7 @@ const Navbar = () => {
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">S</span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-pink-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-blue-600">
                 SuiTimes
               </span>
             </a>
@@ -61,34 +60,21 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <a
               href="/"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
             >
               Home
             </a>
             <a
               href="/features"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
             >
               Features
             </a>
             <a
               href="/ecosystem"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
             >
               Ecosystem
-            </a>
-            <a
-              href="/news"
-              className="flex items-center gap-2 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 hover:text-cyan-200 px-3 py-2 rounded-lg transition-all duration-300 border border-cyan-400/30"
-            >
-              <Newspaper className="w-4 h-4" />
-              News
-            </a>
-            <a
-              href="/community"
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
-            >
-              Community
             </a>
           </div>
 
@@ -159,19 +145,6 @@ const Navbar = () => {
           >
             Ecosystem
           </a>
-          <a
-            href="/news"
-            className="flex items-center gap-2 block px-3 py-2 rounded-md text-base font-medium text-cyan-300 hover:text-white hover:bg-cyan-500/20 border border-cyan-400/30"
-          >
-            <Newspaper className="w-4 h-4" />
-            News
-          </a>
-          <a
-            href="/community"
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700"
-          >
-            Community
-          </a>
           <div className="pt-4 pb-2 space-y-3">
             <button
               onClick={cycleColorTheme}
@@ -188,7 +161,7 @@ const Navbar = () => {
               onClick={scrollToAuth}
               className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2.5 px-4 rounded-lg"
             >
-              Connect Wallet
+              Get Started
             </Button>
           </div>
         </motion.div>
