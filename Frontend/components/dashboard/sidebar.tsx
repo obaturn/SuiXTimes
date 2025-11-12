@@ -116,13 +116,13 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
         </div>
-        <a
-          href="/"
+        <button
+          onClick={handleDisconnect}
           className="w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-blue-600/20 border border-blue-600/30 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 transition-colors"
         >
-          <Home className="h-5 w-5" />
-          <span>Back to Home</span>
-        </a>
+          <LogOut className="h-5 w-5" />
+          <span>Disconnect</span>
+        </button>
       </div>
     </aside>
   );

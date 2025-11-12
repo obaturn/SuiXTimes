@@ -83,7 +83,7 @@ export function AuthCard({
   }
 
   const handleCreateSlushWallet = () => {
-    window.open("https://slush.finance/", "_blank")
+    window.open("https://my.slush.app/Welcome", "_blank")
   }
 
   return (
