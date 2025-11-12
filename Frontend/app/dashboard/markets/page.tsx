@@ -87,7 +87,7 @@ const Markets = () => {
     });
 
     setFilteredTokens(filtered);
-  }, [tokens, searchQuery, sortBy, currentWatchlist]); // Add currentWatchlist dependency
+  }, [tokens, searchQuery, sortBy]);
 
   useEffect(() => {
     const getTokens = async () => {
@@ -376,16 +376,25 @@ const Markets = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         console.log('Watchlist button clicked for token:', token);
                         console.log('Currently in watchlist:', inWatchlist);
+                        console.log('Token ID:', token.id, 'Token symbol:', token.symbol);
                         if (inWatchlist) {
                           console.log('Removing from watchlist');
                           removeFromWatchlist(token.id);
                           toast.success(`Removed ${token.symbol} from watchlist`);
                         } else {
-                          console.log('Adding to watchlist');
+                          console.log('Adding to watchlist - calling addToWatchlist');
                           addToWatchlist(token);
+                          console.log('addToWatchlist called, checking if token was added...');
+                          // Check immediately if it was added
+                          setTimeout(() => {
+                            console.log('After add - isInWatchlist check:', isInWatchlist(token.id));
+                          }, 100);
                           toast.success(`Added ${token.symbol} to watchlist`, {
                             action: {
                               label: 'View Watchlist',
@@ -394,9 +403,9 @@ const Markets = () => {
                           });
                         }
                       }}
-                      className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
+                      className={`h-10 w-10 p-0 cursor-pointer ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
                     >
-                      {inWatchlist ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      {inWatchlist ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                     </Button>
                   </div>
                 </div>

@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+"use client";
+
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { useCurrentWallet } from '@mysten/dapp-kit';
-import { Token, fetchSingleToken } from '@/app/actions/tokens';
+import { Token } from '@/app/actions/tokens';
 
 export interface WatchlistItem extends Token {
   addedAt: number;
@@ -16,7 +18,26 @@ export interface PriceAlert {
   triggeredAt?: number;
 }
 
-export function useWatchlist() {
+interface WatchlistContextType {
+  watchlist: WatchlistItem[];
+  isLoading: boolean;
+  addToWatchlist: (token: Token) => void;
+  removeFromWatchlist: (tokenId: string) => void;
+  isInWatchlist: (tokenId: string) => boolean;
+  updateTokenPrices: (updatedTokens: Token[]) => void;
+  addPriceAlert: (tokenId: string, alert: Omit<PriceAlert, 'id' | 'createdAt'>) => string;
+  removePriceAlert: (tokenId: string, alertId: string) => void;
+  togglePriceAlert: (tokenId: string, alertId: string) => void;
+  checkPriceAlerts: (currentPrices: { [tokenId: string]: number }) => Array<{ tokenId: string; alert: PriceAlert; currentPrice: number }>;
+  getActiveAlertsCount: () => number;
+  getWatchlistValue: () => number;
+  getTopPerformer: () => WatchlistItem | null;
+  getWorstPerformer: () => WatchlistItem | null;
+}
+
+const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
+
+export function WatchlistProvider({ children }: { children: ReactNode }) {
   const { currentWallet } = useCurrentWallet();
   const account = currentWallet?.accounts?.[0];
   const accountAddress = account?.address;
@@ -24,9 +45,10 @@ export function useWatchlist() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get localStorage key
+  // Get localStorage key - FIXED: Now properly uses account address
   const getStorageKey = () => {
-    return 'suihub_watchlist';
+    // Use a global watchlist if no account is connected, or account-specific if connected
+    return accountAddress ? `suihub_watchlist_${accountAddress}` : 'suihub_watchlist';
   };
 
   // Load watchlist from localStorage on mount
@@ -36,15 +58,14 @@ export function useWatchlist() {
       let saved = localStorage.getItem(key);
 
       // If no account-specific data exists, try to migrate from the old generic key
-      if (!saved) {
+      if (!saved && accountAddress) {
         const oldKey = 'suihub_watchlist';
         const oldData = localStorage.getItem(oldKey);
         if (oldData) {
           console.log('Migrating watchlist data from old key to account-specific key');
           saved = oldData;
-          // Save to new key and remove old key
+          // Save to new key (but don't remove old key yet in case user switches accounts)
           localStorage.setItem(key, oldData);
-          localStorage.removeItem(oldKey);
         }
       }
 
@@ -58,7 +79,7 @@ export function useWatchlist() {
           setWatchlist([]);
         }
       } else {
-        console.log('No watchlist found in localStorage for account:', accountAddress);
+        console.log('No watchlist found in localStorage for key:', key);
         setWatchlist([]);
       }
     }
@@ -69,19 +90,31 @@ export function useWatchlist() {
     if (typeof window !== 'undefined') {
       const key = getStorageKey();
       localStorage.setItem(key, JSON.stringify(watchlist));
-      console.log('Saved watchlist to localStorage:', watchlist);
+      console.log('Saved watchlist to localStorage:', { key, count: watchlist.length, account: accountAddress });
     }
-  }, [watchlist]);
+  }, [watchlist, accountAddress]);
 
   const addToWatchlist = (token: Token) => {
-    console.log('Adding token to watchlist:', token);
-    console.log('Current account address:', accountAddress);
+    console.log('=== addToWatchlist called ===');
+    console.log('Token to add:', token);
+    console.log('Token ID:', token.id);
+    console.log('Current watchlist before add:', watchlist.length, 'items:', watchlist.map(w => w.id));
+
+    if (!token.id) {
+      console.error('Token has no ID:', token);
+      return;
+    }
 
     setWatchlist(prev => {
+      console.log('setWatchlist callback - prev state:', prev.length, 'items:', prev.map(w => w.id));
+
       // Check if token is already in watchlist
-      if (prev.some(item => item.id === token.id)) {
-        console.log('Token already in watchlist:', token.id);
-        return prev; // Already exists
+      const exists = prev.some(item => item.id === token.id);
+      console.log('Token exists in watchlist:', exists);
+
+      if (exists) {
+        console.log('Token already in watchlist, not adding');
+        return prev;
       }
 
       const newItem: WatchlistItem = {
@@ -90,19 +123,31 @@ export function useWatchlist() {
         alerts: []
       };
 
-      console.log('New watchlist item:', newItem);
+      console.log('Created new watchlist item:', newItem);
       const updated = [...prev, newItem];
-      console.log('Updated watchlist:', updated);
+      console.log('Final updated watchlist:', updated.length, 'items:', updated.map(w => w.id));
+
+      return updated;
+    });
+
+    console.log('addToWatchlist function completed');
+  };
+
+  const removeFromWatchlist = (tokenId: string) => {
+    console.log('Removing token from watchlist:', tokenId);
+    console.log('Current watchlist before remove:', watchlist);
+
+    setWatchlist(prev => {
+      const updated = prev.filter(item => item.id !== tokenId);
+      console.log('Updated watchlist after remove:', updated);
       return updated;
     });
   };
 
-  const removeFromWatchlist = (tokenId: string) => {
-    setWatchlist(prev => prev.filter(item => item.id !== tokenId));
-  };
-
   const isInWatchlist = (tokenId: string): boolean => {
-    return watchlist.some(item => item.id === tokenId);
+    const inList = watchlist.some(item => item.id === tokenId);
+    console.log(`Checking if ${tokenId} is in watchlist:`, inList, 'Current watchlist IDs:', watchlist.map(w => w.id));
+    return inList;
   };
 
   const updateTokenPrices = (updatedTokens: Token[]) => {
@@ -214,7 +259,7 @@ export function useWatchlist() {
   };
 
   const getWatchlistValue = (): number => {
-    return watchlist.reduce((total, item) => total + item.price, 0);
+    return watchlist.length; // Return count of tokens instead of sum of prices
   };
 
   const getTopPerformer = () => {
@@ -231,7 +276,7 @@ export function useWatchlist() {
     );
   };
 
-  return {
+  const value: WatchlistContextType = {
     watchlist,
     isLoading,
     addToWatchlist,
@@ -247,4 +292,18 @@ export function useWatchlist() {
     getTopPerformer,
     getWorstPerformer,
   };
+
+  return (
+    <WatchlistContext.Provider value={value}>
+      {children}
+    </WatchlistContext.Provider>
+  );
+}
+
+export function useWatchlist() {
+  const context = useContext(WatchlistContext);
+  if (context === undefined) {
+    throw new Error('useWatchlist must be used within a WatchlistProvider');
+  }
+  return context;
 }
