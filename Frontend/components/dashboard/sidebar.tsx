@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     { href: '/dashboard/news', icon: Newspaper, label: 'Articles' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
-    { href: '/dashboard/events', icon: Calendar, label: 'Events' },
+    { href: '/dashboard/events', icon: Users, label: 'Community' },
     { href: '/dashboard/learn', icon: BookOpen, label: 'Learn' },
   ];
 
