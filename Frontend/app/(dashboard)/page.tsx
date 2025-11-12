@@ -32,7 +32,7 @@ const Home = () => {
           <div className="flex justify-between items-center">
             <span className="inline-block bg-purple-900/80 text-white text-xs font-semibold px-3 py-1 rounded-full">Web3 Ecosystem</span>
           </div>
-          <h1 className="text-4xl font-bold text-white mt-4">Sui Swap Dashboard</h1>
+          <h1 className="text-4xl font-bold text-white mt-4">Sui X Times Dashboard</h1>
           <p className="text-purple-200 mt-2">Welcome to the future of decentralized finance.</p>
           <div className="mt-6 space-x-4">
             <Button className="bg-white text-purple-600 hover:bg-gray-200">Connect Wallet</Button>
