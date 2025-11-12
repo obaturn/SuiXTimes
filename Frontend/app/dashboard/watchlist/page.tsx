@@ -32,6 +32,7 @@ const Watchlist = () => {
       setLastUpdated(new Date());
       toast.success('Prices updated');
     } catch (error) {
+      console.error('Failed to refresh prices:', error);
       toast.error('Failed to refresh prices');
     } finally {
       setIsRefreshing(false);
@@ -72,7 +73,7 @@ const Watchlist = () => {
       console.log('Refreshing prices for watchlist');
       refreshPrices();
     }
-  }, [watchlist.length]);
+  }, [watchlist]);
 
   const summary = [
     {
@@ -117,6 +118,7 @@ const Watchlist = () => {
 
   return (
     <div className="space-y-8">
+      {console.log('Watchlist page render - watchlist length:', watchlist.length, 'items:', watchlist)}
       <h1 className="text-3xl font-bold text-white">My Watchlist</h1>
 
       {/* Streak Card Section */}

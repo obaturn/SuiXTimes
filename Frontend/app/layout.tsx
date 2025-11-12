@@ -4,6 +4,7 @@ import { Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ColorThemeProvider } from "@/components/color-theme-provider"
 import { WalletProviders } from "@/components/wallet-providers"
+import { WatchlistProvider } from "@/hooks/use-watchlist"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -29,7 +30,9 @@ export default function RootLayout({
         >
           <ColorThemeProvider>
             <WalletProviders>
-              {children}
+              <WatchlistProvider>
+                {children}
+              </WatchlistProvider>
             </WalletProviders>
           </ColorThemeProvider>
         </ThemeProvider>
