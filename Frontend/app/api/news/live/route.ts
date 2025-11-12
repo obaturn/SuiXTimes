@@ -38,7 +38,7 @@ let elizaNewsStore: LiveNewsItem[] = [
   }
 ];
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Return current ElizaOS news
     return NextResponse.json(elizaNewsStore);
