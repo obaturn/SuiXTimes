@@ -115,10 +115,10 @@ const Markets = () => {
     getTokens();
     getChartData();
 
-    // Set up auto-refresh: tokens every 2 minutes, SUI data every 30 seconds
+    // Set up auto-refresh: tokens every 30 seconds, SUI data every 15 seconds
     const tokenInterval = setInterval(() => {
       getTokens();
-    }, 2 * 60 * 1000); // 2 minutes for tokens
+    }, 30 * 1000); // 30 seconds for tokens (reduced from 2 minutes)
 
     const suiInterval = setInterval(async () => {
       // Quick SUI data update using server action
@@ -129,9 +129,9 @@ const Markets = () => {
           setLastUpdated(new Date());
         }
       } catch (error) {
-        console.warn("Failed to update SUI data:", error);
+        // Silent error handling for background updates
       }
-    }, 30 * 1000); // 30 seconds for SUI data
+    }, 15 * 1000); // 15 seconds for SUI data (reduced from 30 seconds)
 
     return () => {
       clearInterval(tokenInterval);

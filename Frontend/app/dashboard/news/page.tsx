@@ -22,6 +22,7 @@ import {
 import Link from 'next/link';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { useArticles } from '@/hooks/use-articles';
+import { useLiveNews } from '@/hooks/use-live-news';
 import { Article } from '../../../components/articles/ArticleCard';
 
 const NewsPage = () => {
@@ -29,6 +30,7 @@ const NewsPage = () => {
   const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
   const { articles, isLoading, error, refreshArticles } = useArticles();
+  const { news: liveNews, isLoading: liveNewsLoading, error: liveNewsError, refreshNews } = useLiveNews();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -132,6 +134,104 @@ const NewsPage = () => {
         </div>
       </motion.div>
 
+      {/* Live News Section */}
+      <motion.div
+        className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-slate-600"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <div className="flex items-center justify-between mb-4 lg:mb-6">
+          <div className="flex items-center gap-3">
+            <Zap className="w-5 h-5 lg:w-6 lg:h-6 text-yellow-400" />
+            <h2 className="text-xl lg:text-2xl font-bold text-white">Live News Feed</h2>
+            <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/30">
+              ElizaOS Agent
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshNews}
+            disabled={liveNewsLoading}
+            className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-700"
+          >
+            <RefreshCw className={`h-4 w-4 ${liveNewsLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
+
+        {liveNewsError && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+            <p className="text-red-400 text-sm">{liveNewsError}</p>
+          </div>
+        )}
+
+        {liveNewsLoading && liveNews.length === 0 ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-slate-700/50 rounded-lg p-4 animate-pulse">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-slate-600 rounded-full mt-2"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-slate-600 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-slate-600 rounded w-1/2"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : liveNews.length > 0 ? (
+          <div className="space-y-3">
+            {liveNews.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50 hover:bg-slate-700/50 transition-colors"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                    item.urgent ? 'bg-red-500 animate-pulse' : 'bg-cyan-400'
+                  }`}></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        item.category === 'breaking' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                        item.category === 'defi' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                        item.category === 'nft' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                        'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      }`}>
+                        {item.category.toUpperCase()}
+                      </span>
+                      {item.urgent && (
+                        <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full border border-red-500/30">
+                          URGENT
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-white font-medium text-sm lg:text-base leading-tight mb-1">
+                      {item.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <span>{item.source}</span>
+                      <span>•</span>
+                      <span>{item.time}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <Newspaper className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-slate-400 text-sm">No live news available at the moment.</p>
+            <p className="text-slate-500 text-xs mt-1">The ElizaOS agent will update this feed automatically.</p>
+          </div>
+        )}
+      </motion.div>
 
       {/* Error State */}
       {error && (

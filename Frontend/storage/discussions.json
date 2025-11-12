@@ -1,0 +1,23 @@
+[
+  {
+    "id": "discussion_1762981409746_nfz62fbrp",
+    "title": "Let Discuss About Sui",
+    "author": "User 528b",
+    "authorAddress": "0xa4bdabad459d93980ec8ca4cbf7d586ba1d1c81e929119e22f2a17d5fcc7528b",
+    "replies": 1,
+    "views": 0,
+    "category": "General",
+    "content": "Let Discuss About Sui",
+    "replies_list": [
+      {
+        "id": 1762982182083,
+        "author": "User 6789",
+        "authorAddress": "0x123456789",
+        "content": "Test reply from API",
+        "timestamp": "2025-11-12T21:16:22.083Z"
+      }
+    ],
+    "timestamp": "2025-11-12T21:03:29.746Z",
+    "lastActivity": "2025-11-12T21:16:22.083Z"
+  }
+]
