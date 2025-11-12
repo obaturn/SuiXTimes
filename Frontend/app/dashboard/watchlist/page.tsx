@@ -32,6 +32,7 @@ const Watchlist = () => {
       setLastUpdated(new Date());
       toast.success('Prices updated');
     } catch (error) {
+      console.error('Failed to refresh prices:', error);
       toast.error('Failed to refresh prices');
     } finally {
       setIsRefreshing(false);
@@ -72,7 +73,7 @@ const Watchlist = () => {
       console.log('Refreshing prices for watchlist');
       refreshPrices();
     }
-  }, [watchlist.length]);
+  }, [watchlist]);
 
   const summary = [
     {
