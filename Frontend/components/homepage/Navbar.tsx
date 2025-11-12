@@ -1,15 +1,16 @@
 
 "use client"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { useTheme } from 'next-themes'
 
-import { useColorTheme } from "@/components/color-theme-provider"
-import { Palette } from "lucide-react"
+import { Sun, Moon } from "lucide-react"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { theme, setTheme } = useColorTheme()
+  const [mounted, setMounted] = useState(false)
+  const { theme: darkTheme, setTheme: setDarkTheme } = useTheme()
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
@@ -22,25 +23,16 @@ const Navbar = () => {
     }
   }
 
-  const cycleColorTheme = () => {
-    const themes = ["default", "green", "blue", "pink", "purple", "orange", "red", "light"]
-    const currentIndex = themes.indexOf(theme)
-    const nextIndex = (currentIndex + 1) % themes.length
-    setTheme(themes[nextIndex] as any)
-  }
-
-  const isLightMode = theme === "light"
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b ${
-        isLightMode
-          ? "bg-white/95 border-gray-200"
-          : "bg-slate-900/95 border-slate-700/50"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b bg-background/95 border-border"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -51,7 +43,7 @@ const Navbar = () => {
                 <span className="text-white font-bold text-sm">S</span>
               </div>
               <span className="text-xl font-bold text-blue-600">
-                SuiTimes
+                Sui X Times
               </span>
             </a>
           </div>
@@ -60,19 +52,19 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <a
               href="/"
-              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
+              className="text-foreground hover:text-primary transition-colors duration-300"
             >
               Home
             </a>
             <a
               href="/features"
-              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
+              className="text-foreground hover:text-primary transition-colors duration-300"
             >
               Features
             </a>
             <a
               href="/ecosystem"
-              className={`${isLightMode ? "text-gray-700 hover:text-cyan-600" : "text-gray-200 hover:text-cyan-400"} transition-colors duration-300`}
+              className="text-foreground hover:text-primary transition-colors duration-300"
             >
               Ecosystem
             </a>
@@ -81,15 +73,16 @@ const Navbar = () => {
           {/* Theme Toggle & CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <button
-              onClick={cycleColorTheme}
-              className={`p-2 rounded-full transition-colors ${
-                isLightMode
-                  ? "text-gray-700 hover:bg-gray-100"
-                  : "text-gray-300 hover:bg-gray-800"
-              }`}
-              aria-label="Change theme"
+              onClick={() => setDarkTheme(darkTheme === 'light' ? 'dark' : 'light')}
+              className="relative p-2 rounded-full transition-colors text-foreground hover:bg-accent"
+              aria-label="Toggle dark mode"
             >
-              <Palette size={20} />
+              {mounted && (
+                <>
+                  <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute inset-0 h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                </>
+              )}
             </button>
             <Button
               onClick={scrollToAuth}
@@ -101,7 +94,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <button onClick={toggleMenu} className={isLightMode ? "text-gray-900" : "text-white"} aria-label="Toggle menu">
+            <button onClick={toggleMenu} className="text-foreground" aria-label="Toggle menu">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -147,15 +140,16 @@ const Navbar = () => {
           </a>
           <div className="pt-4 pb-2 space-y-3">
             <button
-              onClick={cycleColorTheme}
-              className={`w-full flex items-center justify-center space-x-2 p-2 rounded-lg transition-colors ${
-                isLightMode
-                  ? "text-gray-700 hover:bg-gray-100"
-                  : "text-gray-300 hover:bg-gray-700"
-              }`}
+              onClick={() => setDarkTheme(darkTheme === 'light' ? 'dark' : 'light')}
+              className="relative w-full flex items-center justify-center space-x-2 p-2 rounded-lg transition-colors text-foreground hover:bg-accent"
             >
-              <Palette size={18} />
-              <span>Change Theme</span>
+              {mounted && (
+                <>
+                  <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute inset-0 h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                </>
+              )}
+              <span>Toggle Dark Mode</span>
             </button>
             <Button
               onClick={scrollToAuth}

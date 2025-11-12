@@ -9,9 +9,9 @@ import { toast } from "sonner"
 
 const WalletIcon = ({ src, alt, name }: { src?: string; alt: string; name: string }) => {
   return (
-    <button className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+    <span className="w-6 h-6 bg-white/20 rounded inline-flex items-center justify-center">
       <span className="text-xs font-bold text-white">W</span>
-    </button>
+    </span>
   );
 };
 
@@ -88,7 +88,12 @@ export function AuthCard({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-slate-800/60 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-800 backdrop-blur-md">
+      <div className="bg-slate-800/40 dark:bg-slate-900/50 rounded-2xl p-8 shadow-2xl shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-300 border border-white/20 dark:border-white/10 backdrop-blur-xl relative overflow-hidden">
+        {/* Glowing effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-2xl opacity-60 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 via-blue-500/10 to-purple-500/10 rounded-2xl blur-lg"></div>
+        {/* Content */}
+        <div className="relative z-10">
         <div className="flex justify-center mb-8 sm:mb-10 lg:mb-12">
           <div className="bouncing-logo">
             <img
@@ -217,6 +222,7 @@ export function AuthCard({
               </p>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

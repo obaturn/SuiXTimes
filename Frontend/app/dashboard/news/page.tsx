@@ -77,8 +77,8 @@ const NewsPage = () => {
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Sui Times Article</h1>
-              <p className="text-slate-300">Stay updated with the latest from the Sui ecosystem Article</p>
+              <h1 className="text-4xl font-bold text-white mb-2">Sui X Times Articles</h1>
+              <p className="text-slate-300">Stay updated with the latest from the Sui ecosystem articles</p>
             </div>
             <div className="flex gap-3">
               <Button
