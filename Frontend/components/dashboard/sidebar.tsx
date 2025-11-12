@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, Sun, Moon, LogOut, BookOpen } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from 'next-themes';
+import { useWatchlist } from '@/hooks/use-watchlist';
 
 import { useDisconnectWallet } from '@mysten/dapp-kit';
 
@@ -14,7 +15,7 @@ const SidebarLogo = () => (
     <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
       <span className="text-white font-bold text-sm">S</span>
     </div>
-    <span className="text-xl font-bold text-foreground">Sui Times</span>
+    <span className="text-xl font-bold text-foreground">Sui X Times</span>
   </div>
 );
 
@@ -29,6 +30,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const { mutate: disconnect } = useDisconnectWallet();
+  const { watchlist } = useWatchlist();
 
   const handleDisconnect = () => {
     disconnect();
@@ -36,13 +38,13 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   };
 
   const navItems = [
-    { href: '/dashboard', icon: Home, label: 'Home' },
+    { href: '/dashboard', icon: Home, label: 'Dashboard' },
+    { href: '/dashboard/sui-news', icon: Newspaper, label: 'News Feed' },
+    { href: '/dashboard/news', icon: Newspaper, label: 'Articles' },
     { href: '/dashboard/markets', icon: BarChart3, label: 'Markets' },
-    { href: '/dashboard/learn', icon: BookOpen, label: 'Learn' },
-    { href: '/dashboard/sui-news', icon: Newspaper, label: 'X Feed' },
-    { href: '/dashboard/news', icon: Newspaper, label: 'Article' },
     { href: '/dashboard/watchlist', icon: Star, label: 'Watchlist' },
     { href: '/dashboard/events', icon: Calendar, label: 'Events' },
+    { href: '/dashboard/learn', icon: BookOpen, label: 'Learn' },
   ];
 
   return (
@@ -52,7 +54,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       <div className="flex items-center justify-between h-20 border-b border-border px-4">
         {isMobile ? (
           <Link href="/" className="text-2xl font-bold text-white">
-            <span className="text-purple-400">Ξ</span> Sui Swap
+            Sui X Times
           </Link>
         ) : (
           <SidebarLogo />
@@ -70,6 +72,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <ul>
           {navItems.map((item) => {
             const Icon = item.icon;
+            const isWatchlist = item.label === 'Watchlist';
+            const watchlistCount = isWatchlist ? watchlist.length : 0;
             return (
               <li key={item.label}>
                 <Link
@@ -80,6 +84,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
                   <Icon className="h-5 w-5" />
                   <span className="ml-4 font-medium">{item.label}</span>
+                  {isWatchlist && watchlistCount > 0 && (
+                    <span className="ml-auto bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {watchlistCount}
+                    </span>
+                  )}
                 </Link>
               </li>
             );

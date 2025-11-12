@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Bell, Trash2, Star, ArrowUpRight, RefreshCw, TrendingUp, TrendingDown } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useWatchlist } from '@/hooks/use-watchlist';
-import { fetchTopPerformingTokens, Token } from '@/app/actions/tokens';
+import { fetchTopPerformingTokens, fetchSuiToken, Token } from '@/app/actions/tokens';
 import { toast } from 'sonner';
 import StreakCard from '@/components/streak/StreakCard';
 
@@ -38,10 +38,30 @@ const Watchlist = () => {
     }
   };
 
-  // Auto-refresh prices every 2 minutes
+  // Auto-refresh prices every 30 seconds for better real-time updates
   useEffect(() => {
-    const interval = setInterval(refreshPrices, 2 * 60 * 1000);
+    const interval = setInterval(refreshPrices, 30 * 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Separate SUI price updates every 30 seconds for real-time SUI data
+  useEffect(() => {
+    const updateSuiPrice = async () => {
+      try {
+        const suiToken = await fetchSuiToken();
+        if (suiToken) {
+          updateTokenPrices([suiToken]);
+          setLastUpdated(new Date());
+        }
+      } catch (error) {
+        console.warn("Failed to update SUI price in watchlist:", error);
+      }
+    };
+
+    const suiInterval = setInterval(updateSuiPrice, 30 * 1000);
+    // Initial SUI update
+    updateSuiPrice();
+    return () => clearInterval(suiInterval);
   }, []);
 
   // Initial price load

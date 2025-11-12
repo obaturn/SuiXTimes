@@ -1,11 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { fetchTopPerformingTokens, fetchSuiChartData, Token } from '@/app/actions/tokens';
+import { fetchTopPerformingTokens, fetchSuiChartData, fetchSuiToken, Token } from '@/app/actions/tokens';
 import { useWatchlist } from '@/hooks/use-watchlist';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, Star, Search, TrendingUp, TrendingDown, Plus, Check } from 'lucide-react';
+import { ArrowUpRight, Star, Search, TrendingUp, TrendingDown, Plus, Check, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+
+// Dynamically import chart components to avoid SSR issues
+const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-full">
+    <div className="animate-pulse text-slate-400">Loading chart...</div>
+  </div>
+});
+
+// Import and register Chart.js components
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,7 +28,6 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -32,13 +42,52 @@ ChartJS.register(
 
 const Markets = () => {
   const [tokens, setTokens] = useState<Token[]>([]);
+  const [filteredTokens, setFilteredTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(true);
   const [suiData, setSuiData] = useState<any>(null);
   const [chartData, setChartData] = useState<any>(null);
   const [chartLoading, setChartLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'market_cap' | 'price' | 'change'>('market_cap');
 
-  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist, watchlist: currentWatchlist } = useWatchlist();
+
+  // Filter and sort tokens
+  useEffect(() => {
+    let filtered = tokens.filter(token =>
+      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Sort tokens
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price':
+          return b.price - a.price;
+        case 'change':
+          return b.change24h - a.change24h;
+        case 'market_cap':
+        default:
+          // Simple market cap sorting based on formatted string
+          const getMarketCapValue = (formatted: string) => {
+            const match = formatted.match(/\$([0-9.]+)([BKM])/);
+            if (!match) return 0;
+            const value = parseFloat(match[1]);
+            const unit = match[2];
+            switch (unit) {
+              case 'B': return value * 1_000_000_000;
+              case 'M': return value * 1_000_000;
+              case 'K': return value * 1_000;
+              default: return value;
+            }
+          };
+          return getMarketCapValue(b.marketCapFormatted) - getMarketCapValue(a.marketCapFormatted);
+      }
+    });
+
+    setFilteredTokens(filtered);
+  }, [tokens, searchQuery, sortBy, currentWatchlist]); // Add currentWatchlist dependency
 
   useEffect(() => {
     const getTokens = async () => {
@@ -66,13 +115,28 @@ const Markets = () => {
     getTokens();
     getChartData();
 
-    // Set up auto-refresh every 5 minutes
-    const interval = setInterval(() => {
+    // Set up auto-refresh: tokens every 2 minutes, SUI data every 30 seconds
+    const tokenInterval = setInterval(() => {
       getTokens();
-      getChartData();
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 2 * 60 * 1000); // 2 minutes for tokens
 
-    return () => clearInterval(interval);
+    const suiInterval = setInterval(async () => {
+      // Quick SUI data update using server action
+      try {
+        const suiToken = await fetchSuiToken();
+        if (suiToken) {
+          setSuiData(suiToken);
+          setLastUpdated(new Date());
+        }
+      } catch (error) {
+        console.warn("Failed to update SUI data:", error);
+      }
+    }, 30 * 1000); // 30 seconds for SUI data
+
+    return () => {
+      clearInterval(tokenInterval);
+      clearInterval(suiInterval);
+    };
   }, []);
 
   return (
@@ -211,15 +275,48 @@ const Markets = () => {
 
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Sui Ecosystem Tokens</h2>
+          <h2 className="text-2xl font-bold text-white">Sui Ecosystem Tokens ({filteredTokens.length})</h2>
           <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={async () => {
+                setLoading(true);
+                const fetchedTokens = await fetchTopPerformingTokens();
+                setTokens(fetchedTokens);
+                const suiToken = fetchedTokens.find(token => token.symbol === 'SUI');
+                if (suiToken) {
+                  setSuiData(suiToken);
+                }
+                setLoading(false);
+                setLastUpdated(new Date());
+                toast.success('Data refreshed');
+              }}
+              disabled={loading}
+              className="border-purple-400 text-purple-300 hover:bg-purple-500/30"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input type="text" placeholder="Search tokens..." className="bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              <input
+                type="text"
+                placeholder="Search tokens..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
             </div>
-            <Button variant="outline" className="border-purple-400 text-purple-300 hover:bg-purple-500/30">All</Button>
-            <Button variant="outline" className="border-purple-400 text-purple-300 hover:bg-purple-500/30">Gainers</Button>
-            <Button variant="outline" className="border-purple-400 text-purple-300 hover:bg-purple-500/30">Volume</Button>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              title="Sort tokens by"
+              className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="market_cap">Market Cap</option>
+              <option value="price">Price</option>
+              <option value="change">24h Change</option>
+            </select>
           </div>
         </div>
         {loading ? (
@@ -249,7 +346,7 @@ const Markets = () => {
             </div>
 
             {/* Token Rows */}
-            {tokens.map((token) => {
+            {filteredTokens.map((token) => {
               const inWatchlist = isInWatchlist(token.id);
               return (
                 <div key={token.id} className="grid grid-cols-12 gap-4 px-4 py-4 bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg hover:bg-slate-800/80 transition-colors">
@@ -289,7 +386,12 @@ const Markets = () => {
                         } else {
                           console.log('Adding to watchlist');
                           addToWatchlist(token);
-                          toast.success(`Added ${token.symbol} to watchlist`);
+                          toast.success(`Added ${token.symbol} to watchlist`, {
+                            action: {
+                              label: 'View Watchlist',
+                              onClick: () => window.location.href = '/dashboard/watchlist'
+                            }
+                          });
                         }
                       }}
                       className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}

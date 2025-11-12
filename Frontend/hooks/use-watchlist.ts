@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCurrentWallet } from '@mysten/dapp-kit';
-import { Token } from '@/app/actions/tokens';
+import { Token, fetchSingleToken } from '@/app/actions/tokens';
 
 export interface WatchlistItem extends Token {
   addedAt: number;
@@ -24,15 +24,15 @@ export function useWatchlist() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get account-specific localStorage key
-  const getStorageKey = (address?: string) => {
-    return address ? `suihub_watchlist_${address}` : 'suihub_watchlist';
+  // Get localStorage key
+  const getStorageKey = () => {
+    return 'suihub_watchlist';
   };
 
-  // Load watchlist from localStorage on mount and when account changes
+  // Load watchlist from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && accountAddress) {
-      const key = getStorageKey(accountAddress);
+    if (typeof window !== 'undefined') {
+      const key = getStorageKey();
       let saved = localStorage.getItem(key);
 
       // If no account-specific data exists, try to migrate from the old generic key
@@ -66,16 +66,17 @@ export function useWatchlist() {
 
   // Save watchlist to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined' && accountAddress) {
-      const key = getStorageKey(accountAddress);
+    if (typeof window !== 'undefined') {
+      const key = getStorageKey();
       localStorage.setItem(key, JSON.stringify(watchlist));
-      console.log('Saved watchlist to localStorage for account:', accountAddress, watchlist);
+      console.log('Saved watchlist to localStorage:', watchlist);
     }
-  }, [watchlist, accountAddress]);
+  }, [watchlist]);
 
   const addToWatchlist = (token: Token) => {
     console.log('Adding token to watchlist:', token);
     console.log('Current account address:', accountAddress);
+
     setWatchlist(prev => {
       // Check if token is already in watchlist
       if (prev.some(item => item.id === token.id)) {
