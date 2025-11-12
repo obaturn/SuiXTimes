@@ -117,16 +117,15 @@ const Watchlist = () => {
   );
 
   return (
-    <div className="space-y-8">
-      {console.log('Watchlist page render - watchlist length:', watchlist.length, 'items:', watchlist)}
-      <h1 className="text-3xl font-bold text-white">My Watchlist</h1>
+    <div className="space-y-6 lg:space-y-8">
+      <h1 className="text-2xl lg:text-3xl font-bold text-white">My Watchlist</h1>
 
       {/* Streak Card Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <StreakCard />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {summary.map(item => (
           <div key={item.label} className="rounded-lg bg-slate-800/60 p-6 backdrop-blur-md border border-slate-700/50">
             <p className="text-slate-400">{item.label}</p>
@@ -144,23 +143,23 @@ const Watchlist = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">Tokens</h2>
-            <div className="flex items-center space-x-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <div className="space-y-4 lg:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h2 className="text-xl lg:text-2xl font-bold text-white">Tokens</h2>
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 onClick={refreshPrices}
                 disabled={isRefreshing}
-                className="border-purple-400 text-purple-300 hover:bg-purple-500/30"
+                className="border-purple-400 text-purple-300 hover:bg-purple-500/30 text-sm"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
               <Button
                 onClick={() => window.location.href = '/dashboard/markets'}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 text-sm"
               >
                 <Plus className="w-4 h-4 mr-2" /> Add Token
               </Button>
@@ -182,35 +181,35 @@ const Watchlist = () => {
               </div>
             ) : (
               watchlist.map(token => (
-                <div key={token.id} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 flex justify-between items-center">
-                  <div className="flex items-center space-x-4">
-                    <img src={token.image} alt={token.symbol} className="w-10 h-10 rounded-full" />
+                <div key={token.id} className="rounded-lg bg-slate-800/60 p-3 lg:p-4 backdrop-blur-md border border-slate-700/50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <div className="flex items-center space-x-3 lg:space-x-4">
+                    <img src={token.image} alt={token.symbol} className="w-8 h-8 lg:w-10 lg:h-10 rounded-full" />
                     <div>
-                      <p className="font-bold text-white">{token.name}</p>
-                      <p className="text-sm text-slate-400">{token.symbol}</p>
+                      <p className="font-bold text-white text-sm lg:text-base">{token.name}</p>
+                      <p className="text-xs lg:text-sm text-slate-400">{token.symbol}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-white">${token.price.toFixed(4)}</p>
-                    <div className={`flex items-center justify-end space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {token.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                  <div className="text-left sm:text-right">
+                    <p className="font-bold text-white text-sm lg:text-base">${token.price.toFixed(4)}</p>
+                    <div className={`flex items-center justify-start sm:justify-end space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {token.change24h >= 0 ? <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" /> : <TrendingDown className="w-3 h-3 lg:w-4 lg:h-4" />}
                       <span>{token.change24h >= 0 ? '+' : ''}{token.change24h.toFixed(2)}%</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-purple-400">
-                      <Bell className="w-5 h-5" />
+                  <div className="flex items-center justify-center sm:justify-end space-x-2">
+                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-purple-400 p-2">
+                      <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
                     </Button>
                     <Button
                       variant="ghost"
-                      size="icon"
+                      size="sm"
                       onClick={() => {
                         removeFromWatchlist(token.id);
                         toast.success(`Removed ${token.symbol} from watchlist`);
                       }}
-                      className="text-slate-400 hover:text-red-400"
+                      className="text-slate-400 hover:text-red-400 p-2"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4 lg:w-5 lg:h-5" />
                     </Button>
                   </div>
                 </div>
@@ -219,8 +218,8 @@ const Watchlist = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">Alerts</h2>
+        <div className="space-y-4 lg:space-y-6">
+          <h2 className="text-xl lg:text-2xl font-bold text-white">Alerts</h2>
           <div className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 space-y-4">
             {alerts.length === 0 ? (
               <div className="text-center py-8">

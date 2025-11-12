@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Users, TrendingUp, RefreshCw, X, Calendar, MapPin, Users as UsersIcon, FileText } from 'lucide-react';
+import { Plus, MessageSquare, Users, TrendingUp, RefreshCw, X, Calendar, MapPin, Users as UsersIcon, FileText, ExternalLink } from 'lucide-react';
 
 interface FeaturedEvent {
   title: string;
@@ -15,10 +15,30 @@ interface FeaturedEvent {
   url?: string;
 }
 
+interface Discussion {
+  id: number;
+  title: string;
+  author: string;
+  replies: number;
+  views: number;
+  category: string;
+  content: string;
+  replies_list: Reply[];
+  expanded: boolean;
+  timestamp: Date;
+}
+
+interface Reply {
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
+}
+
 const Events = () => {
+  // Removed blog events integration - keeping it simple with Luma link
 
-
-  const [discussions, setDiscussions] = useState([
+  const defaultDiscussions: Discussion[] = [
     {
       id: 1,
       title: 'What are your favorite dApps on Sui?',
@@ -31,7 +51,8 @@ const Events = () => {
         { id: 1, author: 'Alice', content: 'Definitely Turbos Finance for DEX trading!', timestamp: '2h ago' },
         { id: 2, author: 'Bob', content: 'Check out SuiFrens for NFT marketplace', timestamp: '1h ago' }
       ],
-      expanded: false
+      expanded: false,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     },
     {
       id: 2,
@@ -44,14 +65,41 @@ const Events = () => {
       replies_list: [
         { id: 3, author: 'DevExpert', content: 'Start with the Sui documentation and Move book', timestamp: '3h ago' }
       ],
-      expanded: false
+      expanded: false,
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
     },
-  ]);
+  ];
+
+  const [discussions, setDiscussions] = useState<Discussion[]>(defaultDiscussions);
 
   const [newDiscussion, setNewDiscussion] = useState('');
   const [showDiscussionForm, setShowDiscussionForm] = useState(false);
   const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
   const [newReply, setNewReply] = useState('');
+
+  // Load discussions from localStorage on mount
+  useEffect(() => {
+    const savedDiscussions = localStorage.getItem('sui-discussions');
+    if (savedDiscussions) {
+      try {
+        const parsed = JSON.parse(savedDiscussions);
+        // Convert timestamp strings back to Date objects
+        const discussionsWithDates = parsed.map((d: any) => ({
+          ...d,
+          timestamp: new Date(d.timestamp)
+        }));
+        setDiscussions(discussionsWithDates);
+      } catch (error) {
+        console.error('Error loading discussions:', error);
+        setDiscussions(defaultDiscussions);
+      }
+    }
+  }, []);
+
+  // Save discussions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('sui-discussions', JSON.stringify(discussions));
+  }, [discussions]);
 
   const [groups, setGroups] = useState([
     {
@@ -86,41 +134,60 @@ const Events = () => {
     }
   };
 
-  const trending = [
+  // Calculate trending topics from discussions
+  const getTrendingTopics = () => {
+    const wordCount: { [key: string]: number } = {};
+
+    discussions.forEach(discussion => {
+      const words = discussion.title.toLowerCase().split(' ');
+      words.forEach(word => {
+        if (word.length > 3 && !['what', 'how', 'why', 'when', 'where', 'sui', 'the', 'and', 'for', 'are', 'you', 'your', 'with', 'this', 'that'].includes(word)) {
+          wordCount[word] = (wordCount[word] || 0) + 1;
+        }
+      });
+    });
+
+    return Object.entries(wordCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([topic]) => topic.charAt(0).toUpperCase() + topic.slice(1));
+  };
+
+  const trending = getTrendingTopics().length > 0 ? getTrendingTopics() : [
     'Sui 8192 game going viral',
     'New DeFi protocol launching next week',
     'Move vs. Rust: which is better for smart contracts?',
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Events & Community</h1>
+    <div className="space-y-6 lg:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl lg:text-3xl font-bold text-white">Events & Community</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="flex gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* Calendar Section */}
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white mb-4">Sui Events Calendar</h2>
-              <div className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 h-96">
+              <h2 className="text-xl lg:text-2xl font-bold text-white mb-4">Sui Events Calendar</h2>
+              <div className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 h-80 lg:h-96">
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-6 h-6 lg:w-8 lg:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Sui Events Calendar</h3>
-                    <p className="text-slate-400 mb-4">Discover upcoming Sui ecosystem events</p>
+                    <h3 className="text-lg lg:text-xl font-bold text-white mb-2">Sui Events Calendar</h3>
+                    <p className="text-slate-400 text-sm mb-4">Discover upcoming Sui ecosystem events</p>
                     <a
                       href="https://lu.ma/sui"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-medium transition-colors text-sm lg:text-base"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
                       View Events on Luma
@@ -134,10 +201,10 @@ const Events = () => {
             </div>
 
             {/* Community Join Card */}
-            <div className="w-80">
-              <h2 className="text-2xl font-bold text-white mb-4">Join Community</h2>
+            <div className="w-full lg:w-80">
+              <h2 className="text-xl lg:text-2xl font-bold text-white mb-4">Join Community</h2>
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/20 rounded-lg p-4">
+                <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/20 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -153,13 +220,13 @@ const Events = () => {
                   </div>
                   <Button
                     onClick={() => window.open('https://discord.gg/sui', '_blank')}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-sm lg:text-base"
                   >
                     Join Discord
                   </Button>
                 </div>
 
-                <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/20 rounded-lg p-4">
+                <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/20 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
@@ -174,14 +241,14 @@ const Events = () => {
                     </div>
                   </div>
                   <Button
-                    onClick={() => window.open('https://chat.whatsapp.com/sui-community', '_blank')}
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={() => window.open('https://chat.whatsapp.com/BSq8BV4onTQ1YrbiW1fzxp?mode=r_t', '_blank')}
+                    className="w-full bg-green-600 hover:bg-green-700 text-sm lg:text-base"
                   >
                     Join WhatsApp
                   </Button>
                 </div>
 
-                <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/20 rounded-lg p-4">
+                <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/20 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
@@ -196,8 +263,8 @@ const Events = () => {
                     </div>
                   </div>
                   <Button
-                    onClick={() => window.open('https://t.me/sui_official', '_blank')}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    onClick={() => window.open('https://t.me/+s3N-Ntd0GZ5mMjI0', '_blank')}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-sm lg:text-base"
                   >
                     Join Telegram
                   </Button>
@@ -231,7 +298,7 @@ const Events = () => {
                 <Button
                   onClick={() => {
                     if (newDiscussion.trim()) {
-                      const newDisc = {
+                      const newDisc: Discussion = {
                         id: Date.now(),
                         title: newDiscussion,
                         author: 'You', // In real app, get from wallet
@@ -240,7 +307,8 @@ const Events = () => {
                         category: 'General',
                         content: newDiscussion,
                         replies_list: [],
-                        expanded: false
+                        expanded: false,
+                        timestamp: new Date()
                       };
                       setDiscussions(prev => [newDisc, ...prev]);
                       setNewDiscussion('');
@@ -254,14 +322,24 @@ const Events = () => {
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-4 lg:space-y-6">
               {discussions.map(discussion => (
-                <div key={discussion.id} className="rounded-lg bg-slate-800/60 backdrop-blur-md border border-slate-700/50 hover:border-slate-600/50 transition-colors">
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <p className="font-bold text-white text-lg mb-2">{discussion.title}</p>
-                        <p className="text-sm text-slate-400 mb-3">by {discussion.author} in <span className="font-semibold text-purple-400">#{discussion.category}</span></p>
+                <div key={discussion.id} className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-xl lg:rounded-2xl overflow-hidden">
+                  {/* Discussion Header */}
+                  <div className="p-3 lg:p-4 border-b border-slate-700/50">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg lg:text-xl font-bold text-white mb-2 break-words">{discussion.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 lg:gap-3 text-sm text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <div className="w-5 h-5 lg:w-6 lg:h-6 bg-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                              {discussion.author.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="truncate">{discussion.author}</span>
+                          </span>
+                          <span className="hidden sm:inline">in #{discussion.category}</span>
+                          <span className="text-xs lg:text-sm">{new Date(discussion.timestamp).toLocaleDateString()}</span>
+                        </div>
                       </div>
                       <Button
                         variant="outline"
@@ -269,92 +347,123 @@ const Events = () => {
                         onClick={() => setDiscussions(prev => prev.map(d =>
                           d.id === discussion.id ? { ...d, expanded: !d.expanded } : d
                         ))}
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700 self-start text-sm"
                       >
-                        {discussion.expanded ? 'Collapse' : 'View'}
+                        {discussion.expanded ? 'Hide' : 'View'} Thread
                       </Button>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-4 text-sm text-slate-400 mb-3">
-                      <span>💬 {discussion.replies} replies</span>
-                      <span>👁️ {discussion.views}k views</span>
+                  {/* Discussion Content */}
+                  <div className="p-3 lg:p-4">
+                    <div className="flex gap-3">
+                      <div className="w-7 h-7 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {discussion.author.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-slate-700/50 rounded-xl lg:rounded-2xl px-3 lg:px-4 py-2 lg:py-3 mb-3">
+                          <p className="text-slate-200 text-sm lg:text-base break-words">{discussion.content}</p>
+                        </div>
+                        <div className="flex items-center gap-3 lg:gap-4 text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            💬 {discussion.replies} replies
+                          </span>
+                          <span className="flex items-center gap-1">
+                            👁️ {discussion.views}k views
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
                     {discussion.expanded && (
-                      <div className="border-t border-slate-700/50 pt-4 mt-4">
-                        <div className="mb-4">
-                          <p className="text-slate-300">{discussion.content}</p>
-                        </div>
-
-                        <div className="space-y-3 mb-4">
-                          {discussion.replies_list.map(reply => (
-                            <div key={reply.id} className="bg-slate-700/30 rounded p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <span className="font-medium text-purple-400">{reply.author}</span>
-                                <span className="text-xs text-slate-500">{reply.timestamp}</span>
-                              </div>
-                              <p className="text-slate-300 text-sm">{reply.content}</p>
+                      <div className="mt-4 lg:mt-6 space-y-3 lg:space-y-4">
+                        {/* Replies */}
+                        {discussion.replies_list.map(reply => (
+                          <div key={reply.id} className="flex gap-2 lg:gap-3 ml-6 lg:ml-8">
+                            <div className="w-5 h-5 lg:w-6 lg:h-6 bg-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                              {reply.author.charAt(0).toUpperCase()}
                             </div>
-                          ))}
-                        </div>
-
-                        {selectedDiscussion === discussion.id && (
-                          <div className="border-t border-slate-700/50 pt-4">
-                            <textarea
-                              value={newReply}
-                              onChange={(e) => setNewReply(e.target.value)}
-                              placeholder="Write your reply..."
-                              className="w-full p-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
-                              rows={3}
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => {
-                                  if (newReply.trim()) {
-                                    const reply = {
-                                      id: Date.now(),
-                                      author: 'You',
-                                      content: newReply,
-                                      timestamp: 'Just now'
-                                    };
-                                    setDiscussions(prev => prev.map(d =>
-                                      d.id === discussion.id
-                                        ? {
-                                            ...d,
-                                            replies: d.replies + 1,
-                                            replies_list: [...d.replies_list, reply]
-                                          }
-                                        : d
-                                    ));
-                                    setNewReply('');
-                                    setSelectedDiscussion(null);
-                                  }
-                                }}
-                                className="bg-purple-600 hover:bg-purple-700"
-                              >
-                                Reply
-                              </Button>
-                              <Button
-                                variant="outline"
-                                onClick={() => {
-                                  setSelectedDiscussion(null);
-                                  setNewReply('');
-                                }}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                Cancel
-                              </Button>
+                            <div className="flex-1 min-w-0">
+                              <div className="bg-slate-700/30 rounded-lg lg:rounded-xl px-2 lg:px-3 py-2">
+                                <div className="flex flex-wrap items-center gap-1 lg:gap-2 mb-1">
+                                  <span className="font-medium text-green-400 text-sm">{reply.author}</span>
+                                  <span className="text-xs text-slate-500">{reply.timestamp}</span>
+                                </div>
+                                <p className="text-slate-300 text-sm break-words">{reply.content}</p>
+                              </div>
                             </div>
                           </div>
-                        )}
+                        ))}
 
-                        {selectedDiscussion !== discussion.id && (
-                          <Button
-                            onClick={() => setSelectedDiscussion(discussion.id)}
-                            className="bg-slate-700 hover:bg-slate-600"
-                          >
-                            Reply to Discussion
-                          </Button>
+                        {/* Reply Form */}
+                        {selectedDiscussion === discussion.id ? (
+                          <div className="ml-6 lg:ml-8 mt-3 lg:mt-4">
+                            <div className="flex gap-2 lg:gap-3">
+                              <div className="w-5 h-5 lg:w-6 lg:h-6 bg-purple-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                Y
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <textarea
+                                  value={newReply}
+                                  onChange={(e) => setNewReply(e.target.value)}
+                                  placeholder="Write your reply..."
+                                  className="w-full p-2 lg:p-3 bg-slate-700/50 border border-slate-600 rounded-lg lg:rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2 resize-none text-sm"
+                                  rows={2}
+                                />
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      if (newReply.trim()) {
+                                        const reply: Reply = {
+                                          id: Date.now(),
+                                          author: 'You',
+                                          content: newReply,
+                                          timestamp: 'Just now'
+                                        };
+                                        setDiscussions(prev => prev.map(d =>
+                                          d.id === discussion.id
+                                            ? {
+                                                ...d,
+                                                replies: d.replies + 1,
+                                                replies_list: [...d.replies_list, reply]
+                                              }
+                                            : d
+                                        ));
+                                        setNewReply('');
+                                        setSelectedDiscussion(null);
+                                      }
+                                    }}
+                                    className="bg-purple-600 hover:bg-purple-700 text-sm"
+                                  >
+                                    Reply
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedDiscussion(null);
+                                      setNewReply('');
+                                    }}
+                                    className="border-slate-600 text-slate-300 hover:bg-slate-700 text-sm"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="ml-6 lg:ml-8">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedDiscussion(discussion.id)}
+                              className="text-purple-400 hover:text-purple-300 hover:bg-purple-600/10 text-sm"
+                            >
+                              💬 Reply to this discussion
+                            </Button>
+                          </div>
                         )}
                       </div>
                     )}
@@ -365,38 +474,37 @@ const Events = () => {
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 lg:space-y-8">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-4">Discussions</h2>
+            <h2 className="text-xl lg:text-2xl font-bold text-white mb-4">Discussions</h2>
             <div className="space-y-4">
               {discussions.map(discussion => (
-                <div key={discussion.id} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 hover:border-slate-600/50 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="font-bold text-white text-lg mb-2">{discussion.title}</p>
+                <div key={discussion.id} className="rounded-lg bg-slate-800/60 p-3 lg:p-4 backdrop-blur-md border border-slate-700/50 hover:border-slate-600/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white text-base lg:text-lg mb-2 break-words">{discussion.title}</p>
                       <p className="text-sm text-slate-400 mb-3">by {discussion.author} in <span className="font-semibold text-purple-400">#{discussion.category}</span></p>
                       <div className="flex items-center gap-4 text-sm text-slate-400">
                         <span>💬 {discussion.replies} replies</span>
                         <span>👁️ {discussion.views}k views</span>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:bg-slate-700">
+                    <Button variant="outline" size="sm" className="border-slate-600 text-slate-300 hover:bg-slate-700 self-start sm:self-auto text-sm">
                       View
                     </Button>
                   </div>
                 </div>
               ))}
             </div>
-
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-white mb-4">Trending</h2>
+            <h2 className="text-xl lg:text-2xl font-bold text-white mb-4">Trending</h2>
             <div className="space-y-3">
               {trending.map((item, index) => (
                 <div key={index} className="flex items-start space-x-3 text-sm">
-                  <TrendingUp className="w-5 h-5 text-purple-400 mt-1" />
-                  <p className="text-slate-300">{item}</p>
+                  <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-purple-400 mt-1 flex-shrink-0" />
+                  <p className="text-slate-300 break-words">{item}</p>
                 </div>
               ))}
             </div>
