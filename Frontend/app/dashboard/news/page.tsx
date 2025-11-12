@@ -65,7 +65,7 @@ const NewsPage = () => {
     <div className="space-y-8">
       {/* Header Section */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 p-8"
+        className="relative overflow-hidden rounded-xl lg:rounded-2xl bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 p-4 lg:p-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -75,24 +75,24 @@ const NewsPage = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(139,92,246,0.1),transparent_70%)]" />
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4 lg:mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Sui X Times Articles</h1>
-              <p className="text-slate-300">Stay updated with the latest from the Sui ecosystem articles</p>
+              <h1 className="text-2xl lg:text-4xl font-bold text-white mb-2">Sui X Times Articles</h1>
+              <p className="text-slate-300 text-sm lg:text-base">Stay updated with the latest from the Sui ecosystem articles</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-3">
               <Button
                 variant="outline"
                 onClick={refreshArticles}
                 disabled={isLoading}
-                className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-700 text-sm lg:text-base"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
               <Link href="/dashboard/news/new" passHref>
-                <Button className="gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700">
-                  <PlusCircle className="h-5 w-5" />
+                <Button className="gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-sm lg:text-base">
+                  <PlusCircle className="h-4 w-4 lg:h-5 lg:w-5" />
                   Write Article
                 </Button>
               </Link>
@@ -100,30 +100,31 @@ const NewsPage = () => {
           </div>
 
           {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-col gap-3 lg:gap-4">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
               <input
                 type="text"
                 placeholder="Search news and articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full pl-9 lg:pl-10 pr-4 py-2 lg:py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm lg:text-base"
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto pb-1">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 rounded-lg border transition-all whitespace-nowrap text-sm ${
                     selectedCategory === category.id
                       ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
                       : 'bg-slate-800/50 border-slate-600 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  <category.icon className="h-4 w-4" />
-                  {category.name}
+                  <category.icon className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span className="hidden sm:inline">{category.name}</span>
+                  <span className="sm:hidden">{category.name.split(' ')[0]}</span>
                 </button>
               ))}
             </div>
@@ -172,14 +173,14 @@ const NewsPage = () => {
           {/* Featured Article */}
           {filteredArticles.length > 0 && (
             <motion.div
-              className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-2xl p-6 border border-slate-600"
+              className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-slate-600"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Star className="w-5 h-5 text-yellow-400" />
-                <span className="text-yellow-400 font-medium">Featured Article</span>
+              <div className="flex items-center gap-2 mb-3 lg:mb-4">
+                <Star className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-400" />
+                <span className="text-yellow-400 font-medium text-sm lg:text-base">Featured Article</span>
               </div>
               <ArticleCard
                 key={filteredArticles[0].id}

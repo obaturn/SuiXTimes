@@ -2119,66 +2119,69 @@ export class SuiBridgeClient {
       </div>
 
       {/* Learning Progress Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <BookOpen className="w-8 h-8 text-blue-400" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6">
+          <div className="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
+            <BookOpen className="w-6 h-6 lg:w-8 lg:h-8 text-blue-400" />
             <div>
-              <h3 className="text-lg font-bold text-white">Courses Completed</h3>
-              <p className="text-slate-400">Track your learning journey</p>
+              <h3 className="text-base lg:text-lg font-bold text-white">Courses Completed</h3>
+              <p className="text-slate-400 text-sm">Track your learning journey</p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-white">2</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">2</div>
           <div className="text-sm text-slate-400 mt-2">of 15 available</div>
         </div>
 
-        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Award className="w-8 h-8 text-green-400" />
+        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6">
+          <div className="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
+            <Award className="w-6 h-6 lg:w-8 lg:h-8 text-green-400" />
             <div>
-              <h3 className="text-lg font-bold text-white">Certificates Earned</h3>
-              <p className="text-slate-400">Showcase your skills</p>
+              <h3 className="text-base lg:text-lg font-bold text-white">Certificates Earned</h3>
+              <p className="text-slate-400 text-sm">Showcase your skills</p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-white">1</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">1</div>
           <div className="text-sm text-slate-400 mt-2">Move Basics Certified</div>
         </div>
 
-        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Clock className="w-8 h-8 text-purple-400" />
+        <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6 sm:col-span-2 lg:col-span-1">
+          <div className="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
+            <Clock className="w-6 h-6 lg:w-8 lg:h-8 text-purple-400" />
             <div>
-              <h3 className="text-lg font-bold text-white">Study Time</h3>
-              <p className="text-slate-400">Hours invested in learning</p>
+              <h3 className="text-base lg:text-lg font-bold text-white">Study Time</h3>
+              <p className="text-slate-400 text-sm">Hours invested in learning</p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-white">24h</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">24h</div>
           <div className="text-sm text-slate-400 mt-2">This month</div>
         </div>
       </div>
 
       {/* Tab Navigation */}
       <div className="border-b border-slate-700">
-        <nav className="flex space-x-8">
-          {[
-            { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
-            { id: 'paths', label: 'Learning Paths', icon: Play },
-            { id: 'docs', label: 'Documentation', icon: FileText },
-            { id: 'examples', label: 'Code Examples', icon: Code }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
-                  ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
+        <nav className="flex overflow-x-auto scrollbar-hide">
+          <div className="flex space-x-4 lg:space-x-8 min-w-max">
+            {[
+              { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
+              { id: 'paths', label: 'Learning Paths', icon: Play },
+              { id: 'docs', label: 'Documentation', icon: FileText },
+              { id: 'examples', label: 'Code Examples', icon: Code }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1 lg:gap-2 py-3 lg:py-4 px-1 border-b-2 font-medium text-xs lg:text-sm transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                <tab.icon className="w-3 h-3 lg:w-4 lg:h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
         </nav>
       </div>
 
@@ -2228,13 +2231,13 @@ export class SuiBridgeClient {
             {!activePath ? (
               <>
                 <h2 className="text-2xl font-bold text-white mb-6">Learning Paths</h2>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                   {learningPaths.map((path, index) => (
-                    <div key={index} className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6">
-                      <div className={`w-full h-2 bg-gradient-to-r ${path.color} rounded-full mb-4`}></div>
-                      <h3 className="text-xl font-bold text-white mb-2">{path.title}</h3>
-                      <p className="text-slate-400 text-sm mb-4">{path.description}</p>
-                      <div className="space-y-2 mb-6">
+                    <div key={index} className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6">
+                      <div className={`w-full h-2 bg-gradient-to-r ${path.color} rounded-full mb-3 lg:mb-4`}></div>
+                      <h3 className="text-lg lg:text-xl font-bold text-white mb-2">{path.title}</h3>
+                      <p className="text-slate-400 text-sm mb-3 lg:mb-4">{path.description}</p>
+                      <div className="space-y-2 mb-4 lg:mb-6">
                         <div className="flex justify-between text-sm">
                           <span className="text-slate-400">Duration</span>
                           <span className="text-white">{path.duration}</span>
@@ -2269,11 +2272,11 @@ export class SuiBridgeClient {
                         </div>
                       </div>
                       <Button
-                        className={`w-full ${!checkPrerequisites(path.id) ? 'bg-gray-600 cursor-not-allowed' : `bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700`}`}
+                        className={`w-full text-sm lg:text-base ${!checkPrerequisites(path.id) ? 'bg-gray-600 cursor-not-allowed' : `bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700`}`}
                         onClick={() => startLearningPath(path.id)}
                         disabled={!checkPrerequisites(path.id)}
                       >
-                        <Play className="w-4 h-4 mr-2" />
+                        <Play className="w-3 h-3 lg:w-4 lg:h-4 mr-2" />
                         {path.progress > 0 ? 'Continue Path' : 'View Curriculum'}
                       </Button>
                     </div>
@@ -2294,17 +2297,17 @@ export class SuiBridgeClient {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 lg:space-y-4">
                   {learningPaths.find(p => p.id === activePath)?.curriculum.map((module, index) => {
                     const isCompleted = curriculumProgress[activePath]?.[module.id] || false;
                     const isUnlocked = isModuleUnlocked(activePath, index);
 
                     return (
-                      <div key={module.id} className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      <div key={module.id} className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start gap-3 mb-2">
+                              <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
                                 isCompleted
                                   ? 'bg-green-600 text-white'
                                   : isUnlocked
@@ -2313,12 +2316,12 @@ export class SuiBridgeClient {
                               }`}>
                                 {isCompleted ? '✓' : index + 1}
                               </div>
-                              <div>
-                                <h3 className="text-lg font-bold text-white">{module.title}</h3>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="text-base lg:text-lg font-bold text-white break-words">{module.title}</h3>
                                 <p className="text-slate-400 text-sm">{module.description}</p>
                               </div>
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-500 ml-11">
+                            <div className="flex flex-wrap items-center gap-2 lg:gap-4 text-xs text-slate-500 ml-10 lg:ml-11">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {module.duration}
@@ -2336,7 +2339,7 @@ export class SuiBridgeClient {
                           </div>
                           <Button
                             size="sm"
-                            className={`${
+                            className={`self-start sm:self-auto text-sm ${
                               isCompleted
                                 ? 'bg-green-600 hover:bg-green-700'
                                 : isUnlocked
@@ -2350,8 +2353,8 @@ export class SuiBridgeClient {
                           </Button>
                         </div>
                         {isUnlocked && (
-                          <div className="mt-4 ml-11 p-4 bg-slate-900/50 rounded-lg">
-                            <p className="text-slate-300 text-sm">{module.content}</p>
+                          <div className="mt-4 ml-8 lg:ml-11 p-3 lg:p-4 bg-slate-900/50 rounded-lg">
+                            <p className="text-slate-300 text-sm break-words">{module.content}</p>
                           </div>
                         )}
                       </div>

@@ -142,22 +142,22 @@ const Markets = () => {
   return (
     <div className="space-y-8">
       {/* SUI Price Chart Section */}
-      <div className="rounded-lg bg-slate-800/60 p-6 backdrop-blur-md border border-slate-700/50">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <img src={suiData?.image || "/placeholder.svg"} alt="SUI" className="w-12 h-12 rounded-full" />
+      <div className="rounded-lg bg-slate-800/60 p-4 lg:p-6 backdrop-blur-md border border-slate-700/50">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 lg:mb-6">
+          <div className="flex items-center space-x-3 lg:space-x-4">
+            <img src={suiData?.image || "/placeholder.svg"} alt="SUI" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full" />
             <div>
-              <h2 className="text-2xl font-bold text-white">SUI/USD</h2>
-              <p className="text-3xl font-bold text-white mt-1">${suiData?.price?.toFixed(4) || '1.5000'}</p>
+              <h2 className="text-xl lg:text-2xl font-bold text-white">SUI/USD</h2>
+              <p className="text-2xl lg:text-3xl font-bold text-white mt-1">${suiData?.price?.toFixed(4) || '1.5000'}</p>
             </div>
           </div>
-          <div className="text-right">
-            <div className={`flex items-center justify-end space-x-2 ${suiData?.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {suiData?.change24h >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-              <span>{suiData?.change24h?.toFixed(2) || '+3.20'}% (24h)</span>
+          <div className="text-left sm:text-right">
+            <div className={`flex items-center justify-start sm:justify-end space-x-2 ${suiData?.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {suiData?.change24h >= 0 ? <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5" /> : <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5" />}
+              <span className="text-sm lg:text-base">{suiData?.change24h?.toFixed(2) || '+3.20'}% (24h)</span>
             </div>
-            <div className={`flex items-center justify-end space-x-2 text-sm ${suiData?.changeHour >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {suiData?.changeHour >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+            <div className={`flex items-center justify-start sm:justify-end space-x-2 text-sm ${suiData?.changeHour >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {suiData?.changeHour >= 0 ? <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" /> : <TrendingDown className="w-3 h-3 lg:w-4 lg:h-4" />}
               <span>{suiData?.changeHour?.toFixed(2) || '+1.20'}% (1h)</span>
             </div>
           </div>
@@ -247,22 +247,22 @@ const Markets = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-white">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-4 lg:mt-6 text-white">
           <div>
-            <p className="text-sm text-slate-400">Market Cap</p>
-            <p className="font-semibold">{suiData?.marketCapFormatted || '$1.5B'}</p>
+            <p className="text-xs lg:text-sm text-slate-400">Market Cap</p>
+            <p className="font-semibold text-sm lg:text-base">{suiData?.marketCapFormatted || '$1.5B'}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-400">Volume (24h)</p>
-            <p className="font-semibold">{suiData?.volumeFormatted || '$1.2M'}</p>
+            <p className="text-xs lg:text-sm text-slate-400">Volume (24h)</p>
+            <p className="font-semibold text-sm lg:text-base">{suiData?.volumeFormatted || '$1.2M'}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-400">24h High</p>
-            <p className="font-semibold text-green-400">$1.55</p>
+            <p className="text-xs lg:text-sm text-slate-400">24h High</p>
+            <p className="font-semibold text-green-400 text-sm lg:text-base">$1.55</p>
           </div>
           <div>
-            <p className="text-sm text-slate-400">24h Low</p>
-            <p className="font-semibold text-red-400">$1.42</p>
+            <p className="text-xs lg:text-sm text-slate-400">24h Low</p>
+            <p className="font-semibold text-red-400 text-sm lg:text-base">$1.42</p>
           </div>
         </div>
 
@@ -275,7 +275,7 @@ const Markets = () => {
 
       <div>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Sui Ecosystem Tokens ({filteredTokens.length})</h2>
+          <h2 className="text-xl lg:text-2xl font-bold text-white">Sui Ecosystem Tokens ({filteredTokens.length})</h2>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -334,9 +334,9 @@ const Markets = () => {
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Table Header */}
-            <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-slate-800/40 rounded-lg text-sm font-semibold text-slate-300">
+          <div>
+            {/* Desktop Table Header */}
+            <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-3 bg-slate-800/40 rounded-lg text-sm font-semibold text-slate-300">
               <div className="col-span-4">Token</div>
               <div className="col-span-2 text-right">Price</div>
               <div className="col-span-2 text-right">24h Change</div>
@@ -349,55 +349,117 @@ const Markets = () => {
             {filteredTokens.map((token) => {
               const inWatchlist = isInWatchlist(token.id);
               return (
-                <div key={token.id} className="grid grid-cols-12 gap-4 px-4 py-4 bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg hover:bg-slate-800/80 transition-colors">
-                  <div className="col-span-4 flex items-center space-x-3">
-                    <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
-                    <div>
-                      <p className="font-bold text-white text-sm">{token.name}</p>
-                      <p className="text-xs text-slate-400">{token.symbol}</p>
+                <div key={token.id} className="mb-4">
+                  {/* Mobile Card Layout */}
+                  <div className="lg:hidden bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 hover:bg-slate-800/80 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                        <div>
+                          <p className="font-bold text-white text-sm">{token.name}</p>
+                          <p className="text-xs text-slate-400">{token.symbol}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          console.log('Watchlist button clicked for token:', token);
+                          console.log('Currently in watchlist:', inWatchlist);
+                          if (inWatchlist) {
+                            console.log('Removing from watchlist');
+                            removeFromWatchlist(token.id);
+                            toast.success(`Removed ${token.symbol} from watchlist`);
+                          } else {
+                            console.log('Adding to watchlist');
+                            addToWatchlist(token);
+                            toast.success(`Added ${token.symbol} to watchlist`, {
+                              action: {
+                                label: 'View Watchlist',
+                                onClick: () => window.location.href = '/dashboard/watchlist'
+                              }
+                            });
+                          }
+                        }}
+                        className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
+                      >
+                        {inWatchlist ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-slate-400 text-xs">Price</p>
+                        <p className="text-white font-semibold">${token.price.toFixed(4)}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-400 text-xs">24h Change</p>
+                        <div className={`flex items-center space-x-1 font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {token.change24h >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                          <span>{token.change24h.toFixed(2)}%</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-slate-400 text-xs">Volume</p>
+                        <p className="text-white">{token.volumeFormatted}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-400 text-xs">Market Cap</p>
+                        <p className="text-white">{token.marketCapFormatted}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="col-span-2 flex items-center justify-end">
-                    <p className="text-white font-semibold">${token.price.toFixed(4)}</p>
-                  </div>
-                  <div className="col-span-2 flex items-center justify-end">
-                    <div className={`flex items-center space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {token.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                      <span>{token.change24h.toFixed(2)}%</span>
+
+                  {/* Desktop Table Row */}
+                  <div className="hidden lg:grid grid-cols-12 gap-4 px-4 py-4 bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg hover:bg-slate-800/80 transition-colors">
+                    <div className="col-span-4 flex items-center space-x-3">
+                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                      <div>
+                        <p className="font-bold text-white text-sm">{token.name}</p>
+                        <p className="text-xs text-slate-400">{token.symbol}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-span-2 flex items-center justify-end">
-                    <p className="text-white text-sm">{token.volumeFormatted}</p>
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end">
-                    <p className="text-white text-sm">{token.marketCapFormatted}</p>
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        console.log('Watchlist button clicked for token:', token);
-                        console.log('Currently in watchlist:', inWatchlist);
-                        if (inWatchlist) {
-                          console.log('Removing from watchlist');
-                          removeFromWatchlist(token.id);
-                          toast.success(`Removed ${token.symbol} from watchlist`);
-                        } else {
-                          console.log('Adding to watchlist');
-                          addToWatchlist(token);
-                          toast.success(`Added ${token.symbol} to watchlist`, {
-                            action: {
-                              label: 'View Watchlist',
-                              onClick: () => window.location.href = '/dashboard/watchlist'
-                            }
-                          });
-                        }
-                      }}
-                      className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
-                    >
-                      {inWatchlist ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    </Button>
+                    <div className="col-span-2 flex items-center justify-end">
+                      <p className="text-white font-semibold">${token.price.toFixed(4)}</p>
+                    </div>
+                    <div className="col-span-2 flex items-center justify-end">
+                      <div className={`flex items-center space-x-1 text-sm font-semibold ${token.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {token.change24h >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                        <span>{token.change24h.toFixed(2)}%</span>
+                      </div>
+                    </div>
+                    <div className="col-span-2 flex items-center justify-end">
+                      <p className="text-white text-sm">{token.volumeFormatted}</p>
+                    </div>
+                    <div className="col-span-1 flex items-center justify-end">
+                      <p className="text-white text-sm">{token.marketCapFormatted}</p>
+                    </div>
+                    <div className="col-span-1 flex items-center justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          console.log('Watchlist button clicked for token:', token);
+                          console.log('Currently in watchlist:', inWatchlist);
+                          if (inWatchlist) {
+                            console.log('Removing from watchlist');
+                            removeFromWatchlist(token.id);
+                            toast.success(`Removed ${token.symbol} from watchlist`);
+                          } else {
+                            console.log('Adding to watchlist');
+                            addToWatchlist(token);
+                            toast.success(`Added ${token.symbol} to watchlist`, {
+                              action: {
+                                label: 'View Watchlist',
+                                onClick: () => window.location.href = '/dashboard/watchlist'
+                              }
+                            });
+                          }
+                        }}
+                        className={`h-8 w-8 p-0 ${inWatchlist ? 'text-green-400 hover:text-green-300' : 'text-slate-400 hover:text-purple-400'}`}
+                      >
+                        {inWatchlist ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
