@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Users, TrendingUp, RefreshCw, X, Calendar, MapPin, Users as UsersIcon, FileText } from 'lucide-react';
+import { Plus, MessageSquare, Users, TrendingUp, RefreshCw, X, Calendar, MapPin, Users as UsersIcon, FileText, ExternalLink } from 'lucide-react';
 
 interface FeaturedEvent {
   title: string;
@@ -15,10 +15,30 @@ interface FeaturedEvent {
   url?: string;
 }
 
+interface Discussion {
+  id: number;
+  title: string;
+  author: string;
+  replies: number;
+  views: number;
+  category: string;
+  content: string;
+  replies_list: Reply[];
+  expanded: boolean;
+  timestamp: Date;
+}
+
+interface Reply {
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
+}
+
 const Events = () => {
+  // Removed blog events integration - keeping it simple with Luma link
 
-
-  const [discussions, setDiscussions] = useState([
+  const defaultDiscussions: Discussion[] = [
     {
       id: 1,
       title: 'What are your favorite dApps on Sui?',
@@ -31,7 +51,8 @@ const Events = () => {
         { id: 1, author: 'Alice', content: 'Definitely Turbos Finance for DEX trading!', timestamp: '2h ago' },
         { id: 2, author: 'Bob', content: 'Check out SuiFrens for NFT marketplace', timestamp: '1h ago' }
       ],
-      expanded: false
+      expanded: false,
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     },
     {
       id: 2,
@@ -44,14 +65,41 @@ const Events = () => {
       replies_list: [
         { id: 3, author: 'DevExpert', content: 'Start with the Sui documentation and Move book', timestamp: '3h ago' }
       ],
-      expanded: false
+      expanded: false,
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
     },
-  ]);
+  ];
+
+  const [discussions, setDiscussions] = useState<Discussion[]>(defaultDiscussions);
 
   const [newDiscussion, setNewDiscussion] = useState('');
   const [showDiscussionForm, setShowDiscussionForm] = useState(false);
   const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
   const [newReply, setNewReply] = useState('');
+
+  // Load discussions from localStorage on mount
+  useEffect(() => {
+    const savedDiscussions = localStorage.getItem('sui-discussions');
+    if (savedDiscussions) {
+      try {
+        const parsed = JSON.parse(savedDiscussions);
+        // Convert timestamp strings back to Date objects
+        const discussionsWithDates = parsed.map((d: any) => ({
+          ...d,
+          timestamp: new Date(d.timestamp)
+        }));
+        setDiscussions(discussionsWithDates);
+      } catch (error) {
+        console.error('Error loading discussions:', error);
+        setDiscussions(defaultDiscussions);
+      }
+    }
+  }, []);
+
+  // Save discussions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('sui-discussions', JSON.stringify(discussions));
+  }, [discussions]);
 
   const [groups, setGroups] = useState([
     {
@@ -86,7 +134,26 @@ const Events = () => {
     }
   };
 
-  const trending = [
+  // Calculate trending topics from discussions
+  const getTrendingTopics = () => {
+    const wordCount: { [key: string]: number } = {};
+
+    discussions.forEach(discussion => {
+      const words = discussion.title.toLowerCase().split(' ');
+      words.forEach(word => {
+        if (word.length > 3 && !['what', 'how', 'why', 'when', 'where', 'sui', 'the', 'and', 'for', 'are', 'you', 'your', 'with', 'this', 'that'].includes(word)) {
+          wordCount[word] = (wordCount[word] || 0) + 1;
+        }
+      });
+    });
+
+    return Object.entries(wordCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([topic]) => topic.charAt(0).toUpperCase() + topic.slice(1));
+  };
+
+  const trending = getTrendingTopics().length > 0 ? getTrendingTopics() : [
     'Sui 8192 game going viral',
     'New DeFi protocol launching next week',
     'Move vs. Rust: which is better for smart contracts?',
@@ -174,7 +241,7 @@ const Events = () => {
                     </div>
                   </div>
                   <Button
-                    onClick={() => window.open('https://chat.whatsapp.com/sui-community', '_blank')}
+                    onClick={() => window.open('https://chat.whatsapp.com/BSq8BV4onTQ1YrbiW1fzxp?mode=r_t', '_blank')}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
                     Join WhatsApp
@@ -196,7 +263,7 @@ const Events = () => {
                     </div>
                   </div>
                   <Button
-                    onClick={() => window.open('https://t.me/sui_official', '_blank')}
+                    onClick={() => window.open('https://t.me/+s3N-Ntd0GZ5mMjI0', '_blank')}
                     className="w-full bg-purple-600 hover:bg-purple-700"
                   >
                     Join Telegram
@@ -231,7 +298,7 @@ const Events = () => {
                 <Button
                   onClick={() => {
                     if (newDiscussion.trim()) {
-                      const newDisc = {
+                      const newDisc: Discussion = {
                         id: Date.now(),
                         title: newDiscussion,
                         author: 'You', // In real app, get from wallet
@@ -240,7 +307,8 @@ const Events = () => {
                         category: 'General',
                         content: newDiscussion,
                         replies_list: [],
-                        expanded: false
+                        expanded: false,
+                        timestamp: new Date()
                       };
                       setDiscussions(prev => [newDisc, ...prev]);
                       setNewDiscussion('');
@@ -254,14 +322,24 @@ const Events = () => {
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {discussions.map(discussion => (
-                <div key={discussion.id} className="rounded-lg bg-slate-800/60 backdrop-blur-md border border-slate-700/50 hover:border-slate-600/50 transition-colors">
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
+                <div key={discussion.id} className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl overflow-hidden">
+                  {/* Discussion Header */}
+                  <div className="p-4 border-b border-slate-700/50">
+                    <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <p className="font-bold text-white text-lg mb-2">{discussion.title}</p>
-                        <p className="text-sm text-slate-400 mb-3">by {discussion.author} in <span className="font-semibold text-purple-400">#{discussion.category}</span></p>
+                        <h3 className="text-xl font-bold text-white mb-2">{discussion.title}</h3>
+                        <div className="flex items-center gap-3 text-sm text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                              {discussion.author.charAt(0).toUpperCase()}
+                            </div>
+                            {discussion.author}
+                          </span>
+                          <span>in #{discussion.category}</span>
+                          <span>{new Date(discussion.timestamp).toLocaleDateString()}</span>
+                        </div>
                       </div>
                       <Button
                         variant="outline"
@@ -271,90 +349,121 @@ const Events = () => {
                         ))}
                         className="border-slate-600 text-slate-300 hover:bg-slate-700"
                       >
-                        {discussion.expanded ? 'Collapse' : 'View'}
+                        {discussion.expanded ? 'Hide' : 'View'} Thread
                       </Button>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-4 text-sm text-slate-400 mb-3">
-                      <span>💬 {discussion.replies} replies</span>
-                      <span>👁️ {discussion.views}k views</span>
+                  {/* Discussion Content */}
+                  <div className="p-4">
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {discussion.author.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <div className="bg-slate-700/50 rounded-2xl px-4 py-3 mb-3">
+                          <p className="text-slate-200">{discussion.content}</p>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            💬 {discussion.replies} replies
+                          </span>
+                          <span className="flex items-center gap-1">
+                            👁️ {discussion.views}k views
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
                     {discussion.expanded && (
-                      <div className="border-t border-slate-700/50 pt-4 mt-4">
-                        <div className="mb-4">
-                          <p className="text-slate-300">{discussion.content}</p>
-                        </div>
-
-                        <div className="space-y-3 mb-4">
-                          {discussion.replies_list.map(reply => (
-                            <div key={reply.id} className="bg-slate-700/30 rounded p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <span className="font-medium text-purple-400">{reply.author}</span>
-                                <span className="text-xs text-slate-500">{reply.timestamp}</span>
-                              </div>
-                              <p className="text-slate-300 text-sm">{reply.content}</p>
+                      <div className="mt-6 space-y-4">
+                        {/* Replies */}
+                        {discussion.replies_list.map(reply => (
+                          <div key={reply.id} className="flex gap-3 ml-8">
+                            <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                              {reply.author.charAt(0).toUpperCase()}
                             </div>
-                          ))}
-                        </div>
-
-                        {selectedDiscussion === discussion.id && (
-                          <div className="border-t border-slate-700/50 pt-4">
-                            <textarea
-                              value={newReply}
-                              onChange={(e) => setNewReply(e.target.value)}
-                              placeholder="Write your reply..."
-                              className="w-full p-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
-                              rows={3}
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => {
-                                  if (newReply.trim()) {
-                                    const reply = {
-                                      id: Date.now(),
-                                      author: 'You',
-                                      content: newReply,
-                                      timestamp: 'Just now'
-                                    };
-                                    setDiscussions(prev => prev.map(d =>
-                                      d.id === discussion.id
-                                        ? {
-                                            ...d,
-                                            replies: d.replies + 1,
-                                            replies_list: [...d.replies_list, reply]
-                                          }
-                                        : d
-                                    ));
-                                    setNewReply('');
-                                    setSelectedDiscussion(null);
-                                  }
-                                }}
-                                className="bg-purple-600 hover:bg-purple-700"
-                              >
-                                Reply
-                              </Button>
-                              <Button
-                                variant="outline"
-                                onClick={() => {
-                                  setSelectedDiscussion(null);
-                                  setNewReply('');
-                                }}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                Cancel
-                              </Button>
+                            <div className="flex-1">
+                              <div className="bg-slate-700/30 rounded-xl px-3 py-2">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium text-green-400 text-sm">{reply.author}</span>
+                                  <span className="text-xs text-slate-500">{reply.timestamp}</span>
+                                </div>
+                                <p className="text-slate-300 text-sm">{reply.content}</p>
+                              </div>
                             </div>
                           </div>
-                        )}
+                        ))}
 
-                        {selectedDiscussion !== discussion.id && (
-                          <Button
-                            onClick={() => setSelectedDiscussion(discussion.id)}
-                            className="bg-slate-700 hover:bg-slate-600"
-                          >
-                            Reply to Discussion
-                          </Button>
+                        {/* Reply Form */}
+                        {selectedDiscussion === discussion.id ? (
+                          <div className="ml-8 mt-4">
+                            <div className="flex gap-3">
+                              <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                Y
+                              </div>
+                              <div className="flex-1">
+                                <textarea
+                                  value={newReply}
+                                  onChange={(e) => setNewReply(e.target.value)}
+                                  placeholder="Write your reply..."
+                                  className="w-full p-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-2 resize-none"
+                                  rows={2}
+                                />
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      if (newReply.trim()) {
+                                        const reply: Reply = {
+                                          id: Date.now(),
+                                          author: 'You',
+                                          content: newReply,
+                                          timestamp: 'Just now'
+                                        };
+                                        setDiscussions(prev => prev.map(d =>
+                                          d.id === discussion.id
+                                            ? {
+                                                ...d,
+                                                replies: d.replies + 1,
+                                                replies_list: [...d.replies_list, reply]
+                                              }
+                                            : d
+                                        ));
+                                        setNewReply('');
+                                        setSelectedDiscussion(null);
+                                      }
+                                    }}
+                                    className="bg-purple-600 hover:bg-purple-700"
+                                  >
+                                    Reply
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedDiscussion(null);
+                                      setNewReply('');
+                                    }}
+                                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="ml-8">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedDiscussion(discussion.id)}
+                              className="text-purple-400 hover:text-purple-300 hover:bg-purple-600/10"
+                            >
+                              💬 Reply to this discussion
+                            </Button>
+                          </div>
                         )}
                       </div>
                     )}
