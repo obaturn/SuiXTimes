@@ -87,7 +87,7 @@ const Markets = () => {
     });
 
     setFilteredTokens(filtered);
-  }, [tokens, searchQuery, sortBy, currentWatchlist]); // Add currentWatchlist dependency
+  }, [tokens, searchQuery, sortBy]);
 
   useEffect(() => {
     const getTokens = async () => {
