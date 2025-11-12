@@ -56,48 +56,271 @@ const sampleTokens: Token[] = [
   },
 ];
 
+const primarySuiTokens = [
+  // Major tokens
+  "sui", "usd-coin",
+
+  // DeFi Protocols
+  "cetus-protocol", "turbos-finance", "bucket-protocol", "aftermath-finance",
+  "navi-protocol", "scallop-protocol", "suilend", "deepbook",
+
+  // Gaming & NFTs
+  "sui-heroes", "suimon", "sui-monster",
+
+  // Infrastructure
+  "walrus-protocol", "mysten-labs",
+
+  // Other popular tokens
+  "alpha-finance", "sui-yield", "sui-staking", "sui-liquid-staking"
+];
+
 export async function fetchTopPerformingTokens(): Promise<Token[]> {
   const apiKey = process.env.coingecko_api;
-  const suiEcosystemIds = ["sui", "usd-coin", "cetus-protocol", "turbos-finance", "bucket-protocol", "aftermath-finance", "navi-protocol", "scallop-protocol"];
+
+  // Try to fetch from CoinGecko first
+  if (apiKey) {
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${primarySuiTokens.join(",")}&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=1h%2C24h&x_cg_demo_api_key=${apiKey}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+
+        const tokens = data.map((token: any) => ({
+          id: token.id,
+          name: token.name,
+          symbol: token.symbol.toUpperCase(),
+          price: token.current_price,
+          changeHour: token.price_change_percentage_1h_in_currency || 0,
+          change24h: token.price_change_percentage_24h_in_currency || 0,
+          marketCapFormatted: token.market_cap >= 1_000_000_000
+            ? `$${(token.market_cap / 1_000_000_000).toFixed(2)}B`
+            : token.market_cap >= 1_000_000
+            ? `$${(token.market_cap / 1_000_000).toFixed(2)}M`
+            : `$${(token.market_cap / 1_000).toFixed(2)}K`,
+          volumeFormatted: token.total_volume >= 1_000_000
+            ? `$${(token.total_volume / 1_000_000).toFixed(2)}M`
+            : token.total_volume >= 1_000
+            ? `$${(token.total_volume / 1_000).toFixed(2)}K`
+            : `$${token.total_volume.toFixed(2)}`,
+          isMostBought: false,
+          image: token.image,
+        }));
+
+        // If we got tokens from CoinGecko, try to supplement with additional Sui tokens
+        const additionalTokens = await fetchAdditionalSuiTokens();
+        const allTokens = [...tokens, ...additionalTokens];
+
+        // Remove duplicates based on symbol
+        const uniqueTokens = allTokens.filter((token, index, self) =>
+          index === self.findIndex(t => t.symbol === token.symbol)
+        );
+
+        return uniqueTokens.sort((a: any, b: any) => (b.marketCapFormatted.includes('B') ? 1 : 0) - (a.marketCapFormatted.includes('B') ? 1 : 0) || parseFloat(b.marketCapFormatted.replace(/[$,MB]/g, '')) - parseFloat(a.marketCapFormatted.replace(/[$,MB]/g, '')));
+      }
+    } catch (error) {
+      console.warn("CoinGecko API failed, trying alternative sources:", error);
+    }
+  }
+
+  // Fallback: Try to fetch from alternative sources
+  try {
+    const additionalTokens = await fetchAdditionalSuiTokens();
+    if (additionalTokens.length > 0) {
+      console.log(`Fetched ${additionalTokens.length} tokens from alternative sources`);
+      return additionalTokens;
+    }
+  } catch (error) {
+    console.error("Failed to fetch from alternative sources:", error);
+  }
+
+  // Final fallback to sample data
+  console.warn("All token fetching methods failed, returning sample data");
+  return sampleTokens;
+}
+
+// Function to fetch additional Sui tokens from alternative sources
+async function fetchAdditionalSuiTokens(): Promise<Token[]> {
+  const additionalTokens: Token[] = [];
+
+  // Try SuiScan API for comprehensive token list
+  try {
+    const response = await fetch('https://api.suiscan.xyz/api/v1/coins', {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'SuiHub/1.0'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // Process SuiScan data - adapt based on actual API response structure
+      if (data && Array.isArray(data)) {
+        const suiscanTokens = data
+          .filter((token: any) => token.price && token.price > 0) // Only tokens with price data
+          .slice(0, 50) // Limit to top 50
+          .map((token: any) => ({
+            id: token.coinType || token.address || token.symbol?.toLowerCase() || `sui-${token.symbol}`,
+            name: token.name || token.symbol,
+            symbol: token.symbol?.toUpperCase(),
+            price: token.price,
+            changeHour: token.priceChange1h || 0,
+            change24h: token.priceChange24h || 0,
+            marketCapFormatted: token.marketCap >= 1_000_000_000
+              ? `$${(token.marketCap / 1_000_000_000).toFixed(2)}B`
+              : token.marketCap >= 1_000_000
+              ? `$${(token.marketCap / 1_000_000).toFixed(2)}M`
+              : `$${(token.marketCap / 1_000).toFixed(2)}K`,
+            volumeFormatted: token.volume24h >= 1_000_000
+              ? `$${(token.volume24h / 1_000_000).toFixed(2)}M`
+              : token.volume24h >= 1_000
+              ? `$${(token.volume24h / 1_000).toFixed(2)}K`
+              : `$${token.volume24h?.toFixed(2) || '0'}`,
+            isMostBought: false,
+            image: token.logoUrl || token.iconUrl || "/placeholder.svg",
+          }));
+
+        additionalTokens.push(...suiscanTokens);
+      }
+    }
+  } catch (error) {
+    console.warn("SuiScan API failed:", error);
+  }
+
+  // Try CoinGecko's Sui ecosystem category
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=sui-ecosystem&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h${process.env.coingecko_api ? `&x_cg_demo_api_key=${process.env.coingecko_api}` : ''}`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+
+      const ecosystemTokens = data
+        .filter((token: any) => !primarySuiTokens.includes(token.id)) // Avoid duplicates
+        .slice(0, 50) // Limit to prevent overwhelming
+        .map((token: any) => ({
+          id: token.id,
+          name: token.name,
+          symbol: token.symbol.toUpperCase(),
+          price: token.current_price,
+          changeHour: token.price_change_percentage_1h_in_currency || 0,
+          change24h: token.price_change_percentage_24h_in_currency || 0,
+          marketCapFormatted: token.market_cap >= 1_000_000_000
+            ? `$${(token.market_cap / 1_000_000_000).toFixed(2)}B`
+            : token.market_cap >= 1_000_000
+            ? `$${(token.market_cap / 1_000_000).toFixed(2)}M`
+            : `$${(token.market_cap / 1_000).toFixed(2)}K`,
+          volumeFormatted: token.total_volume >= 1_000_000
+            ? `$${(token.total_volume / 1_000_000).toFixed(2)}M`
+            : token.total_volume >= 1_000
+            ? `$${(token.total_volume / 1_000).toFixed(2)}K`
+            : `$${token.total_volume.toFixed(2)}`,
+          isMostBought: false,
+          image: token.image,
+        }));
+
+      additionalTokens.push(...ecosystemTokens);
+    }
+  } catch (error) {
+    console.warn("CoinGecko ecosystem API failed:", error);
+  }
+
+  return additionalTokens;
+}
+
+export async function fetchSingleToken(tokenId: string): Promise<Token | null> {
+  const apiKey = process.env.coingecko_api;
 
   if (!apiKey) {
-    console.warn("CoinGecko API key not found, returning sample data.");
-    return sampleTokens;
+    console.warn("CoinGecko API key not found, cannot fetch single token.");
+    return null;
   }
 
   try {
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${suiEcosystemIds.join(",")}&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=1h%2C24h&x_cg_demo_api_key=${apiKey}`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${tokenId}&order=market_cap_desc&per_page=1&page=1&sparkline=false&price_change_percentage=1h%2C24h&x_cg_demo_api_key=${apiKey}`
     );
 
-    if (!response.ok) {
-      throw new Error(`CoinGecko API request failed with status ${response.status}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const token = data[0];
+        return {
+          id: token.id,
+          name: token.name,
+          symbol: token.symbol.toUpperCase(),
+          price: token.current_price,
+          changeHour: token.price_change_percentage_1h_in_currency || 0,
+          change24h: token.price_change_percentage_24h_in_currency || 0,
+          marketCapFormatted: token.market_cap >= 1_000_000_000
+            ? `$${(token.market_cap / 1_000_000_000).toFixed(2)}B`
+            : token.market_cap >= 1_000_000
+            ? `$${(token.market_cap / 1_000_000).toFixed(2)}M`
+            : `$${(token.market_cap / 1_000).toFixed(2)}K`,
+          volumeFormatted: token.total_volume >= 1_000_000
+            ? `$${(token.total_volume / 1_000_000).toFixed(2)}M`
+            : token.total_volume >= 1_000
+            ? `$${(token.total_volume / 1_000).toFixed(2)}K`
+            : `$${token.total_volume.toFixed(2)}`,
+          isMostBought: false,
+          image: token.image,
+        };
+      }
     }
-
-    const data = await response.json();
-
-    const tokens = data.map((token: any) => ({
-      id: token.id,
-      name: token.name,
-      symbol: token.symbol.toUpperCase(),
-      price: token.current_price,
-      changeHour: token.price_change_percentage_1h_in_currency || 0,
-      change24h: token.price_change_percentage_24h_in_currency || 0,
-      marketCapFormatted: token.market_cap >= 1_000_000_000
-        ? `$${(token.market_cap / 1_000_000_000).toFixed(2)}B`
-        : `$${(token.market_cap / 1_000_000).toFixed(2)}M`,
-      volumeFormatted: token.total_volume >= 1_000_000
-        ? `$${(token.total_volume / 1_000_000).toFixed(2)}M`
-        : `$${(token.total_volume / 1_000).toFixed(2)}K`,
-      isMostBought: false, // This would require more complex logic to determine
-      image: token.image,
-    }));
-
-    return tokens.sort((a: any, b: any) => b.market_cap - a.market_cap);
   } catch (error) {
-    console.error("Failed to fetch top performing tokens:", error);
-    return sampleTokens;
+    console.warn(`Failed to fetch single token ${tokenId}:`, error);
   }
+
+  return null;
+}
+
+export async function fetchSuiToken(): Promise<Token | null> {
+  const apiKey = process.env.coingecko_api;
+
+  if (!apiKey) {
+    console.warn("CoinGecko API key not found, cannot fetch SUI token.");
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=sui&order=market_cap_desc&per_page=1&page=1&sparkline=false&price_change_percentage=1h%2C24h&x_cg_demo_api_key=${apiKey}`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const token = data[0];
+        return {
+          id: token.id,
+          name: token.name,
+          symbol: token.symbol.toUpperCase(),
+          price: token.current_price,
+          changeHour: token.price_change_percentage_1h_in_currency || 0,
+          change24h: token.price_change_percentage_24h_in_currency || 0,
+          marketCapFormatted: token.market_cap >= 1_000_000_000
+            ? `$${(token.market_cap / 1_000_000_000).toFixed(2)}B`
+            : token.market_cap >= 1_000_000
+            ? `$${(token.market_cap / 1_000_000).toFixed(2)}M`
+            : `$${(token.market_cap / 1_000).toFixed(2)}K`,
+          volumeFormatted: token.total_volume >= 1_000_000
+            ? `$${(token.total_volume / 1_000_000).toFixed(2)}M`
+            : token.total_volume >= 1_000
+            ? `$${(token.total_volume / 1_000).toFixed(2)}K`
+            : `$${token.total_volume.toFixed(2)}`,
+          isMostBought: false,
+          image: token.image,
+        };
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to fetch SUI token:", error);
+  }
+
+  return null;
 }
 
 export async function fetchSuiChartData(days: number = 7): Promise<any> {
