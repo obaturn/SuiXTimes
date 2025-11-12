@@ -4,7 +4,7 @@
     "title": "Let Discuss About Sui",
     "author": "User 528b",
     "authorAddress": "0xa4bdabad459d93980ec8ca4cbf7d586ba1d1c81e929119e22f2a17d5fcc7528b",
-    "replies": 1,
+    "replies": 2,
     "views": 0,
     "category": "General",
     "content": "Let Discuss About Sui",
@@ -15,9 +15,16 @@
         "authorAddress": "0x123456789",
         "content": "Test reply from API",
         "timestamp": "2025-11-12T21:16:22.083Z"
+      },
+      {
+        "id": 1762982721577,
+        "author": "User 528b",
+        "authorAddress": "0xa4bdabad459d93980ec8ca4cbf7d586ba1d1c81e929119e22f2a17d5fcc7528b",
+        "content": "okay let test it now",
+        "timestamp": "2025-11-12T21:25:21.577Z"
       }
     ],
     "timestamp": "2025-11-12T21:03:29.746Z",
-    "lastActivity": "2025-11-12T21:16:22.083Z"
+    "lastActivity": "2025-11-12T21:25:21.577Z"
   }
 ]
