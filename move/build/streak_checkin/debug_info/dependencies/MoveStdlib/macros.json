@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:818771dd627b3fa26f843d3b2fa9454e72afd2dcee8f40c1c8b59a3c244b5d1a
-size 504
+{"version":2,"from_file_path":"/home/obaturn/.move/https___github_com_MystenLabs_sui_git_framework__testnet/crates/sui-framework/packages/move-stdlib/sources/macros.move","definition_location":{"file_hash":[2,97,174,66,141,176,149,104,147,125,253,164,117,149,79,114,178,154,248,116,216,24,219,36,6,102,220,173,9,242,87,40],"start":155,"end":161},"module_name":["0000000000000000000000000000000000000000000000000000000000000001","macros"],"struct_map":{},"enum_map":{},"function_map":{},"constant_map":{}}
