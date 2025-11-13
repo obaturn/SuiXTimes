@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,14 +29,14 @@ export default function DashboardLayout({
 
     // Allow access to dashboard even when not connected for development
     // Comment out the redirect for easier testing
-    // if (connectionStatus !== 'connected') {
-    //   router.push("/");
-    // }
+    if (connectionStatus !== 'connected') {
+      router.push("/");
+    }
   }, [connectionStatus, router]);
 
-  // For development, allow access to dashboard without wallet connection
-  // Comment out the loader to bypass connection check
-  /*
+  // While checking, or if the user is not connected, show a full-screen loader.
+  // This prevents any content flicker and ensures the user never sees the dashboard
+  // in a disconnected state.
   if (isChecking || connectionStatus !== "connected") {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-900">
@@ -45,9 +44,8 @@ export default function DashboardLayout({
       </div>
     );
   }
-  */
 
-  // Always render the dashboard layout for development
+  // Only render the dashboard layout if the user is fully connected.
   return (
     <div className="flex h-screen bg-gray-900">
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
@@ -62,3 +60,4 @@ export default function DashboardLayout({
     </div>
   );
 }
+
