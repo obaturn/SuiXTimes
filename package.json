@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "cd Frontend && next build",
+    "build": "next build",
     "dev": "node server.js",
     "dev:next": "next dev",
     "lint": "eslint .",
