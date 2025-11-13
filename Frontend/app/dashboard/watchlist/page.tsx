@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Bell, Trash2, Star, ArrowUpRight, RefreshCw, TrendingUp, TrendingDown, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useWatchlist } from '@/hooks/use-watchlist';
+import { useColorTheme } from '@/components/color-theme-provider';
 import { fetchTopPerformingTokens, fetchSuiToken, Token } from '@/app/actions/tokens';
 import { toast } from 'sonner';
 import StreakCard from '@/components/streak/StreakCard';
@@ -23,6 +24,7 @@ const Watchlist = () => {
     getWorstPerformer,
     getActiveAlertsCount,
   } = useWatchlist();
+  const { theme: colorTheme } = useColorTheme();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);

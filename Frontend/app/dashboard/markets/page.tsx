@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTopPerformingTokens, fetchSuiChartData, fetchSuiToken, Token } from '@/app/actions/tokens';
 import { useWatchlist } from '@/hooks/use-watchlist';
+import { useColorTheme } from '@/components/color-theme-provider';
 import { Button } from '@/components/ui/button';
 import { ArrowUpRight, Star, Search, TrendingUp, TrendingDown, Plus, Check, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -50,6 +51,7 @@ const Markets = () => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'market_cap' | 'price' | 'change'>('market_cap');
+  const { theme: colorTheme } = useColorTheme();
 
   const { addToWatchlist, removeFromWatchlist, isInWatchlist, watchlist: currentWatchlist } = useWatchlist();
 

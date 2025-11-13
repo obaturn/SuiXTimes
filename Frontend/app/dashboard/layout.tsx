@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Sidebar from "@/components/dashboard/sidebar";
 import Header from "@/components/dashboard/header";
+import { useColorTheme, getBackgroundGradient, getWaveColors } from '@/components/color-theme-provider';
 
 export default function DashboardLayout({
   children,
@@ -17,6 +18,12 @@ export default function DashboardLayout({
   const { connectionStatus } = useCurrentWallet();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
+  const { theme: colorTheme } = useColorTheme();
+  // choose a default readable text color for dashboard content
+  const colors = getWaveColors(colorTheme);
+  const dashboardPrimary = colors[0];
+  const dashboardPrimaryText = colors[1];
+  const dashboardTextColor = '#0f172a';
 
   useEffect(() => {
     // Don't do anything while the wallet status is initializing.
@@ -49,11 +56,20 @@ export default function DashboardLayout({
 
   // Always render the dashboard layout for development
   return (
-    <div className="flex h-screen bg-gray-900">
+    // use the color theme's background gradient for the dashboard
+    <div
+      className={`flex h-screen ${getBackgroundGradient(colorTheme)}`}
+      style={{
+        // expose a CSS variable for components to use
+        ['--dashboard-text' as any]: dashboardTextColor,
+        ['--dashboard-primary' as any]: dashboardPrimary,
+        ['--dashboard-primary-text' as any]: dashboardPrimaryText,
+      }}
+    >
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <div className="flex flex-1 flex-col min-h-screen lg:ml-64">
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto bg-gray-900">
+        <main className="flex-1 overflow-y-auto">
           <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
             {children}
           </div>

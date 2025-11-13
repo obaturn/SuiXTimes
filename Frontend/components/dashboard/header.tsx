@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from 'next-themes';
-import { useColorTheme } from '@/components/color-theme-provider';
+import { useColorTheme, getWaveColors } from '@/components/color-theme-provider';
 import { useCurrentWallet, useDisconnectWallet, ConnectButton } from '@mysten/dapp-kit';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -24,11 +24,15 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     router.push('/');
   };
 
+  const colors = getWaveColors(colorTheme);
+  const primary = colors[0];
+  const primaryText = colors[1];
+
   const cycleColorTheme = () => {
-    const themes: ("green" | "blue" | "pink" | "light")[] = ["green", "blue", "pink", "light"];
-    const currentIndex = themes.indexOf(colorTheme);
+    const themes = ["green", "blue", "pink", "light"] as const;
+    const currentIndex = themes.indexOf(colorTheme as any);
     const nextIndex = (currentIndex + 1) % themes.length;
-    setColorTheme(themes[nextIndex]);
+    setColorTheme(themes[nextIndex] as any);
   };
 
   return (
@@ -50,9 +54,12 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           {/* Wallet Connection Status */}
           {account ? (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-1 bg-green-600/20 border border-green-600/30 rounded-full">
-                <Wallet className="h-4 w-4 text-green-400" />
-                <span className="text-sm text-green-400 font-medium">
+              <div
+                className="flex items-center gap-2 px-3 py-1 rounded-full"
+                style={{ backgroundColor: `${primary}22`, border: `1px solid ${primary}55` }}
+              >
+                <Wallet className="h-4 w-4" style={{ color: primaryText }} />
+                <span className="text-sm font-medium" style={{ color: primaryText }}>
                   {account.address.slice(0, 6)}...{account.address.slice(-4)}
                 </span>
               </div>
@@ -60,7 +67,8 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                 variant="outline"
                 size="sm"
                 onClick={handleDisconnect}
-                className="text-red-400 border-red-400/30 hover:bg-red-400/10"
+                className="hover:opacity-90"
+                style={{ color: primaryText, borderColor: `${primary}55`, backgroundColor: 'transparent' }}
               >
                 Disconnect
               </Button>
@@ -76,6 +84,15 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={cycleColorTheme}
+            aria-label="Cycle dashboard color"
+            style={{ color: primaryText }}
+          >
+            <Palette className="h-6 w-6" />
           </Button>
           <div className="relative">
             <Bell className="h-6 w-6" />

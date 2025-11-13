@@ -33,7 +33,7 @@ const Home = () => {
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <h1 className="text-3xl font-bold text-white">Sui News Feed</h1>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--dashboard-text)' }}>Sui News Feed</h1>
           <p className="text-slate-400 mt-2">Get the latest updates from the Sui ecosystem.</p>
         </div>
         <div className="lg:col-span-1">
@@ -46,7 +46,9 @@ const Home = () => {
           <Button
             variant={filter === 'All News' ? 'default' : 'outline'}
             onClick={() => setFilter('All News')}
-            className={`whitespace-nowrap ${filter === 'All News' ? 'bg-cyan-600 text-white' : 'border-slate-700 text-slate-300 hover:bg-slate-800'}`}>
+            className="whitespace-nowrap"
+            style={filter === 'All News' ? { backgroundColor: 'var(--dashboard-primary)', color: '#fff' } : undefined}
+          >
             All News
           </Button>
         </div>
@@ -76,8 +78,8 @@ const Home = () => {
                 <img src={article.image} alt={article.title} className="w-full h-40 object-cover" />
                 <div className="p-4 flex flex-col flex-grow">
                   <div>
-                    <span className="text-xs font-semibold bg-cyan-800/50 text-white px-2 py-1 rounded-full">{article.category}</span>
-                    <h3 className="text-lg font-bold text-white mt-2 hover:text-cyan-400 transition-colors"><a href={article.url} target="_blank" rel="noopener noreferrer">{article.title}</a></h3>
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ backgroundColor: 'var(--dashboard-primary-text, rgba(12,74,110,0.15))', color: '#fff' }}>{article.category}</span>
+                    <h3 className="text-lg font-bold mt-2 transition-colors" style={{ color: 'var(--dashboard-text)' }}><a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>{article.title}</a></h3>
                     <p className="text-slate-400 text-sm mt-1 flex-grow">{article.description}</p>
                   </div>
                   <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-700/50">

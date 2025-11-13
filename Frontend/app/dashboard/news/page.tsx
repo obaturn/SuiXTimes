@@ -23,11 +23,13 @@ import Link from 'next/link';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { useArticles } from '@/hooks/use-articles';
 import { useLiveNews } from '@/hooks/use-live-news';
+import { useColorTheme } from '@/components/color-theme-provider';
 import { Article } from '../../../components/articles/ArticleCard';
 
 const NewsPage = () => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const { theme: colorTheme } = useColorTheme();
 
   const { articles, isLoading, error, refreshArticles } = useArticles();
   const { news: liveNews, isLoading: liveNewsLoading, error: liveNewsError, refreshNews } = useLiveNews();
@@ -118,11 +120,12 @@ const NewsPage = () => {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 rounded-lg border transition-all whitespace-nowrap text-sm ${
+                  className={`flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 rounded-lg border transition-all whitespace-nowrap text-sm`}
+                  style={
                     selectedCategory === category.id
-                      ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400'
-                      : 'bg-slate-800/50 border-slate-600 text-slate-300 hover:bg-slate-700'
-                  }`}
+                      ? { backgroundColor: 'var(--dashboard-primary, rgba(12,74,110,0.15))', borderColor: 'var(--dashboard-primary)', color: 'var(--dashboard-primary-text)' }
+                      : { backgroundColor: 'rgba(100,116,139,0.3)', borderColor: 'rgb(71,85,105)', color: 'rgb(148,163,184)' }
+                  }
                 >
                   <category.icon className="h-3 w-3 lg:h-4 lg:w-4" />
                   <span className="hidden sm:inline">{category.name}</span>
