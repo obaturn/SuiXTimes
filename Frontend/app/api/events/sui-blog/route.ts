@@ -3,15 +3,19 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     // First, try to get categories to see what's available
-    const categoriesResponse = await fetch('https://blog.sui.io/wp-json/wp/v2/categories', {
-      headers: {
-        'User-Agent': 'SuiHub/1.0',
-      },
-    });
-
     let categories = [];
-    if (categoriesResponse.ok) {
-      categories = await categoriesResponse.json();
+    try {
+      const categoriesResponse = await fetch('https://blog.sui.io/wp-json/wp/v2/categories', {
+        headers: {
+          'User-Agent': 'SuiHub/1.0',
+        },
+      });
+
+      if (categoriesResponse.ok) {
+        categories = await categoriesResponse.json();
+      }
+    } catch (error) {
+      console.warn('Failed to fetch categories, proceeding without:', error);
     }
 
     // Check if there's an events category
@@ -35,7 +39,38 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error(`Sui blog API error: ${response.status}`);
+      console.warn(`Sui blog API error: ${response.status}, using fallback`);
+      // Don't throw error, just use fallback
+      // Use fallback events
+      const fallbackEvents = [
+        {
+          title: "Sui Developer Conference 2024",
+          date: new Date().toLocaleDateString(),
+          image: "/placeholder.svg",
+          description: "Join the Sui developer community for the annual conference featuring workshops, talks, and networking opportunities.",
+          location: "Virtual",
+          type: "Conference",
+          attendees: "Developers",
+          url: "https://sui.io/developer-conference"
+        },
+        {
+          title: "Sui Hackathon Season",
+          date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(), // 1 week from now
+          image: "/placeholder.svg",
+          description: "Build the next generation of Sui applications. Prizes, mentorship, and community support available.",
+          location: "Online",
+          type: "Hackathon",
+          attendees: "Builders",
+          url: "https://sui.io/hackathon"
+        }
+      ];
+
+      return NextResponse.json({
+        events: fallbackEvents,
+        success: true,
+        isFallback: true,
+        error: `API returned ${response.status}`
+      });
     }
 
     const posts = await response.json();
