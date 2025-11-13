@@ -80,17 +80,28 @@ const Home = () => {
       }
     };
 
-    // Fetch news from RSS feeds
+    // Fetch news from multiple sources
     const fetchNews = async () => {
       try {
-        // Try multiple RSS sources for crypto news
+        let allNews: any[] = [];
+
+        // Fetch from NewsAPI
+        try {
+          const newsApiResponse = await fetch('/api/newsapi');
+          if (newsApiResponse.ok) {
+            const newsApiData = await newsApiResponse.json();
+            allNews = allNews.concat(newsApiData.slice(0, 2)); // Take 2 from NewsAPI
+          }
+        } catch (err) {
+          console.warn('Failed to fetch from NewsAPI:', err);
+        }
+
+        // Fetch from RSS feeds
         const rssUrls = [
           'https://coindesk.com/arc/outboundfeeds/rss/',
           'https://www.coingecko.com/en/news/rss',
           'https://cointelegraph.com/rss'
         ];
-
-        let allNews: any[] = [];
 
         for (const url of rssUrls) {
           try {
@@ -98,11 +109,16 @@ const Home = () => {
             if (response.ok) {
               const data = await response.json();
               if (data.items) {
-                // Filter for Sui-related news
+                // Filter for Sui-related news or take general crypto news
                 const suiNews = data.items
                   .filter((item: any) => item.title?.toLowerCase().includes('sui') || item.content?.toLowerCase().includes('sui'))
-                  .slice(0, 2); // Take 2 from each source
-                allNews = allNews.concat(suiNews);
+                  .slice(0, 1); // Take 1 Sui-specific from each
+                if (suiNews.length > 0) {
+                  allNews = allNews.concat(suiNews);
+                } else {
+                  // Take 1 general news if no Sui news
+                  allNews = allNews.concat(data.items.slice(0, 1));
+                }
               }
             }
           } catch (err) {
@@ -110,28 +126,13 @@ const Home = () => {
           }
         }
 
-        // If no Sui news found, take general crypto news
-        if (allNews.length === 0) {
-          for (const url of rssUrls) {
-            try {
-              const response = await fetch(`/api/rss?url=${encodeURIComponent(url)}`);
-              if (response.ok) {
-                const data = await response.json();
-                if (data.items) {
-                  allNews = allNews.concat(data.items.slice(0, 1)); // Take 1 from each
-                }
-              }
-            } catch (err) {
-              console.warn(`Failed to fetch from ${url}:`, err);
-            }
-          }
-        }
-
-        const newsData: NewsItem[] = allNews.slice(0, 3).map((item: any) => ({
+        // Shuffle and take top 3
+        const shuffled = allNews.sort(() => 0.5 - Math.random());
+        const newsData: NewsItem[] = shuffled.slice(0, 3).map((item: any) => ({
           title: item.title || 'No title',
           source: item.source || 'Crypto News',
-          time: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : 'Recent',
-          category: 'Blockchain'
+          time: item.time || item.pubDate ? new Date(item.pubDate || item.time).toLocaleDateString() : 'Recent',
+          category: item.category || 'Cryptocurrency'
         }));
 
         setNews(newsData.length > 0 ? newsData : [
