@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  // During build time, skip external API calls and return fallback immediately
-  if (process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'production') {
+  // During Vercel build time, skip external API calls and return fallback immediately
+  if (process.env.VERCEL || process.env.CI || !process.env.VERCEL_ENV) {
     // In production build, just return fallback without logging
     const fallbackEvents = [
       {
