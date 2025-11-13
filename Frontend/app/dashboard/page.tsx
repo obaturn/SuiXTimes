@@ -80,19 +80,65 @@ const Home = () => {
       }
     };
 
-    // Fetch news from internal API
+    // Fetch news from RSS feeds
     const fetchNews = async () => {
       try {
-        const response = await fetch('/api/news/live');
-        const data = await response.json();
+        // Try multiple RSS sources for crypto news
+        const rssUrls = [
+          'https://coindesk.com/arc/outboundfeeds/rss/',
+          'https://www.coingecko.com/en/news/rss',
+          'https://cointelegraph.com/rss'
+        ];
 
-        const newsData: NewsItem[] = data.slice(0, 3).map((item: any) => ({
-          title: item.title,
-          source: item.source,
-          time: item.time,
-          category: item.category
+        let allNews: any[] = [];
+
+        for (const url of rssUrls) {
+          try {
+            const response = await fetch(`/api/rss?url=${encodeURIComponent(url)}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.items) {
+                // Filter for Sui-related news
+                const suiNews = data.items
+                  .filter((item: any) => item.title?.toLowerCase().includes('sui') || item.content?.toLowerCase().includes('sui'))
+                  .slice(0, 2); // Take 2 from each source
+                allNews = allNews.concat(suiNews);
+              }
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch from ${url}:`, err);
+          }
+        }
+
+        // If no Sui news found, take general crypto news
+        if (allNews.length === 0) {
+          for (const url of rssUrls) {
+            try {
+              const response = await fetch(`/api/rss?url=${encodeURIComponent(url)}`);
+              if (response.ok) {
+                const data = await response.json();
+                if (data.items) {
+                  allNews = allNews.concat(data.items.slice(0, 1)); // Take 1 from each
+                }
+              }
+            } catch (err) {
+              console.warn(`Failed to fetch from ${url}:`, err);
+            }
+          }
+        }
+
+        const newsData: NewsItem[] = allNews.slice(0, 3).map((item: any) => ({
+          title: item.title || 'No title',
+          source: item.source || 'Crypto News',
+          time: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : 'Recent',
+          category: 'Blockchain'
         }));
-        setNews(newsData);
+
+        setNews(newsData.length > 0 ? newsData : [
+          { title: 'Sui DeFi ecosystem sees massive growth', source: 'CoinDesk', time: '2h ago', category: 'DeFi' },
+          { title: 'New developer tools released for Sui', source: 'Sui Foundation', time: '1d ago', category: 'Technical' },
+          { title: 'Community milestone: 1 million active wallets', source: 'Sui News', time: '3d ago', category: 'Community' },
+        ]);
       } catch (error) {
         console.error('Error fetching news:', error);
         // Fallback to static data
