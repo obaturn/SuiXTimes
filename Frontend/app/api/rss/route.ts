@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
 
     if (!url) {
       return NextResponse.json({ error: 'URL parameter required' }, { status: 400 });
+      console.log("No URL parameter provided"+url);
     }
 
     // Fetch the RSS feed
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching RSS:', error);
     return NextResponse.json(
       { error: 'Failed to fetch RSS feed' },
+      
       { status: 500 }
     );
   }
