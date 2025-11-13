@@ -1,9 +1,3 @@
-// Copyright (c) Mysten Labs, Inc.
-// SPDX-License-Identifier: Apache-2.0
-
-module sui::hmac;
-
-/// @param key: HMAC key, arbitrary bytes.
-/// @param msg: message to sign, arbitrary bytes.
-/// Returns the 32 bytes digest of HMAC-SHA3-256(key, msg).
-public native fun hmac_sha3_256(key: &vector<u8>, msg: &vector<u8>): vector<u8>;
+version https://git-lfs.github.com/spec/v1
+oid sha256:8d4881c7949fbf805753a4dd83adea9db6a44e737ab7d36fffb2a06384118468
+size 328

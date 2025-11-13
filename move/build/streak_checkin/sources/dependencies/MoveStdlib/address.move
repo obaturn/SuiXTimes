@@ -1,12 +1,3 @@
-// Copyright (c) Mysten Labs, Inc.
-// SPDX-License-Identifier: Apache-2.0
-
-/// Provides a way to get address length since it's a
-/// platform-specific parameter.
-module std::address;
-
-/// Should be converted to a native function.
-/// Current implementation only works for Sui.
-public fun length(): u64 {
-    32
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:d71f1b77cf1bf4f07a53bb99a84bf1ca6a41800f1d469468ac6a09e5c382da97
+size 313

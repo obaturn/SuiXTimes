@@ -1,6 +1,3 @@
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "framework": null
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:6f54ec9552737b4474b75eb7ef8dce2c3465de93ca9b5c81cbece43f8479402a
+size 123

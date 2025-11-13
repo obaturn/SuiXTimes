@@ -1,17 +1,3 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('@mysten/walrus', '@mysten/walrus-wasm');
-    }
-    return config;
-  },
-}
-
-export default nextConfig
+version https://git-lfs.github.com/spec/v1
+oid sha256:da0b7ae03ae3fa49e040660d6ea7e8ecadcbb80aa483e0700746c3cbbde7b57d
+size 340

@@ -1,26 +1,3 @@
-"use client"
-
-import type React from "react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit"
-import { getFullnodeUrl } from "@mysten/sui/client"
-
-const queryClient = new QueryClient()
-
-const networks = {
-  devnet: { url: getFullnodeUrl("devnet") },
-  mainnet: { url: getFullnodeUrl("mainnet") },
-  testnet: { url: getFullnodeUrl("testnet") },
-}
-
-export function WalletProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <SuiClientProvider networks={networks} defaultNetwork="testnet">
-        <WalletProvider>
-          {children}
-        </WalletProvider>
-      </SuiClientProvider>
-    </QueryClientProvider>
-  )
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:2029eb3df58e500b16fcaddba882633d90c9bf0dab43b829661297963e6cbd4b
+size 779
