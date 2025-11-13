@@ -86,15 +86,17 @@ const StreakCard: React.FC = () => {
     setLoading(true);
     try {
       console.log('Creating streak for address:', account.address);
-      console.log('signAndExecuteTransaction type:', typeof signAndExecuteTransaction);
-      console.log('signAndExecuteTransaction:', signAndExecuteTransaction);
       const tx = StreakCheckinContract.createStreakTransaction();
       const result = await signAndExecuteTransaction({
         transaction: tx,
       });
       console.log('Streak creation result:', result);
       toast.success('Streak tracker created! Start checking in daily.');
-      await loadStreakData(); // Reload data
+
+      // Wait for transaction confirmation and indexing
+      setTimeout(async () => {
+        await loadStreakData(); // Reload data
+      }, 5000);
     } catch (error) {
       console.error('Error creating streak:', error);
       toast.error(`Failed to create streak tracker: ${error instanceof Error ? error.message : String(error)}`);

@@ -1,14 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, Sun, Moon, LogOut, BookOpen } from 'lucide-react';
+import { Home, BarChart3, Newspaper, Star, Calendar, Users, X, LogOut, BookOpen } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useTheme } from 'next-themes';
 import { useWatchlist } from '@/hooks/use-watchlist';
 
-import { useDisconnectWallet } from '@mysten/dapp-kit';
+import { useDisconnectWallet, useCurrentAccount } from '@mysten/dapp-kit';
+import { getUserStreak } from '@/app/actions/streak';
 
 const SidebarLogo = () => (
   <div className="flex items-center space-x-2">
@@ -27,15 +27,22 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const { mutate: disconnect } = useDisconnectWallet();
   const { watchlist } = useWatchlist();
+  const account = useCurrentAccount();
+  const [streak, setStreak] = useState(0);
 
   const handleDisconnect = () => {
     disconnect();
     router.push('/');
   };
+
+  useEffect(() => {
+    if (account?.address) {
+      getUserStreak(account.address).then(setStreak);
+    }
+  }, [account?.address]);
 
   const navItems = [
     { href: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -99,22 +106,16 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       <div className="border-t border-border p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <img
-              className="h-10 w-10 rounded-full object-cover"
-              src="/placeholder-user.jpg"
-              alt="User avatar"
-            />
+            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+              {account?.address ? account.address.slice(0, 2).toUpperCase() : 'G'}
+            </div>
             <div className="ml-4">
-              <p className="font-semibold text-foreground">Satoshi</p>
-              <p className="text-sm text-muted-foreground">Level 5</p>
+              <p className="font-semibold text-foreground">
+                {account?.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : 'Guest'}
+              </p>
+              <p className="text-sm text-muted-foreground">{streak} day streak</p>
             </div>
           </div>
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
         </div>
         <button
           onClick={handleDisconnect}

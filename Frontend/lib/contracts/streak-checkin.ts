@@ -6,6 +6,8 @@ import { bcs } from '@mysten/sui/bcs';
 const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID!;
 const STREAK_REGISTRY = process.env.NEXT_PUBLIC_STREAK_REGISTRY!;
 
+console.log('Contract env vars:', { PACKAGE_ID, STREAK_REGISTRY, network: process.env.NEXT_PUBLIC_NETWORK });
+
 // Initialize Sui client
 const network = (process.env.NEXT_PUBLIC_NETWORK as "mainnet" | "testnet" | "devnet" | "localnet") || "testnet";
 const suiClient = new SuiClient({
@@ -39,6 +41,16 @@ export class StreakCheckinContract {
    * Create a transaction for streak creation (for use with hooks)
    */
   static createStreakTransaction(registryId: string = STREAK_REGISTRY) {
+    if (!PACKAGE_ID) {
+      throw new Error('Package ID not configured');
+    }
+
+    console.log('Creating transaction with:', {
+      packageId: PACKAGE_ID,
+      registryId,
+      target: `${PACKAGE_ID}::streak_checkin::create_streak`
+    });
+
     const tx = new Transaction();
 
     tx.moveCall({
@@ -49,6 +61,7 @@ export class StreakCheckinContract {
       ],
     });
 
+    console.log('Transaction created successfully');
     return tx;
   }
   /**
@@ -103,6 +116,8 @@ export class StreakCheckinContract {
     signAndExecuteTransaction: any,
     streakId: string
   ) {
+    const tx = this.checkInTransaction(streakId);
+
     try {
       const result = await signAndExecuteTransaction({
         transaction: tx,
@@ -192,18 +207,45 @@ export class StreakCheckinContract {
    */
   static async hasStreakObject(ownerAddress: string): Promise<string | null> {
     try {
+      console.log('Checking for streak object with package ID:', PACKAGE_ID);
+      console.log('Network:', network);
+
+      // First, let's see all owned objects to debug
+      const allObjects = await suiClient.getOwnedObjects({
+        owner: ownerAddress,
+        options: {
+          showType: true,
+          showContent: true,
+        },
+      });
+
+      console.log('All owned objects:', allObjects.data.length);
+      console.log('All objects sample:', allObjects.data.slice(0, 3).map(obj => ({
+        objectId: obj.data?.objectId,
+        type: obj.data?.type
+      })));
+
+      // Now filter for UserStreak
+      const userStreakType = `${PACKAGE_ID}::streak_checkin::UserStreak`;
+      console.log('Looking for type:', userStreakType);
+
       const objects = await suiClient.getOwnedObjects({
         owner: ownerAddress,
         filter: {
-          StructType: `${PACKAGE_ID}::streak_checkin::UserStreak`,
+          StructType: userStreakType,
         },
         options: {
           showContent: true,
         },
       });
 
+      console.log('Filtered objects:', objects.data.length);
+      console.log('Filtered objects data:', objects.data);
+
       if (objects.data.length > 0) {
-        return objects.data[0].data?.objectId || null;
+        const objectId = objects.data[0].data?.objectId || null;
+        console.log('Returning object ID:', objectId);
+        return objectId;
       }
 
       return null;
