@@ -15,7 +15,8 @@ import {
   PlayCircle,
   Clock,
   Users,
-  Star
+  Star,
+  Eye
 } from 'lucide-react';
 
 const Learn = () => {
@@ -32,6 +33,9 @@ const Learn = () => {
     developer: 0,
     advanced: 0
   });
+  const [completedCourses, setCompletedCourses] = useState(0);
+  const [certificatesEarned, setCertificatesEarned] = useState(0);
+  const [studyTime, setStudyTime] = useState(0);
   const [curriculumProgress, setCurriculumProgress] = useState<{
     [key: string]: { [moduleId: string]: boolean }
   }>({
@@ -40,6 +44,19 @@ const Learn = () => {
     advanced: {}
   });
   const [activePath, setActivePath] = useState<string | null>(null);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [completedPaths, setCompletedPaths] = useState<{
+    [pathId: string]: {
+      completedAt: string;
+      totalTime: number; // in minutes
+      score: number; // percentage
+      certificateId: string;
+    }
+  }>({});
+  const [showCertificate, setShowCertificate] = useState<{
+    pathId: string;
+    certificateData: any;
+  } | null>(null);
 
   const updateProgress = (track: keyof typeof learningProgress, increment: number) => {
     setLearningProgress(prev => ({
@@ -52,13 +69,35 @@ const Learn = () => {
   useEffect(() => {
     const savedProgress = localStorage.getItem('sui-learning-progress');
     const savedCurriculum = localStorage.getItem('sui-curriculum-progress');
+    const savedStudyTime = localStorage.getItem('sui-study-time');
+    const savedCompletedPaths = localStorage.getItem('sui-completed-paths');
     if (savedProgress) {
       setLearningProgress(JSON.parse(savedProgress));
     }
     if (savedCurriculum) {
       setCurriculumProgress(JSON.parse(savedCurriculum));
     }
+    if (savedStudyTime) {
+      setStudyTime(parseInt(savedStudyTime));
+    }
+    if (savedCompletedPaths) {
+      setCompletedPaths(JSON.parse(savedCompletedPaths));
+    }
   }, []);
+
+  // Calculate dynamic stats
+  useEffect(() => {
+    // Calculate completed courses
+    const totalModules = learningPaths.reduce((acc, path) => acc + path.curriculum.length, 0);
+    const completedModules = Object.values(curriculumProgress).reduce((acc, pathProgress) =>
+      acc + Object.values(pathProgress).filter(Boolean).length, 0
+    );
+    setCompletedCourses(completedModules);
+
+    // Calculate certificates earned from completed paths
+    const certificatesCount = Object.keys(completedPaths).length;
+    setCertificatesEarned(certificatesCount);
+  }, [curriculumProgress, learningProgress]);
 
   // Save progress to localStorage whenever it changes
   useEffect(() => {
@@ -72,6 +111,7 @@ const Learn = () => {
   const startTutorial = (tutorialIndex: number) => {
     setActiveLesson(tutorialIndex);
     setCurrentStep(0);
+    setSessionStartTime(Date.now());
   };
 
   const nextStep = () => {
@@ -96,6 +136,15 @@ const Learn = () => {
   };
 
   const backToLearn = () => {
+    // Track study time
+    if (sessionStartTime) {
+      const sessionDuration = Math.floor((Date.now() - sessionStartTime) / (1000 * 60)); // in minutes
+      const newStudyTime = studyTime + sessionDuration;
+      setStudyTime(newStudyTime);
+      localStorage.setItem('sui-study-time', newStudyTime.toString());
+      setSessionStartTime(null);
+    }
+
     setActiveLesson(null);
     setCurrentStep(0);
   };
@@ -242,7 +291,64 @@ const Learn = () => {
       const completedModules = Object.values(curriculumProgress[pathId] || {}).filter(Boolean).length + 1;
       const newProgress = Math.round((completedModules / path.curriculum.length) * 100);
       updateProgress(pathId as keyof typeof learningProgress, newProgress - learningProgress[pathId as keyof typeof learningProgress]);
+
+      // Check if path is now complete
+      if (newProgress >= 100 && !completedPaths[pathId]) {
+        completeLearningPath(pathId);
+      }
     }
+  };
+
+  const completeLearningPath = (pathId: string) => {
+    const path = learningPaths.find(p => p.id === pathId);
+    if (!path) return;
+
+    // Calculate completion metrics
+    const totalModules = path.curriculum.length;
+    const completedModules = Object.values(curriculumProgress[pathId] || {}).filter(Boolean).length;
+    const completionScore = Math.round((completedModules / totalModules) * 100);
+
+    // Calculate total study time for this path (simplified - could be more sophisticated)
+    const pathStudyTime = Math.floor(studyTime * (completedModules / totalModules));
+
+    // Generate certificate
+    const certificateId = `CERT-${pathId.toUpperCase()}-${Date.now()}`;
+    const certificateData = {
+      certificateId,
+      pathId,
+      pathTitle: path.title,
+      completedAt: new Date().toISOString(),
+      totalTime: pathStudyTime,
+      score: completionScore,
+      recipientName: "Student Name", // In real app, get from user profile
+      issuer: "Sui X Times Academy",
+      issuedAt: new Date().toISOString(),
+      blockchainVerification: `sui://certificate/${certificateId}`
+    };
+
+    // Save completion data
+    const newCompletedPaths = {
+      ...completedPaths,
+      [pathId]: {
+        completedAt: certificateData.completedAt,
+        totalTime: pathStudyTime,
+        score: completionScore,
+        certificateId
+      }
+    };
+
+    setCompletedPaths(newCompletedPaths);
+    localStorage.setItem('sui-completed-paths', JSON.stringify(newCompletedPaths));
+
+    // Update certificates earned count
+    const newCertificatesEarned = Object.keys(newCompletedPaths).length;
+    setCertificatesEarned(newCertificatesEarned);
+
+    // Show certificate modal
+    setShowCertificate({
+      pathId,
+      certificateData
+    });
   };
 
   const isModuleUnlocked = (pathId: string, moduleIndex: number): boolean => {
@@ -266,6 +372,165 @@ const Learn = () => {
 
   const backToPaths = () => {
     setActivePath(null);
+  };
+
+  const downloadCertificate = (certificateData: any) => {
+    // Create a simple certificate as HTML that can be printed/saved as PDF
+    const certificateHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Certificate of Completion</title>
+        <style>
+          body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+          }
+          .certificate {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 60px 40px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+          }
+          .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+          }
+          .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 30px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+          .subtitle {
+            font-size: 18px;
+            margin: 20px 0;
+            opacity: 0.9;
+          }
+          .recipient {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #ffd700;
+          }
+          .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 40px 0;
+            font-size: 16px;
+          }
+          .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+          }
+          .verification {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 14px;
+          }
+          .footer {
+            margin-top: 40px;
+            opacity: 0.8;
+            font-size: 14px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="certificate">
+          <div class="logo">🎓</div>
+          <div class="title">Certificate of Completion</div>
+          <div class="subtitle">This certifies that</div>
+          <div class="recipient">${certificateData.recipientName}</div>
+          <div class="subtitle">has successfully completed the</div>
+          <div style="font-size: 24px; font-weight: bold; margin: 20px 0;">
+            ${certificateData.pathTitle}
+          </div>
+          <div class="subtitle">Learning Path</div>
+
+          <div class="details">
+            <div class="detail-item">
+              <strong>Completion Date</strong><br>
+              ${new Date(certificateData.completedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+            <div class="detail-item">
+              <strong>Study Time</strong><br>
+              ${Math.floor(certificateData.totalTime / 60)}h ${certificateData.totalTime % 60}m
+            </div>
+            <div class="detail-item">
+              <strong>Score</strong><br>
+              ${certificateData.score}%
+            </div>
+            <div class="detail-item">
+              <strong>Certificate ID</strong><br>
+              ${certificateData.certificateId}
+            </div>
+          </div>
+
+          <div class="verification">
+            <strong>Blockchain Verification:</strong><br>
+            ${certificateData.blockchainVerification}<br>
+            <small>Scan or visit the link above to verify this certificate on the Sui blockchain</small>
+          </div>
+
+          <div class="footer">
+            Issued by ${certificateData.issuer} on ${new Date(certificateData.issuedAt).toLocaleDateString()}
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Create blob and download
+    const blob = new Blob([certificateHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SuiXTimes-Certificate-${certificateData.pathId}-${certificateData.certificateId}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const viewCertificate = (pathId: string) => {
+    const completionData = completedPaths[pathId];
+    if (!completionData) return;
+
+    const path = learningPaths.find(p => p.id === pathId);
+    if (!path) return;
+
+    const certificateData = {
+      certificateId: completionData.certificateId,
+      pathId,
+      pathTitle: path.title,
+      completedAt: completionData.completedAt,
+      totalTime: completionData.totalTime,
+      score: completionData.score,
+      recipientName: "Student Name", // In real app, get from user profile
+      issuer: "Sui X Times Academy",
+      issuedAt: completionData.completedAt,
+      blockchainVerification: `sui://certificate/${completionData.certificateId}`
+    };
+
+    setShowCertificate({
+      pathId,
+      certificateData
+    });
   };
 
   const openDocumentation = (doc: any) => {
@@ -2128,7 +2393,7 @@ export class SuiBridgeClient {
               <p className="text-slate-400 text-sm">Track your learning journey</p>
             </div>
           </div>
-          <div className="text-2xl lg:text-3xl font-bold text-white">2</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">{completedCourses}</div>
           <div className="text-sm text-slate-400 mt-2">of 15 available</div>
         </div>
 
@@ -2140,8 +2405,8 @@ export class SuiBridgeClient {
               <p className="text-slate-400 text-sm">Showcase your skills</p>
             </div>
           </div>
-          <div className="text-2xl lg:text-3xl font-bold text-white">1</div>
-          <div className="text-sm text-slate-400 mt-2">Move Basics Certified</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">{certificatesEarned}</div>
+          <div className="text-sm text-slate-400 mt-2">{certificatesEarned > 0 ? 'Certified' : 'No certificates yet'}</div>
         </div>
 
         <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-4 lg:p-6 sm:col-span-2 lg:col-span-1">
@@ -2152,7 +2417,7 @@ export class SuiBridgeClient {
               <p className="text-slate-400 text-sm">Hours invested in learning</p>
             </div>
           </div>
-          <div className="text-2xl lg:text-3xl font-bold text-white">24h</div>
+          <div className="text-2xl lg:text-3xl font-bold text-white">{Math.floor(studyTime / 60)}h {studyTime % 60}m</div>
           <div className="text-sm text-slate-400 mt-2">This month</div>
         </div>
       </div>
@@ -2164,6 +2429,7 @@ export class SuiBridgeClient {
             {[
               { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
               { id: 'paths', label: 'Learning Paths', icon: Play },
+              { id: 'certificates', label: 'Certificates', icon: Award },
               { id: 'docs', label: 'Documentation', icon: FileText },
               { id: 'examples', label: 'Code Examples', icon: Code }
             ].map((tab) => (
@@ -2369,14 +2635,136 @@ export class SuiBridgeClient {
                       <div>
                         <h3 className="text-xl font-bold text-white">🎉 Path Completed!</h3>
                         <p className="text-slate-300">Congratulations! You've completed the {learningPaths.find(p => p.id === activePath)?.title}.</p>
-                        <Button className="mt-4 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700">
-                          <Award className="w-4 h-4 mr-2" />
-                          Download Certificate
-                        </Button>
+                        <div className="flex gap-3 mt-4">
+                          <Button
+                            onClick={() => viewCertificate(activePath)}
+                            variant="outline"
+                            className="border-yellow-600 text-yellow-400 hover:bg-yellow-600/10"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Certificate
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              const completionData = completedPaths[activePath];
+                              if (completionData) {
+                                const path = learningPaths.find(p => p.id === activePath);
+                                const certificateData = {
+                                  certificateId: completionData.certificateId,
+                                  pathId: activePath,
+                                  pathTitle: path?.title || '',
+                                  completedAt: completionData.completedAt,
+                                  totalTime: completionData.totalTime,
+                                  score: completionData.score,
+                                  recipientName: "Student Name",
+                                  issuer: "Sui X Times Academy",
+                                  issuedAt: completionData.completedAt,
+                                  blockchainVerification: `sui://certificate/${completionData.certificateId}`
+                                };
+                                downloadCertificate(certificateData);
+                              }
+                            }}
+                            className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download Certificate
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'certificates' && (
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-6">My Certificates</h2>
+            {Object.keys(completedPaths).length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Object.entries(completedPaths).map(([pathId, completionData]) => {
+                  const path = learningPaths.find(p => p.id === pathId);
+                  if (!path) return null;
+
+                  return (
+                    <div key={pathId} className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 rounded-lg p-6 hover:border-slate-600/50 transition-colors">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="p-3 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-lg">
+                          <Award className="w-8 h-8 text-yellow-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-white mb-2">{path.title}</h3>
+                          <p className="text-slate-400 text-sm mb-3">Certificate ID: {completionData.certificateId}</p>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-slate-400">Completed:</span>
+                              <div className="text-white font-semibold">
+                                {new Date(completionData.completedAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Study Time:</span>
+                              <div className="text-white font-semibold">
+                                {Math.floor(completionData.totalTime / 60)}h {completionData.totalTime % 60}m
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Score:</span>
+                              <div className="text-white font-semibold">{completionData.score}%</div>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Level:</span>
+                              <div className="text-white font-semibold capitalize">{path.level}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => viewCertificate(pathId)}
+                          variant="outline"
+                          className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            const certificateData = {
+                              certificateId: completionData.certificateId,
+                              pathId,
+                              pathTitle: path.title,
+                              completedAt: completionData.completedAt,
+                              totalTime: completionData.totalTime,
+                              score: completionData.score,
+                              recipientName: "Student Name",
+                              issuer: "Sui X Times Academy",
+                              issuedAt: completionData.completedAt,
+                              blockchainVerification: `sui://certificate/${completionData.certificateId}`
+                            };
+                            downloadCertificate(certificateData);
+                          }}
+                          className="flex-1 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Award className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">No Certificates Yet</h3>
+                <p className="text-slate-400 mb-6">Complete learning paths to earn certificates</p>
+                <Button onClick={() => setActiveTab('paths')} className="bg-blue-600 hover:bg-blue-700">
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Learning
+                </Button>
               </div>
             )}
           </div>
@@ -2698,6 +3086,91 @@ export class SuiBridgeClient {
                 </a>
 
                 <p className="text-xs text-slate-400 mt-3">Opens in new tab</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Certificate Modal */}
+      {showCertificate && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-slate-800/95 backdrop-blur-md border border-slate-700/50 rounded-lg max-w-4xl w-full max-h-[95vh] overflow-hidden">
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCertificate(null)}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    ← Back
+                  </Button>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white">Certificate of Completion</h2>
+                    <p className="text-slate-400 text-sm">Learning Path Achievement</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => downloadCertificate(showCertificate.certificateData)}
+                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+
+              {/* Certificate Display */}
+              <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/10 rounded-lg p-8 text-center">
+                <div className="mb-6">
+                  <div className="text-6xl mb-4">🎓</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Certificate of Completion</h3>
+                  <p className="text-slate-300">This certifies that</p>
+                </div>
+
+                <div className="mb-6">
+                  <div className="text-3xl font-bold text-yellow-400 mb-2">Student Name</div>
+                  <p className="text-slate-300">has successfully completed the</p>
+                  <div className="text-xl font-bold text-white mt-2">{showCertificate.certificateData.pathTitle}</div>
+                  <p className="text-slate-300">Learning Path</p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-sm text-slate-400">Completion Date</div>
+                    <div className="text-white font-semibold">
+                      {new Date(showCertificate.certificateData.completedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-sm text-slate-400">Study Time</div>
+                    <div className="text-white font-semibold">
+                      {Math.floor(showCertificate.certificateData.totalTime / 60)}h {showCertificate.certificateData.totalTime % 60}m
+                    </div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-sm text-slate-400">Score</div>
+                    <div className="text-white font-semibold">{showCertificate.certificateData.score}%</div>
+                  </div>
+                  <div className="bg-slate-900/50 rounded-lg p-3">
+                    <div className="text-sm text-slate-400">Certificate ID</div>
+                    <div className="text-white font-semibold text-xs">{showCertificate.certificateData.certificateId}</div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/50 rounded-lg p-4 mb-6">
+                  <div className="text-sm text-slate-400 mb-2">Blockchain Verification</div>
+                  <div className="text-blue-400 font-mono text-sm break-all">
+                    {showCertificate.certificateData.blockchainVerification}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">
+                    This certificate is verifiable on the Sui blockchain
+                  </p>
+                </div>
+
+                <div className="text-sm text-slate-400">
+                  Issued by {showCertificate.certificateData.issuer} • {new Date(showCertificate.certificateData.issuedAt).toLocaleDateString()}
+                </div>
               </div>
             </div>
           </div>

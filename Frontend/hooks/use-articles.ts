@@ -16,18 +16,26 @@ export function useArticles() {
     setError(null);
 
     try {
+      console.log('Fetching articles...');
       // For shared objects, we need to use events or maintain a list of known article IDs
       // For now, we'll implement a basic approach using events
 
       const packageId = process.env.NEXT_PUBLIC_PACKAGE_ID!;
+      console.log('Package ID for articles:', packageId);
+
+      if (!packageId) {
+        throw new Error('Package ID not configured for articles');
+      }
 
       // Query for ArticleCreated events to find all articles
+      console.log('Querying events for ArticleCreated...');
       const eventsResponse = await client.queryEvents({
         query: {
           MoveEventType: `${packageId}::article_moderation::ArticleCreated`,
         },
         order: 'descending',
       });
+      console.log('Events response received, count:', eventsResponse.data.length);
 
       const articleIds: string[] = [];
 

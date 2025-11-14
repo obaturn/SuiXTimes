@@ -40,10 +40,20 @@ let elizaNewsStore: LiveNewsItem[] = [
 
 export async function GET() {
   try {
+    console.log('📖 Frontend fetching ElizaOS news, current store:', {
+      count: elizaNewsStore.length,
+      latest: elizaNewsStore.slice(0, 2).map(item => ({
+        id: item.id,
+        title: item.title.substring(0, 30) + '...',
+        time: item.time,
+        source: item.source
+      }))
+    });
+
     // Return current ElizaOS news
     return NextResponse.json(elizaNewsStore);
   } catch (error) {
-    console.error('Error fetching ElizaOS news:', error);
+    console.error('❌ Error fetching ElizaOS news:', error);
     return NextResponse.json(getFallbackNews());
   }
 }
@@ -51,10 +61,17 @@ export async function GET() {
 // POST endpoint for ElizaOS agent to submit news updates
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔄 ElizaOS news update request received');
     const newsUpdate = await request.json();
+    console.log('📨 Raw news update data:', JSON.stringify(newsUpdate, null, 2));
 
     // Validate the news update structure
     if (!newsUpdate.title || !newsUpdate.category || !newsUpdate.source) {
+      console.error('❌ Invalid news update format - missing required fields:', {
+        hasTitle: !!newsUpdate.title,
+        hasCategory: !!newsUpdate.category,
+        hasSource: !!newsUpdate.source
+      });
       return NextResponse.json(
         { error: 'Invalid news update format' },
         { status: 400 }
@@ -79,7 +96,13 @@ export async function POST(request: NextRequest) {
       elizaNewsStore = elizaNewsStore.slice(0, 20);
     }
 
-    console.log('ElizaOS news update received:', newNewsItem);
+    console.log('✅ ElizaOS news update processed successfully:', {
+      id: newNewsItem.id,
+      title: newNewsItem.title.substring(0, 50) + '...',
+      category: newNewsItem.category,
+      source: newNewsItem.source,
+      totalStored: elizaNewsStore.length
+    });
 
     return NextResponse.json({
       success: true,
@@ -88,7 +111,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error processing ElizaOS news update:', error);
+    console.error('❌ Error processing ElizaOS news update:', error);
     return NextResponse.json(
       { error: 'Failed to process news update' },
       { status: 500 }

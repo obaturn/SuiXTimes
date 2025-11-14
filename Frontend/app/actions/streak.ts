@@ -4,6 +4,7 @@ import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 
 export async function getUserStreak(address: string): Promise<number> {
   const packageId = process.env.NEXT_PUBLIC_PACKAGE_ID;
+  const network = (process.env.NEXT_PUBLIC_NETWORK as "mainnet" | "testnet" | "devnet" | "localnet") || "testnet";
 
   if (!packageId) {
     // Fallback to mock data if env vars not set
@@ -11,7 +12,7 @@ export async function getUserStreak(address: string): Promise<number> {
   }
 
   try {
-    const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
+    const client = new SuiClient({ url: getFullnodeUrl(network) });
 
     // Get all objects owned by the user
     const ownedObjects = await client.getOwnedObjects({

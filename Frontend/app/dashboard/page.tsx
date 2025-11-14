@@ -35,7 +35,7 @@ const Home = () => {
     const fetchTokens = async () => {
       try {
         const response = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=sui,usd-coin,cetus-protocol,turbos&vs_currencies=usd&include_24hr_change=true'
+          'https://api.coingecko.com/api/v3/simple/price?ids=sui,usd-coin&vs_currencies=usd&include_24hr_change=true'
         );
         const data = await response.json();
 
@@ -51,18 +51,6 @@ const Home = () => {
             price: `$${data['usd-coin']?.usd?.toFixed(2) || 'N/A'}`,
             change: `${data['usd-coin']?.usd_24h_change?.toFixed(1) || 0}%`,
             image: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png'
-          },
-          {
-            name: 'CETUS',
-            price: `$${data['cetus-protocol']?.usd?.toFixed(2) || 'N/A'}`,
-            change: `${data['cetus-protocol']?.usd_24h_change?.toFixed(1) || 0}%`,
-            image: 'https://assets.coingecko.com/coins/images/29463/small/cetus.png'
-          },
-          {
-            name: 'TURBOS',
-            price: `$${data.turbos?.usd?.toFixed(2) || 'N/A'}`,
-            change: `${data.turbos?.usd_24h_change?.toFixed(1) || 0}%`,
-            image: 'https://assets.coingecko.com/coins/images/29893/small/turbos.jpg'
           }
         ];
         setTokens(tokenData);
@@ -84,6 +72,21 @@ const Home = () => {
     const fetchNews = async () => {
       try {
         let allNews: any[] = [];
+
+        // Fetch from ElizaOS live news
+        try {
+          console.log('Fetching ElizaOS live news...');
+          const liveNewsResponse = await fetch('/api/news/live');
+          if (liveNewsResponse.ok) {
+            const liveNewsData = await liveNewsResponse.json();
+            console.log('ElizaOS news received:', liveNewsData);
+            allNews = allNews.concat(liveNewsData.slice(0, 2)); // Take 2 from ElizaOS
+          } else {
+            console.warn('Failed to fetch ElizaOS news:', liveNewsResponse.status);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch from ElizaOS:', err);
+        }
 
         // Fetch from NewsAPI
         try {
@@ -141,7 +144,7 @@ const Home = () => {
           <p className="text-purple-200 mt-2">Your comprehensive platform for Sui blockchain news, market data, and community insights. Stay informed with real-time updates on DeFi, NFTs, and ecosystem developments.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {stats.map((stat) => (
             <div key={stat.label} className="rounded-lg bg-slate-800/60 p-6 backdrop-blur-md border border-slate-700/50">
               <p className="text-slate-400">{stat.label}</p>
