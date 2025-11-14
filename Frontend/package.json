@@ -34,6 +34,9 @@
   "@mysten/dapp-kit": "^0.19.8",
   
     
+  "@mysten/enoki": "^0.12.11",
+  
+    
   "@mysten/sui": "^1.44.0",
   
     

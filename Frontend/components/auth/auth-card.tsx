@@ -4,6 +4,8 @@ import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useWallets, useConnectWallet, useCurrentAccount } from "@mysten/dapp-kit"
+import { isEnokiWallet, type AuthProvider } from "@mysten/enoki"
+import { type EnokiWallet } from "@mysten/enoki"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -50,6 +52,13 @@ export function AuthCard({
   const { mutateAsync: connect } = useConnectWallet()
   const account = useCurrentAccount()
   const router = useRouter()
+
+  const enokiWallets = wallets.filter(isEnokiWallet)
+  const walletsByProvider = enokiWallets.reduce(
+    (map, wallet) => map.set(wallet.provider, wallet),
+    new Map<AuthProvider, EnokiWallet>()
+  )
+  const googleWallet = walletsByProvider.get("google")
 
   // If already connected, redirect to dashboard
   React.useEffect(() => {
@@ -172,6 +181,27 @@ export function AuthCard({
                     </Button>
                   </>
                 )}
+
+                {/* Google Sign-in Button */}
+                <div className="mt-4">
+                  <p className="text-white/80 text-sm text-center mb-2">Or</p>
+                  {googleWallet ? (
+                    <Button
+                      onClick={() => handleConnectWallet(googleWallet.name)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg h-12 text-sm transition-all duration-200 hover:shadow-md"
+                      disabled={connectingWallet !== null}
+                    >
+                      {connectingWallet === googleWallet.name ? "Connecting..." : "Sign in with Google"}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => window.location.href = `https://enoki.mystenlabs.com/auth?projectId=43886439329e2506ec795607244d5702&provider=google`}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg h-12 text-sm transition-all duration-200 hover:shadow-md"
+                    >
+                      Sign in with Google
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <p className="text-center text-white/80 text-xs sm:text-sm mt-4 sm:mt-6 lg:mt-8">

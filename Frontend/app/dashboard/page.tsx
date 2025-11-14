@@ -34,10 +34,17 @@ const Home = () => {
     // Fetch tokens from CoinGecko
     const fetchTokens = async () => {
       try {
+        console.log('Fetching tokens from CoinGecko...');
         const response = await fetch(
           'https://api.coingecko.com/api/v3/simple/price?ids=sui,usd-coin&vs_currencies=usd&include_24hr_change=true'
         );
+
+        if (!response.ok) {
+          throw new Error(`CoinGecko API error: ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log('CoinGecko data received:', data);
 
         const tokenData: Token[] = [
           {
