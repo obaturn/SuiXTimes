@@ -8,9 +8,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'NewsAPI key not configured' }, { status: 500 });
     }
 
-    // Fetch general crypto news from NewsAPI
+    // Fetch Sui-specific news from NewsAPI
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=cryptocurrency&language=en&pageSize=5&sortBy=publishedAt&apiKey=${NEWSAPI_KEY}`
+      `https://newsapi.org/v2/everything?q=sui+blockchain+OR+sui+crypto+OR+mysten+labs&language=en&pageSize=8&sortBy=publishedAt&apiKey=${NEWSAPI_KEY}`
     );
 
     if (!response.ok) {

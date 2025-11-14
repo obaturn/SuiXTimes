@@ -88,19 +88,42 @@ const Home = () => {
           console.warn('Failed to fetch from ElizaOS:', err);
         }
 
-        // Fetch from NewsAPI
+        // Fetch from NewsAPI (Sui-specific)
         try {
           const newsApiResponse = await fetch('/api/newsapi');
           if (newsApiResponse.ok) {
             const newsApiData = await newsApiResponse.json();
-            allNews = allNews.concat(newsApiData.slice(0, 2)); // Take 2 from NewsAPI
+            allNews = allNews.concat(newsApiData.slice(0, 3)); // Take 3 from NewsAPI
           }
         } catch (err) {
           console.warn('Failed to fetch from NewsAPI:', err);
         }
 
-        // Note: RSS feeds are currently disabled due to CORS/access issues
-        // They can be re-enabled once proper RSS sources are identified
+        // Fetch from CoinGecko news (if available)
+        try {
+          const coingeckoResponse = await fetch('https://api.coingecko.com/api/v3/news');
+          if (coingeckoResponse.ok) {
+            const coingeckoData = await coingeckoResponse.json();
+            const suiNews = coingeckoData.data?.filter((item: any) =>
+              item.title?.toLowerCase().includes('sui') ||
+              item.description?.toLowerCase().includes('sui')
+            ).slice(0, 2) || [];
+
+            const formattedSuiNews = suiNews.map((item: any) => ({
+              title: item.title,
+              source: 'CoinGecko',
+              time: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Recent',
+              category: 'Market News'
+            }));
+
+            allNews = allNews.concat(formattedSuiNews);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch from CoinGecko:', err);
+        }
+
+        // Note: RSS feeds disabled due to CORS and availability issues
+        // NewsAPI and CoinGecko provide sufficient real news coverage
 
         // Shuffle and take top 3
         const shuffled = allNews.sort(() => 0.5 - Math.random());
@@ -120,9 +143,11 @@ const Home = () => {
         console.error('Error fetching news:', error);
         // Fallback to static data
         setNews([
-          { title: 'Sui DeFi ecosystem sees massive growth', source: 'CoinDesk', time: '2h ago', category: 'DeFi' },
-          { title: 'New developer tools released for Sui', source: 'Sui Foundation', time: '1d ago', category: 'Technical' },
-          { title: 'Community milestone: 1 million active wallets', source: 'Sui News', time: '3d ago', category: 'Community' },
+          { title: 'Sui Network TPS reaches new all-time high', source: 'Sui Foundation', time: '2h ago', category: 'Performance' },
+          { title: 'Mysten Labs announces new DeFi primitives for Sui', source: 'Mysten Labs', time: '4h ago', category: 'DeFi' },
+          { title: 'Top 10 Sui dApps by TVL this month', source: 'DeFi Pulse', time: '6h ago', category: 'Ecosystem' },
+          { title: 'Sui wallet adoption grows 300% in Q4', source: 'CryptoCompare', time: '1d ago', category: 'Adoption' },
+          { title: 'New NFT marketplace launches on Sui mainnet', source: 'NFT Evening', time: '2d ago', category: 'NFT' },
         ]);
       } finally {
         setLoadingNews(false);

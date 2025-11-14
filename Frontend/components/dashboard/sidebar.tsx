@@ -106,9 +106,17 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       <div className="border-t border-border p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-              {account?.address ? account.address.slice(0, 2).toUpperCase() : 'G'}
-            </div>
+            {account?.address ? (
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${account.address}`}
+                alt="Profile Avatar"
+                className="h-10 w-10 rounded-full border-2 border-blue-500/50"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                G
+              </div>
+            )}
             <div className="ml-4">
               <p className="font-semibold text-foreground">
                 {account?.address ? `${account.address.slice(0, 6)}...${account.address.slice(-4)}` : 'Guest'}

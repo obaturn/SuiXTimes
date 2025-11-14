@@ -19,15 +19,15 @@ export function useSocket() {
     const socket = socketRef.current;
 
     socket.on('connect', () => {
-      // Connected successfully
+      console.log('🔗 Connected to WebSocket server');
     });
 
     socket.on('connect_error', (error) => {
-      // Connection error occurred
+      console.error('❌ WebSocket connection error:', error);
     });
 
     socket.on('disconnect', (reason) => {
-      // Disconnected
+      console.log('🔌 Disconnected from WebSocket server:', reason);
     });
 
     // Cleanup on unmount

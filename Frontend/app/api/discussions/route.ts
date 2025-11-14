@@ -66,14 +66,10 @@ export async function GET(request: NextRequest) {
 // POST - Create new discussion
 export async function POST(request: NextRequest) {
   try {
-    console.log('Discussion creation request received');
     const body = await request.json();
     const { title, content, category, authorAddress } = body;
 
-    console.log('Request body:', { title: title?.substring(0, 50), content: content?.substring(0, 50), category, authorAddress });
-
     if (!title || !content || !authorAddress) {
-      console.error('Missing required fields:', { title: !!title, content: !!content, authorAddress: !!authorAddress });
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -81,13 +77,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Read existing discussions
-    console.log('Reading existing discussions...');
     const discussions = await readDiscussions();
-    console.log('Current discussions count:', discussions.length);
 
     // Generate numeric ID
     const newId = Date.now(); // Use timestamp as numeric ID
-    console.log('Generated new ID:', newId);
 
     const newDiscussion = {
       id: newId,
@@ -105,12 +98,9 @@ export async function POST(request: NextRequest) {
 
     // Add to discussions array
     discussions.push(newDiscussion);
-    console.log('Added new discussion to array, new count:', discussions.length);
 
-    // Save to file
-    console.log('Attempting to write discussions to file...');
+    // Save to Vercel KV
     await writeDiscussions(discussions);
-    console.log('Successfully wrote discussions to file');
 
     return NextResponse.json({
       success: true,
