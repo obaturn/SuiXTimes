@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Parser from 'rss-parser';
 
+export const dynamic = 'force-dynamic';
+
 const parser = new Parser();
 
 export async function GET(request: NextRequest) {
