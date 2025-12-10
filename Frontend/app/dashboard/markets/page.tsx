@@ -92,13 +92,30 @@ const Markets = () => {
   useEffect(() => {
     const getTokens = async () => {
       setLoading(true);
-      const fetchedTokens = await fetchTopPerformingTokens();
-      setTokens(fetchedTokens);
+      try {
+        const fetchedTokens = await fetchTopPerformingTokens();
+        setTokens(fetchedTokens);
 
-      // Get SUI specific data
-      const suiToken = fetchedTokens.find(token => token.symbol === 'SUI');
-      if (suiToken) {
-        setSuiData(suiToken);
+        // Get SUI specific data
+        const suiToken = fetchedTokens.find(token => token.symbol === 'SUI');
+        if (suiToken) {
+          setSuiData(suiToken);
+          console.log('SUI data loaded:', suiToken);
+        } else {
+          console.warn('SUI token not found in fetched tokens, trying direct fetch');
+          // Try to fetch SUI data directly
+          try {
+            const directSuiToken = await fetchSuiToken();
+            if (directSuiToken) {
+              setSuiData(directSuiToken);
+              console.log('SUI data loaded via direct fetch:', directSuiToken);
+            }
+          } catch (error) {
+            console.error('Failed to fetch SUI data directly:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching tokens:', error);
       }
 
       setLoading(false);
@@ -107,8 +124,13 @@ const Markets = () => {
 
     const getChartData = async () => {
       setChartLoading(true);
-      const data = await fetchSuiChartData(30); // 30 days of data
-      setChartData(data);
+      try {
+        const data = await fetchSuiChartData(30); // 30 days of data
+        setChartData(data);
+        console.log('Chart data loaded:', data);
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+      }
       setChartLoading(false);
     };
 
@@ -118,20 +140,24 @@ const Markets = () => {
     // Set up auto-refresh: tokens every 30 seconds, SUI data every 15 seconds
     const tokenInterval = setInterval(() => {
       getTokens();
-    }, 30 * 1000); // 30 seconds for tokens (reduced from 2 minutes)
+    }, 30 * 1000); // 30 seconds for tokens
 
     const suiInterval = setInterval(async () => {
       // Quick SUI data update using server action
       try {
+        console.log('Fetching SUI token update...');
         const suiToken = await fetchSuiToken();
         if (suiToken) {
           setSuiData(suiToken);
           setLastUpdated(new Date());
+          console.log('SUI data updated:', suiToken);
+        } else {
+          console.warn('Failed to fetch SUI token update');
         }
       } catch (error) {
-        // Silent error handling for background updates
+        console.error('Error updating SUI data:', error);
       }
-    }, 15 * 1000); // 15 seconds for SUI data (reduced from 30 seconds)
+    }, 15 * 1000); // 15 seconds for SUI data
 
     return () => {
       clearInterval(tokenInterval);
@@ -148,17 +174,23 @@ const Markets = () => {
             <img src={suiData?.image || "/placeholder.svg"} alt="SUI" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full" />
             <div>
               <h2 className="text-xl lg:text-2xl font-bold text-white">SUI/USD</h2>
-              <p className="text-2xl lg:text-3xl font-bold text-white mt-1">${suiData?.price?.toFixed(4) || '1.5000'}</p>
+              <p className="text-2xl lg:text-3xl font-bold text-white mt-1">
+                ${suiData?.price ? suiData.price.toFixed(4) : '1.5000'}
+              </p>
             </div>
           </div>
           <div className="text-left sm:text-right">
             <div className={`flex items-center justify-start sm:justify-end space-x-2 ${suiData?.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {suiData?.change24h >= 0 ? <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5" /> : <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5" />}
-              <span className="text-sm lg:text-base">{suiData?.change24h?.toFixed(2) || '+3.20'}% (24h)</span>
+              <span className="text-sm lg:text-base">
+                {suiData?.change24h ? `${suiData.change24h >= 0 ? '+' : ''}${suiData.change24h.toFixed(2)}` : '+3.20'}% (24h)
+              </span>
             </div>
             <div className={`flex items-center justify-start sm:justify-end space-x-2 text-sm ${suiData?.changeHour >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {suiData?.changeHour >= 0 ? <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4" /> : <TrendingDown className="w-3 h-3 lg:w-4 lg:h-4" />}
-              <span>{suiData?.changeHour?.toFixed(2) || '+1.20'}% (1h)</span>
+              <span>
+                {suiData?.changeHour ? `${suiData.changeHour >= 0 ? '+' : ''}${suiData.changeHour.toFixed(2)}` : '+1.20'}% (1h)
+              </span>
             </div>
           </div>
         </div>

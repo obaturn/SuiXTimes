@@ -38,8 +38,188 @@ let elizaNewsStore: LiveNewsItem[] = [
   }
 ];
 
+// Live news templates for simulation
+const liveNewsTemplates = [
+  {
+    title: "Sui TPS Reaches {tps} Transactions Per Second",
+    category: "performance",
+    urgent: false
+  },
+  {
+    title: "New DeFi Protocol Integrates Sui Blockchain",
+    category: "defi",
+    urgent: false
+  },
+  {
+    title: "Sui Community Grows by {growth}% This Month",
+    category: "community",
+    urgent: false
+  },
+  {
+    title: "BREAKING: Major Partnership Announced for Sui Ecosystem",
+    category: "breaking",
+    urgent: true
+  },
+  {
+    title: "NFT Sales Volume Hits Record High on Sui",
+    category: "nft",
+    urgent: false
+  },
+  {
+    title: "Sui Gas Fees Reduced by {reduction}%",
+    category: "tech",
+    urgent: false
+  },
+  {
+    title: "New Developer Tool Released for Sui Network",
+    category: "development",
+    urgent: false
+  },
+  {
+    title: "Institutional Investor Commits ${amount}M to Sui Projects",
+    category: "investment",
+    urgent: true
+  }
+];
+
+// Initialize live news simulation
+let simulationInterval: NodeJS.Timeout | null = null;
+
+function startLiveNewsSimulation() {
+  if (simulationInterval) return; // Already running
+
+  console.log('🚀 Starting ElizaOS Live News Simulation');
+
+  simulationInterval = setInterval(() => {
+    // Generate new news item
+    const template = liveNewsTemplates[Math.floor(Math.random() * liveNewsTemplates.length)];
+    let title = template.title;
+
+    // Replace placeholders with random values
+    if (title.includes('{tps}')) {
+      const tps = Math.floor(Math.random() * 500) + 1000;
+      title = title.replace('{tps}', tps.toString());
+    }
+    if (title.includes('{growth}')) {
+      const growth = Math.floor(Math.random() * 50) + 10;
+      title = title.replace('{growth}', growth.toString());
+    }
+    if (title.includes('{reduction}')) {
+      const reduction = Math.floor(Math.random() * 30) + 10;
+      title = title.replace('{reduction}', reduction.toString());
+    }
+    if (title.includes('{amount}')) {
+      const amount = Math.floor(Math.random() * 50) + 10;
+      title = title.replace('{amount}', amount.toString());
+    }
+
+    const newNewsItem: LiveNewsItem = {
+      id: Date.now(),
+      title,
+      category: template.category,
+      time: 'Just now',
+      source: 'ElizaOS Agent',
+      urgent: template.urgent
+    };
+
+    // Add to the beginning of the array
+    elizaNewsStore.unshift(newNewsItem);
+
+    // Keep only the latest 20 news items
+    if (elizaNewsStore.length > 20) {
+      elizaNewsStore = elizaNewsStore.slice(0, 20);
+    }
+
+    console.log('📰 ElizaOS Live News: Generated new update -', title);
+
+  }, 45000); // Generate new news every 45 seconds
+}
+
+function stopLiveNewsSimulation() {
+  if (simulationInterval) {
+    clearInterval(simulationInterval);
+    simulationInterval = null;
+    console.log('⏹️ Stopped ElizaOS Live News Simulation');
+  }
+}
+
+// Start simulation when module loads
+if (typeof globalThis !== 'undefined') {
+  // Generate a few initial news items immediately
+  setTimeout(() => {
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        const template = liveNewsTemplates[Math.floor(Math.random() * liveNewsTemplates.length)];
+        let title = template.title;
+
+        // Replace placeholders with random values
+        if (title.includes('{tps}')) {
+          const tps = Math.floor(Math.random() * 500) + 1000;
+          title = title.replace('{tps}', tps.toString());
+        }
+        if (title.includes('{growth}')) {
+          const growth = Math.floor(Math.random() * 50) + 10;
+          title = title.replace('{growth}', growth.toString());
+        }
+        if (title.includes('{reduction}')) {
+          const reduction = Math.floor(Math.random() * 30) + 10;
+          title = title.replace('{reduction}', reduction.toString());
+        }
+        if (title.includes('{amount}')) {
+          const amount = Math.floor(Math.random() * 50) + 10;
+          title = title.replace('{amount}', amount.toString());
+        }
+
+        const newNewsItem: LiveNewsItem = {
+          id: Date.now() + i,
+          title,
+          category: template.category,
+          time: 'Just now',
+          source: 'ElizaOS Agent',
+          urgent: template.urgent
+        };
+
+        elizaNewsStore.unshift(newNewsItem);
+        if (elizaNewsStore.length > 20) {
+          elizaNewsStore = elizaNewsStore.slice(0, 20);
+        }
+
+        console.log('📰 ElizaOS Live News: Initial update -', title);
+      }, i * 2000); // Stagger initial news generation
+    }
+  }, 1000);
+
+  startLiveNewsSimulation();
+}
+
 export async function GET() {
   try {
+    // Update timestamps for existing news items to make them appear more dynamic
+    const now = Date.now();
+    elizaNewsStore = elizaNewsStore.map(item => {
+      if (item.time === 'Just now') {
+        // Keep "Just now" for very recent items
+        return item;
+      }
+
+      // For items with "X min ago", update the time
+      const minMatch = item.time.match(/(\d+)\s+min\s+ago/);
+      if (minMatch) {
+        const minutes = parseInt(minMatch[1]) + 1; // Add 1 minute
+        return { ...item, time: `${minutes} min ago` };
+      }
+
+      const hourMatch = item.time.match(/(\d+)\s+hour/);
+      if (hourMatch) {
+        const hours = parseInt(hourMatch[1]);
+        if (hours < 24) {
+          return { ...item, time: `${hours + 1} hour${hours + 1 > 1 ? 's' : ''} ago` };
+        }
+      }
+
+      return item;
+    });
+
     console.log('📖 Frontend fetching ElizaOS news, current store:', {
       count: elizaNewsStore.length,
       latest: elizaNewsStore.slice(0, 2).map(item => ({
@@ -114,6 +294,78 @@ export async function POST(request: NextRequest) {
     console.error('❌ Error processing ElizaOS news update:', error);
     return NextResponse.json(
       { error: 'Failed to process news update' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE endpoint to stop the simulation (for maintenance)
+export async function DELETE() {
+  try {
+    stopLiveNewsSimulation();
+    return NextResponse.json({
+      success: true,
+      message: 'ElizaOS Live News Simulation stopped'
+    });
+  } catch (error) {
+    console.error('❌ Error stopping simulation:', error);
+    return NextResponse.json(
+      { error: 'Failed to stop simulation' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT endpoint to manually trigger a news update (for testing)
+export async function PUT() {
+  try {
+    const template = liveNewsTemplates[Math.floor(Math.random() * liveNewsTemplates.length)];
+    let title = template.title;
+
+    // Replace placeholders with random values
+    if (title.includes('{tps}')) {
+      const tps = Math.floor(Math.random() * 500) + 1000;
+      title = title.replace('{tps}', tps.toString());
+    }
+    if (title.includes('{growth}')) {
+      const growth = Math.floor(Math.random() * 50) + 10;
+      title = title.replace('{growth}', growth.toString());
+    }
+    if (title.includes('{reduction}')) {
+      const reduction = Math.floor(Math.random() * 30) + 10;
+      title = title.replace('{reduction}', reduction.toString());
+    }
+    if (title.includes('{amount}')) {
+      const amount = Math.floor(Math.random() * 50) + 10;
+      title = title.replace('{amount}', amount.toString());
+    }
+
+    const newNewsItem: LiveNewsItem = {
+      id: Date.now(),
+      title,
+      category: template.category,
+      time: 'Just now',
+      source: 'ElizaOS Agent',
+      urgent: template.urgent
+    };
+
+    elizaNewsStore.unshift(newNewsItem);
+    if (elizaNewsStore.length > 20) {
+      elizaNewsStore = elizaNewsStore.slice(0, 20);
+    }
+
+    console.log('📰 ElizaOS Live News: Manual update triggered -', title);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Manual news update triggered',
+      newsItem: newNewsItem
+    });
+
+  } catch (error) {
+    console.error('❌ Error triggering manual news update:', error);
+    return NextResponse.json(
+      { error: 'Failed to trigger news update' },
       { status: 500 }
     );
   }
