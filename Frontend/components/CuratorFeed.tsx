@@ -1,48 +1,42 @@
 "use client";
 
 import { useEffect } from 'react';
-import Script from 'next/script';
 
 export default function CuratorFeed() {
   useEffect(() => {
-    // Cleanup function to remove any existing Curator instances
-    return () => {
-      // Remove any Curator-injected elements if component unmounts
-      const curatorElements = document.querySelectorAll('[class*="crt-"]');
-      curatorElements.forEach((el) => {
-        if (el.id !== 'curator-feed-default-feed-layout') {
-          el.remove();
-        }
-      });
+    // Load Curator script fresh each time component mounts
+    const loadCuratorScript = () => {
+      // Remove any existing Curator script first
+      const existingScript = document.querySelector(
+        'script[src="https://cdn.curator.io/published/c64ea9d1-6220-46ae-90ad-33641fa5231c.js"]'
+      );
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Create and load new script
+      const script = document.createElement('script');
+      script.async = true;
+      script.charset = 'UTF-8';
+      script.src = 'https://cdn.curator.io/published/c64ea9d1-6220-46ae-90ad-33641fa5231c.js';
+
+      const firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode?.insertBefore(script, firstScript);
     };
+
+    loadCuratorScript();
   }, []);
 
   return (
-    <div>
-      {/* Place this div where you want the feed to appear */}
-      <div id="curator-feed-default-feed-layout" className="min-h-[600px]">
-        <a
-          href="https://curator.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="crt-logo crt-tag"
-        >
-          Powered by Curator.io
-        </a>
-      </div>
-
-      {/* Load the Curator script */}
-      <Script
-        id="curator-feed-script"
-        strategy="lazyOnload"
-        src="https://cdn.curator.io/published/245d3642-0b89-4445-b282-89f3a7a45a56.js"
-        onLoad={() => {
-          console.log('Curator feed loaded successfully');
-        }}
-        onError={() => {
-          console.error('Failed to load Curator feed');
-        }}
-      />
+    <div id="curator-feed-default-feed-layout" style={{ minHeight: '600px' }}>
+      <a
+        href="https://curator.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="crt-logo crt-tag"
+      >
+        Powered by Curator.io
+      </a>
     </div>
   );
 }

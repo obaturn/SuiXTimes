@@ -1,265 +1,284 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { RefreshCw, Zap, Clock } from 'lucide-react';
 import StreakCard from '@/components/streak/StreakCard';
 
-interface Token {
-  name: string;
-  price: string;
-  change: string;
-  image: string;
-}
-
 interface NewsItem {
+  id: number;
   title: string;
+  excerpt: string;
   source: string;
   time: string;
   category: string;
+  image: string;
+  readTime: string;
 }
 
-const Home = () => {
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loadingTokens, setLoadingTokens] = useState(true);
-  const [loadingNews, setLoadingNews] = useState(true);
+interface LiveNewsItem {
+  id: number;
+  title: string;
+  category: string;
+  time: string;
+  source: string;
+  urgent: boolean;
+}
 
-  const stats = [
-    { label: '24h Volume', value: '$1.2M', change: '+5.6%', isPositive: true },
-    { label: 'Total TVL', value: '$2.4B', change: '-2.1%', isPositive: false },
-    { label: 'Active Users', value: '1.5M', change: '+12.8%', isPositive: true },
+const Dashboard = () => {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [liveNews, setLiveNews] = useState<LiveNewsItem[]>([]);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [isLoadingLiveNews, setIsLoadingLiveNews] = useState(true);
+
+  // Static news data with images
+  const staticNews: NewsItem[] = [
+    {
+      id: 1,
+      title: "Sui Network Achieves Record 100,000 TPS in Latest Testnet",
+      excerpt: "The Sui blockchain has demonstrated unprecedented performance with 100,000 transactions per second during recent testnet trials, setting new standards for Web3 scalability.",
+      source: "Sui Foundation",
+      time: "2 hours ago",
+      category: "Performance",
+      image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=250&fit=crop",
+      readTime: "3 min read"
+    },
+    {
+      id: 2,
+      title: "Major DeFi Protocol Launches on Sui Mainnet",
+      excerpt: "Leading DeFi platform announces full migration to Sui blockchain, bringing $500M in TVL and expanding ecosystem opportunities for developers and users.",
+      source: "DeFi Pulse",
+      time: "4 hours ago",
+      category: "DeFi",
+      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop",
+      readTime: "5 min read"
+    },
+    {
+      id: 3,
+      title: "Sui Developer Conference 2024: Key Announcements",
+      excerpt: "Mysten Labs reveals groundbreaking new features including enhanced smart contract capabilities and improved developer tooling at annual conference.",
+      source: "Mysten Labs",
+      time: "6 hours ago",
+      category: "Development",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
+      readTime: "4 min read"
+    },
+    {
+      id: 4,
+      title: "NFT Marketplace Sees 300% Growth on Sui",
+      excerpt: "The Sui NFT ecosystem continues to expand rapidly with new marketplaces and collections driving unprecedented adoption and trading volume.",
+      source: "NFT Evening",
+      time: "8 hours ago",
+      category: "NFT",
+      image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&h=250&fit=crop",
+      readTime: "3 min read"
+    },
+    {
+      id: 5,
+      title: "Institutional Adoption: Major Bank Explores Sui Integration",
+      excerpt: "Leading financial institution announces pilot program to integrate Sui blockchain technology for cross-border payments and asset tokenization.",
+      source: "CoinDesk",
+      time: "12 hours ago",
+      category: "Adoption",
+      image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=250&fit=crop",
+      readTime: "6 min read"
+    },
+    {
+      id: 6,
+      title: "Sui Community Reaches 1 Million Active Wallets Milestone",
+      excerpt: "The Sui ecosystem celebrates reaching 1 million active wallets, marking a significant milestone in blockchain adoption and community growth.",
+      source: "Sui News",
+      time: "1 day ago",
+      category: "Community",
+      image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=250&fit=crop",
+      readTime: "4 min read"
+    },
+    {
+      id: 7,
+      title: "New Gaming DApp Launches with 50K Concurrent Users",
+      excerpt: "Revolutionary blockchain gaming platform built on Sui achieves instant success with massive user adoption and innovative gameplay mechanics.",
+      source: "GameFi Today",
+      time: "1 day ago",
+      category: "Gaming",
+      image: "https://images.unsplash.com/photo-1556438064-2d7646166914?w=400&h=250&fit=crop",
+      readTime: "5 min read"
+    },
+    {
+      id: 8,
+      title: "Sui Gas Fee Reduction Initiative Shows 80% Improvement",
+      excerpt: "Ongoing optimization efforts result in significant reduction of transaction costs, making Sui more accessible for everyday users and micro-transactions.",
+      source: "CryptoCompare",
+      time: "2 days ago",
+      category: "Technical",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
+      readTime: "3 min read"
+    }
   ];
 
   useEffect(() => {
-    // Fetch tokens from CoinGecko
-    const fetchTokens = async () => {
-      try {
-        console.log('Fetching tokens from CoinGecko...');
-        const response = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=sui,usd-coin&vs_currencies=usd&include_24hr_change=true'
-        );
-
-        if (!response.ok) {
-          throw new Error(`CoinGecko API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log('CoinGecko data received:', data);
-
-        const tokenData: Token[] = [
-          {
-            name: 'SUI',
-            price: `$${data.sui?.usd?.toFixed(2) || 'N/A'}`,
-            change: `${data.sui?.usd_24h_change?.toFixed(1) || 0}%`,
-            image: 'https://assets.coingecko.com/coins/images/26375/small/sui_asset.jpeg'
-          },
-          {
-            name: 'USDC',
-            price: `$${data['usd-coin']?.usd?.toFixed(2) || 'N/A'}`,
-            change: `${data['usd-coin']?.usd_24h_change?.toFixed(1) || 0}%`,
-            image: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png'
-          }
-        ];
-        setTokens(tokenData);
-      } catch (error) {
-        console.error('Error fetching tokens:', error);
-        // Fallback to static data
-        setTokens([
-          { name: 'SUI', price: '$1.50', change: '+3.2%', image: '/placeholder.svg' },
-          { name: 'USDC', price: '$1.00', change: '+0.1%', image: '/placeholder.svg' },
-          { name: 'CETUS', price: '$0.50', change: '-1.5%', image: '/placeholder.svg' },
-          { name: 'TURBOS', price: '$0.01', change: '+10.2%', image: '/placeholder.svg' },
-        ]);
-      } finally {
-        setLoadingTokens(false);
-      }
-    };
-
-    // Fetch news from multiple sources
-    const fetchNews = async () => {
-      try {
-        let allNews: any[] = [];
-
-        // Fetch from ElizaOS live news
-        try {
-          console.log('Fetching ElizaOS live news...');
-          const liveNewsResponse = await fetch('/api/news/live');
-          if (liveNewsResponse.ok) {
-            const liveNewsData = await liveNewsResponse.json();
-            console.log('ElizaOS news received:', liveNewsData);
-            allNews = allNews.concat(liveNewsData.slice(0, 2)); // Take 2 from ElizaOS
-          } else {
-            console.warn('Failed to fetch ElizaOS news:', liveNewsResponse.status);
-          }
-        } catch (err) {
-          console.warn('Failed to fetch from ElizaOS:', err);
-        }
-
-        // Fetch from NewsAPI (Sui-specific)
-        try {
-          const newsApiResponse = await fetch('/api/newsapi');
-          if (newsApiResponse.ok) {
-            const newsApiData = await newsApiResponse.json();
-            allNews = allNews.concat(newsApiData.slice(0, 3)); // Take 3 from NewsAPI
-          }
-        } catch (err) {
-          console.warn('Failed to fetch from NewsAPI:', err);
-        }
-
-        // Fetch from CoinGecko news (if available)
-        try {
-          const coingeckoResponse = await fetch('https://api.coingecko.com/api/v3/news');
-          if (coingeckoResponse.ok) {
-            const coingeckoData = await coingeckoResponse.json();
-            const suiNews = coingeckoData.data?.filter((item: any) =>
-              item.title?.toLowerCase().includes('sui') ||
-              item.description?.toLowerCase().includes('sui')
-            ).slice(0, 2) || [];
-
-            const formattedSuiNews = suiNews.map((item: any) => ({
-              title: item.title,
-              source: 'CoinGecko',
-              time: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Recent',
-              category: 'Market News'
-            }));
-
-            allNews = allNews.concat(formattedSuiNews);
-          }
-        } catch (err) {
-          console.warn('Failed to fetch from CoinGecko:', err);
-        }
-
-        // Note: RSS feeds disabled due to CORS and availability issues
-        // NewsAPI and CoinGecko provide sufficient real news coverage
-
-        // Shuffle and take top 3
-        const shuffled = allNews.sort(() => 0.5 - Math.random());
-        const newsData: NewsItem[] = shuffled.slice(0, 3).map((item: any) => ({
-          title: item.title || 'No title',
-          source: item.source || 'Crypto News',
-          time: item.time || item.pubDate ? new Date(item.pubDate || item.time).toLocaleDateString() : 'Recent',
-          category: item.category || 'Cryptocurrency'
-        }));
-
-        setNews(newsData.length > 0 ? newsData : [
-          { title: 'Sui DeFi ecosystem sees massive growth', source: 'CoinDesk', time: '2h ago', category: 'DeFi' },
-          { title: 'New developer tools released for Sui', source: 'Sui Foundation', time: '1d ago', category: 'Technical' },
-          { title: 'Community milestone: 1 million active wallets', source: 'Sui News', time: '3d ago', category: 'Community' },
-        ]);
-      } catch (error) {
-        console.error('Error fetching news:', error);
-        // Fallback to static data
-        setNews([
-          { title: 'Sui Network TPS reaches new all-time high', source: 'Sui Foundation', time: '2h ago', category: 'Performance' },
-          { title: 'Mysten Labs announces new DeFi primitives for Sui', source: 'Mysten Labs', time: '4h ago', category: 'DeFi' },
-          { title: 'Top 10 Sui dApps by TVL this month', source: 'DeFi Pulse', time: '6h ago', category: 'Ecosystem' },
-          { title: 'Sui wallet adoption grows 300% in Q4', source: 'CryptoCompare', time: '1d ago', category: 'Adoption' },
-          { title: 'New NFT marketplace launches on Sui mainnet', source: 'NFT Evening', time: '2d ago', category: 'NFT' },
-        ]);
-      } finally {
+    // Load static news data
+    const loadNews = () => {
+      setLoadingNews(true);
+      // Simulate loading delay for better UX
+      setTimeout(() => {
+        setNews(staticNews);
         setLoadingNews(false);
+      }, 1000);
+    };
+
+    // Fetch live news for sidebar
+    const fetchLiveNews = async () => {
+      try {
+        setIsLoadingLiveNews(true);
+        const response = await fetch('/api/news/live', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const newsData = await response.json();
+          setLiveNews(newsData);
+        }
+      } catch (error) {
+        console.error('Error fetching live news:', error);
+      } finally {
+        setIsLoadingLiveNews(false);
       }
     };
 
-    fetchTokens();
-    fetchNews();
+    loadNews();
+    fetchLiveNews();
+
+    // Update live news every 30 seconds
+    const interval = setInterval(() => {
+      fetchLiveNews();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-gray-900">
-      <div className="space-y-8">
-        <div className="rounded-lg bg-purple-600/40 p-8 backdrop-blur-md border border-purple-500/50">
-          <div className="flex justify-between items-center">
-            <span className="inline-block bg-purple-900/80 text-white text-xs font-semibold px-3 py-1 rounded-full">Sui Blockchain Hub</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white mt-4">Sui X Times Dashboard</h1>
-          <p className="text-purple-200 mt-2">Your comprehensive platform for Sui blockchain news, market data, and community insights. Stay informed with real-time updates on DeFi, NFTs, and ecosystem developments.</p>
-        </div>
+    <div className="w-full min-h-screen">
+      <div className="space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Main News Content */}
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-6">World</h1>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {stats.map((stat) => (
-            <div key={stat.label} className="rounded-lg bg-slate-800/60 p-6 backdrop-blur-md border border-slate-700/50">
-              <p className="text-slate-400">{stat.label}</p>
-              <div className="flex items-baseline space-x-2 mt-2">
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
-                <div className={`flex items-center text-sm font-semibold ${stat.isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                  <ArrowUpRight className={`w-4 h-4 ${!stat.isPositive && 'transform rotate-180'}`} />
-                  <span>{stat.change}</span>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-6">Latest News</h2>
+              {loadingNews ? (
+                <div className="space-y-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="rounded-lg bg-card p-6 backdrop-blur-md border border-border animate-pulse">
+                      <div className="flex gap-6">
+                        <div className="w-48 h-32 bg-muted rounded-lg flex-shrink-0"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-muted rounded w-1/4 mb-3"></div>
+                          <div className="h-6 bg-muted rounded w-full mb-2"></div>
+                          <div className="h-4 bg-muted rounded w-3/4 mb-3"></div>
+                          <div className="h-3 bg-muted rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <div className="space-y-6">
+                  {news.map((item) => (
+                    <div key={item.id} className="rounded-lg bg-card backdrop-blur-md border border-border hover:border-accent transition-all duration-200 hover:shadow-lg hover:shadow-primary/10">
+                      <div className="flex gap-6 p-6">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-48 h-32 rounded-lg object-cover flex-shrink-0"
+                          onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-xs font-semibold bg-primary/20 text-primary px-3 py-1 rounded-full">{item.category}</span>
+                            <span className="text-xs text-muted-foreground">{item.readTime}</span>
+                          </div>
+                          <h3 className="text-xl font-semibold text-foreground mb-3 leading-tight hover:text-primary transition-colors cursor-pointer">{item.title}</h3>
+                          <p className="text-muted-foreground text-sm mb-3 leading-relaxed">{item.excerpt}</p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-muted-foreground text-sm">{item.source} &middot; {item.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Live News Sidebar */}
+          <div className="space-y-4">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Live Updates
+                  {isLoadingLiveNews && <RefreshCw className="w-4 h-4 animate-spin ml-2" />}
+                </h3>
+              </div>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {liveNews.length > 0 ? liveNews.slice(0, 15).map((news) => (
+                  <div key={news.id} className="border-b border-gray-200 last:border-b-0 pb-3 last:pb-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p className="text-gray-900 text-sm font-medium line-clamp-2 mb-1">{news.title}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">{news.source}</span>
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {news.time}
+                          </span>
+                        </div>
+                      </div>
+                      {news.urgent && (
+                        <div className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium flex-shrink-0">
+                          BREAKING
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )) : (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    No live updates available
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-200">
+                <p className="text-xs text-gray-500 text-center">
+                  Real-time Sui ecosystem monitoring
+                </p>
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Streak Card Section */}
-        <div className="w-full max-w-md">
-          <StreakCard />
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-4">Top Tokens</h2>
-          {loadingTokens ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 flex items-center space-x-4 animate-pulse">
-                  <div className="w-10 h-10 bg-slate-700 rounded-full"></div>
-                  <div>
-                    <div className="h-4 bg-slate-700 rounded w-16 mb-2"></div>
-                    <div className="h-3 bg-slate-700 rounded w-12"></div>
-                  </div>
-                  <div className="h-4 bg-slate-700 rounded w-10"></div>
-                </div>
-              ))}
+            {/* Quick Stats */}
+            <div className="grid gap-3">
+              <div className="bg-card rounded-lg p-4 text-center border border-border">
+                <Zap className="w-6 h-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-foreground">{liveNews.length}</div>
+                <div className="text-sm text-muted-foreground">Live Updates</div>
+              </div>
+              <div className="bg-card rounded-lg p-4 text-center border border-border">
+                <RefreshCw className="w-6 h-6 text-primary mx-auto mb-2" />
+                <div className="text-xl font-bold text-foreground">30s</div>
+                <div className="text-sm text-muted-foreground">Refresh Rate</div>
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {tokens.map((token) => (
-                <div key={token.name} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 flex items-center space-x-4">
-                  <img src={token.image} alt={token.name} className="w-10 h-10 rounded-full" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
-                  <div>
-                    <p className="font-semibold text-white">{token.name}</p>
-                    <p className="text-slate-400">{token.price}</p>
-                  </div>
-                  <p className={`text-sm font-semibold ${token.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>{token.change}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-4">Latest News</h2>
-          {loadingNews ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 flex items-center space-x-4 animate-pulse">
-                  <div className="w-16 h-16 bg-slate-700 rounded-lg"></div>
-                  <div className="flex-1">
-                    <div className="h-3 bg-slate-700 rounded w-20 mb-2"></div>
-                    <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-slate-700 rounded w-32"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {news.map((item, index) => (
-                <div key={index} className="rounded-lg bg-slate-800/60 p-4 backdrop-blur-md border border-slate-700/50 flex items-center space-x-4">
-                  <img src="/placeholder.svg" alt={item.title} className="w-16 h-16 rounded-lg object-cover" />
-                  <div>
-                    <span className="text-xs font-semibold bg-purple-600/50 text-white px-2 py-1 rounded-full">{item.category}</span>
-                    <p className="font-semibold text-white mt-2">{item.title}</p>
-                    <p className="text-slate-400 text-sm mt-1">{item.source} &middot; {item.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default Dashboard;

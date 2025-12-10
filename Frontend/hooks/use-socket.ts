@@ -66,11 +66,25 @@ export function useSocket() {
     }
   };
 
+  const emitMessage = (message: any) => {
+    if (socketRef.current) {
+      socketRef.current.emit('chat-message', message);
+    }
+  };
+
+  const onMessageReceived = (callback: (message: any) => void) => {
+    if (socketRef.current) {
+      socketRef.current.on('chat-message', callback);
+    }
+  };
+
   return {
     socket: socketRef.current,
     joinDiscussion,
     emitNewDiscussion,
     emitNewReply,
+    emitMessage,
+    onMessageReceived,
     onDiscussionCreated,
     onReplyAdded,
   };
